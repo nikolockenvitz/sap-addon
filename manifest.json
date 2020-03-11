@@ -1,0 +1,14 @@
+{
+  "manifest_version": 2,
+  "name": "SAP Addon",
+  "version": "0.1",
+  "description": "*.wdf.sap.corp",
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.wdf.sap.corp/*"
+      ],
+      "js": ["sap-addon.js"]
+    }
+  ]
+}
