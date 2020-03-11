@@ -3,6 +3,10 @@
   "name": "SAP Addon",
   "version": "0.1",
   "description": "*.wdf.sap.corp",
+  "icons": {
+    "48": "icons/icon48.png",
+    "96": "icons/icon96.png"
+  },
   "content_scripts": [
     {
       "matches": [
