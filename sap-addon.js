@@ -63,6 +63,5 @@ async function main () {
 };
 main();
 browser.runtime.onConnect.addListener(() => {
-    console.log("onConnect");
     main();
 });
