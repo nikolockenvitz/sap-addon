@@ -35,13 +35,34 @@ let executeFunctionAfterPageLoaded = function (func, args=[]) {
     }
 };
 
+let options = {};
+let loadOptionsFromStorage = async function () {
+    return new Promise(async function (resolve, reject) {
+        browser.storage.local.get("options").then(res => {
+            options = res.options;
+            resolve();
+        });
+    });
+};
+
 let url = new URL(window.location.href);
 
-function main () {
+async function main () {
+    await loadOptionsFromStorage();
     if (url.hostname === sap.github.hostname) {
-        executeFunctionAfterPageLoaded(sap.github.hideFlashNotice);
+        if (!options || options["github-hide-notice"] !== false) {
+            executeFunctionAfterPageLoaded(sap.github.hideFlashNotice);
+        } else {
+            executeFunctionAfterPageLoaded(sap.github.showFlashNotice);
+        }
     } else if (url.hostname === sap.portal.hostname && sap.portal.pathnamesFrom.includes(url.pathname)) {
-        sap.portal.redirect();
+        if (!options || options["portal-redirect"] !== false) {
+            sap.portal.redirect();
+        }
     }
-}
+};
 main();
+browser.runtime.onConnect.addListener(() => {
+    console.log("onConnect");
+    main();
+});

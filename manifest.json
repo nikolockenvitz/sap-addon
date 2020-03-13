@@ -15,5 +15,13 @@
       "js": ["sap-addon.js"],
       "run_at": "document_start"
     }
-  ]
+  ],
+  "permissions": [
+    "storage"
+  ],
+  "browser_action": {
+    "default_icon": "icons/icon48.png",
+    "default_title": "SAP Addon",
+    "default_popup": "popup/popup.html"
+  }
 }
