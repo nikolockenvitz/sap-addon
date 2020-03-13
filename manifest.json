@@ -12,7 +12,8 @@
       "matches": [
         "*://*.wdf.sap.corp/*"
       ],
-      "js": ["sap-addon.js"]
+      "js": ["sap-addon.js"],
+      "run_at": "document_start"
     }
   ]
 }

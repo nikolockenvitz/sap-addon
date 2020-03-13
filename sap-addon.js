@@ -25,12 +25,21 @@ sap.portal.redirect = function () {
     window.location.replace(sap.portal.pathnameTo);
 };
 
+let executeFunctionAfterPageLoaded = function (func, args=[]) {
+    window.addEventListener("load", (e) => {
+        func(...args);
+    });
+    if (document.readyState === "complete") {
+        // is it possible that page is loaded before event listener is registered?
+        func(...args);
+    }
+};
 
 let url = new URL(window.location.href);
 
 function main () {
     if (url.hostname === sap.github.hostname) {
-        sap.github.hideFlashNotice();
+        executeFunctionAfterPageLoaded(sap.github.hideFlashNotice);
     } else if (url.hostname === sap.portal.hostname && sap.portal.pathnamesFrom.includes(url.pathname)) {
         sap.portal.redirect();
     }
