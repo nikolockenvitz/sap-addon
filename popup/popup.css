@@ -34,6 +34,9 @@ body {
 .section-heading {
     color: #a1a1a4;
 }
+.section-text {
+    cursor: pointer;
+}
 .section-text > *:nth-child(1) {
     float: left;
 }
@@ -107,4 +110,16 @@ input:checked + .slider:before {
 
 .slider.round:before {
     border-radius: 50%;
+}
+
+
+/* don't allow text to be selectable */
+.noselect {
+    -webkit-touch-callout: none; /* iOS Safari */
+      -webkit-user-select: none; /* Safari */
+       -khtml-user-select: none; /* Konqueror HTML */
+         -moz-user-select: none; /* Firefox */
+          -ms-user-select: none; /* Internet Explorer/Edge */
+              user-select: none; /* Non-prefixed version, currently
+                                    supported by Chrome and Opera */
 }

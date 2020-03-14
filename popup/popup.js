@@ -6,16 +6,33 @@ window.onload = async function () {
     await loadOptionsFromStorage();
 
     for (let inputId of inputIds) {
-        document.getElementById(inputId).addEventListener("change", async function (event) {
-            options[inputId] = event.target.checked;
-            await saveOptionsToStorage();
-            browser.tabs.query({currentWindow: true, active: true}).then(tabs => {
-                // connect will trigger main function of sap-addon.js
-                browser.tabs.connect(tabs[0].id).disconnect();
-            });
-        });
+        toggleInputOnSectionTextClick(inputId); // sectionText includes also the input itself
     }
     initInputs();
+};
+
+let onChangeInput = async function (inputId) {
+    options[inputId] = document.getElementById(inputId).checked;
+    await saveOptionsToStorage();
+    browser.tabs.query({currentWindow: true, active: true}).then(tabs => {
+        // connect will trigger main function of sap-addon.js
+        browser.tabs.connect(tabs[0].id).disconnect();
+    });
+};
+
+let toggleInputOnSectionTextClick = function (inputId) {
+    let inputEl = document.getElementById(inputId);
+    let el = inputEl;
+    while (el) {
+        el = el.parentElement;
+        if (el.classList.contains('section-text')) {
+            el.addEventListener("click", function (event) {
+                inputEl.checked = !inputEl.checked;
+                onChangeInput(inputId);
+            });
+            break;
+        }
+    }
 };
 
 
