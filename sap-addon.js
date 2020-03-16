@@ -1,18 +1,31 @@
 let sap = {
-    github: { hostname: "github.wdf.sap.corp" },
-    portal: { hostname: "portal.wdf.sap.corp", pathnamesFrom: ["/", "/home"], pathnameTo: "/irj/portal" }
+    portal: {
+        hostname: "portal.wdf.sap.corp",
+        redirect: {
+            optionName: "portal-redirect",
+            pathnamesFrom: ["/", "/home"],
+            pathnameTo: "/irj/portal"
+        }
+    },
+    github: {
+        hostname: "github.wdf.sap.corp",
+        flashNotice: {
+            optionName: "github-hide-notice",
+            queries: [".flash.flash-full.js-notice.flash-warn.flash-length-limited"]
+        }
+    }
 };
 
-sap.github.flashNoticeQueries = [
-    ".flash.flash-full.js-notice.flash-warn.flash-length-limited"
-];
-
-sap.github.hideFlashNotice = function () {
-    _setDisplayAttrOfMatchingElements(sap.github.flashNoticeQueries, "none");
+sap.portal.redirect.redirect = function () {
+    redirectToURL(sap.portal.redirect.pathnameTo);
 };
 
-sap.github.showFlashNotice = function () {
-    _setDisplayAttrOfMatchingElements(sap.github.flashNoticeQueries, "");
+sap.github.flashNotice.hide = function () {
+    _setDisplayAttrOfMatchingElements(sap.github.flashNotice.queries, "none");
+};
+
+sap.github.flashNotice.show = function () {
+    _setDisplayAttrOfMatchingElements(sap.github.flashNotice.queries, "");
 };
 
 let _setDisplayAttrOfMatchingElements = function (queries, displayValue) {
@@ -21,9 +34,6 @@ let _setDisplayAttrOfMatchingElements = function (queries, displayValue) {
     }
 };
 
-sap.portal.redirect = function () {
-    window.location.replace(sap.portal.pathnameTo);
-};
 
 let executeFunctionAfterPageLoaded = function (func, args=[]) {
     window.addEventListener("load", (e) => {
@@ -45,20 +55,28 @@ let loadOptionsFromStorage = async function () {
     });
 };
 
+let isEnabled = function (optionName) {
+    return !options || options[optionName] !== false; // enabled per default
+};
+
 let url = new URL(window.location.href);
 
 async function main () {
     await loadOptionsFromStorage();
-    if (url.hostname === sap.github.hostname) {
-        if (!options || options["github-hide-notice"] !== false) {
-            executeFunctionAfterPageLoaded(sap.github.hideFlashNotice);
-        } else {
-            executeFunctionAfterPageLoaded(sap.github.showFlashNotice);
-        }
-    } else if (url.hostname === sap.portal.hostname && sap.portal.pathnamesFrom.includes(url.pathname)) {
-        if (!options || options["portal-redirect"] !== false) {
-            sap.portal.redirect();
-        }
+
+    switch (url.hostname) {
+        case sap.portal.hostname:
+            if (isEnabled(sap.portal.redirect.optionName) && sap.portal.redirect.pathnamesFrom.includes(url.pathname)) {
+                sap.portal.redirect.redirect();
+            }
+            break;
+        case sap.github.hostname:
+            if (isEnabled(sap.github.hideFlashNotice.optionName)) {
+                executeFunctionAfterPageLoaded(sap.github.flashNotice.hide);
+            } else {
+                executeFunctionAfterPageLoaded(sap.github.flashNotice.show);
+            }
+            break;
     }
 };
 main();
