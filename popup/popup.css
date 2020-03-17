@@ -39,6 +39,8 @@ body {
 }
 .section-text > *:nth-child(1) {
     float: left;
+    max-width: 130px; /* needs to be kept aligned with width of popup and width of switch */
+    word-wrap: break-word;
 }
 .section-text > *:nth-child(2) {
     float: right;
