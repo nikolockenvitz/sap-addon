@@ -1,3 +1,10 @@
+let usePromisesForAsync = false;
+if (typeof browser !== "undefined") {
+    usePromisesForAsync = true;
+} else {
+    window.browser = chrome;
+}
+
 let sap = {
     portal: {
         hostname: "portal.wdf.sap.corp",
@@ -35,6 +42,10 @@ let _setDisplayAttrOfMatchingElements = function (queries, displayValue) {
 };
 
 
+let redirectToURL = function (url) {
+    window.location.replace(url);
+};
+
 let executeFunctionAfterPageLoaded = function (func, args=[]) {
     window.addEventListener("load", (e) => {
         func(...args);
@@ -48,10 +59,15 @@ let executeFunctionAfterPageLoaded = function (func, args=[]) {
 let options = {};
 let loadOptionsFromStorage = async function () {
     return new Promise(async function (resolve, reject) {
-        browser.storage.local.get("options").then(res => {
+        function onLocalStorageGet (res) {
             options = res.options;
             resolve();
-        });
+        }
+        if (usePromisesForAsync) {
+            browser.storage.local.get("options").then(onLocalStorageGet);
+        } else {
+            browser.storage.local.get("options", onLocalStorageGet);
+        }
     });
 };
 
@@ -71,7 +87,7 @@ async function main () {
             }
             break;
         case sap.github.hostname:
-            if (isEnabled(sap.github.hideFlashNotice.optionName)) {
+            if (isEnabled(sap.github.flashNotice.optionName)) {
                 executeFunctionAfterPageLoaded(sap.github.flashNotice.hide);
             } else {
                 executeFunctionAfterPageLoaded(sap.github.flashNotice.show);
