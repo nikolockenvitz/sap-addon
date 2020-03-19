@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "SAP Addon",
-  "version": "1.0",
+  "version": "1.1",
   "description": "*.wdf.sap.corp",
   "icons": {
     "48": "icons/icon48.png",

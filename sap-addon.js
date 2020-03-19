@@ -12,6 +12,10 @@ let sap = {
             optionName: "portal-redirect",
             pathnamesFrom: ["/", "/home"],
             pathnameTo: "/irj/portal"
+        },
+        searchbar: {
+            optionName: "portal-focus-searchbar",
+            searchbarId: "uhGlobalSearch"
         }
     },
     github: {
@@ -27,12 +31,30 @@ sap.portal.redirect.redirect = function () {
     redirectToURL(sap.portal.redirect.pathnameTo);
 };
 
+sap.portal.searchbar.focus = function () {
+    executeFunctionAfterPageLoaded(function () {
+        // sometimes the focus gets resetted when executing directly
+        let timesOfExecution = 5;
+        function focus () {
+            document.getElementById(sap.portal.searchbar.searchbarId).focus();
+            if (--timesOfExecution > 0) {
+                setTimeout(focus, 250);
+            }
+        }
+        focus();
+    });
+};
+
 sap.github.flashNotice.hide = function () {
-    _setDisplayAttrOfMatchingElements(sap.github.flashNotice.queries, "none");
+    executeFunctionAfterPageLoaded(function () {
+        _setDisplayAttrOfMatchingElements(sap.github.flashNotice.queries, "none");
+    });
 };
 
 sap.github.flashNotice.show = function () {
-    _setDisplayAttrOfMatchingElements(sap.github.flashNotice.queries, "");
+    executeFunctionAfterPageLoaded(function () {
+        _setDisplayAttrOfMatchingElements(sap.github.flashNotice.queries, "");
+    });
 };
 
 let _setDisplayAttrOfMatchingElements = function (queries, displayValue) {
@@ -51,7 +73,6 @@ let executeFunctionAfterPageLoaded = function (func, args=[]) {
         func(...args);
     });
     if (document.readyState === "complete") {
-        // is it possible that page is loaded before event listener is registered?
         func(...args);
     }
 };
@@ -85,12 +106,15 @@ async function main () {
             if (isEnabled(sap.portal.redirect.optionName) && sap.portal.redirect.pathnamesFrom.includes(url.pathname)) {
                 sap.portal.redirect.redirect();
             }
+            if (isEnabled(sap.portal.searchbar.optionName)) {
+                sap.portal.searchbar.focus();
+            }
             break;
         case sap.github.hostname:
             if (isEnabled(sap.github.flashNotice.optionName)) {
-                executeFunctionAfterPageLoaded(sap.github.flashNotice.hide);
+                sap.github.flashNotice.hide();
             } else {
-                executeFunctionAfterPageLoaded(sap.github.flashNotice.show);
+                sap.github.flashNotice.show();
             }
             break;
     }
