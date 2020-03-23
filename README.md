@@ -3,6 +3,7 @@
 ## current features
 * `portal.wdf.sap.corp`
   * redirect from login page (`/home`) to main page (`/irj/portal`)
+  * focus the search bar automatically when loading page
 * `github.wdf.sap.corp`
   * hide yellow notice box
 
