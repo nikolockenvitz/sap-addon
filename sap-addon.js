@@ -20,6 +20,10 @@ let sap = {
     },
     github: {
         hostname: "github.wdf.sap.corp",
+        signIn: {
+            optionName: "github-sign-in",
+            query: "a[href^='/login?']"
+        },
         flashNotice: {
             optionName: "github-hide-notice",
             queries: [".flash.flash-full.js-notice.flash-warn.flash-length-limited"]
@@ -42,6 +46,15 @@ sap.portal.searchbar.focus = function () {
             }
         }
         focus();
+    });
+};
+
+
+sap.github.signIn.signIn = function () {
+    executeFunctionAfterPageLoaded(function () {
+        // TODO: .signed-in-tab-flash
+        let signInBtn = document.querySelector(sap.github.signIn.query);
+        if (signInBtn) { signInBtn.click(); }
     });
 };
 
@@ -111,6 +124,9 @@ async function main () {
             }
             break;
         case sap.github.hostname:
+            if (isEnabled(sap.github.signIn.optionName)) {
+                sap.github.signIn.signIn();
+            }
             if (isEnabled(sap.github.flashNotice.optionName)) {
                 sap.github.flashNotice.hide();
             } else {

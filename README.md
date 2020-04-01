@@ -5,6 +5,7 @@
   * redirect from login page (`/home`) to main page (`/irj/portal`)
   * focus the search bar automatically when loading page
 * `github.wdf.sap.corp`
+  * sign in automatically
   * hide yellow notice box
 
 ## install
