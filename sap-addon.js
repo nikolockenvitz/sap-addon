@@ -26,7 +26,7 @@ let sap = {
         },
         flashNotice: {
             optionName: "github-hide-notice",
-            queries: [".flash.flash-full.js-notice.flash-warn.flash-length-limited"]
+            query: ".flash.flash-full.js-notice.flash-warn.flash-length-limited"
         },
         showNames: {
             optionName: "github-show-names",
@@ -35,6 +35,34 @@ let sap = {
         }
     }
 };
+
+class DOMObserver {
+    constructor () {
+        this.observerCallbacks = {};
+        let that = this;
+        this.observer = new MutationObserver(function (mutation, _observer) {
+            for (let id in that.observerCallbacks) {
+                that.observerCallbacks[id](mutation, _observer);
+            }
+        });
+        this.observer.observe(document, {
+            childList: true,
+            characterData: true,
+            subtree: true
+        });
+    }
+
+    registerCallbackFunction (id, callback) {
+        if (!this.observerCallbacks[id]) {
+            this.observerCallbacks[id] = callback;
+        }
+    }
+
+    unregisterCallbackFunction (id) {
+        this.observerCallbacks[id] = undefined;
+    }
+}
+const domObserver = new DOMObserver();
 
 sap.portal.redirect.redirect = function () {
     redirectToURL(sap.portal.redirect.pathnameTo);
@@ -71,19 +99,36 @@ sap.github.signIn.signIn = function () {
 
 sap.github.flashNotice.hide = function () {
     executeFunctionAfterPageLoaded(function () {
-        _setDisplayAttrOfMatchingElements(sap.github.flashNotice.queries, "none");
+        _hideElementsByQuery(sap.github.flashNotice.query);
+    });
+
+    domObserver.registerCallbackFunction(sap.github.flashNotice.optionName,
+    function (mutations, _observer) {
+        for (let { target } of mutations) {
+            _hideElementsByQuery(sap.github.flashNotice.query, target);
+        }
     });
 };
 
 sap.github.flashNotice.show = function () {
+    domObserver.unregisterCallbackFunction(sap.github.flashNotice.optionName);
     executeFunctionAfterPageLoaded(function () {
-        _setDisplayAttrOfMatchingElements(sap.github.flashNotice.queries, "");
+        _showElementsByQuery(sap.github.flashNotice.query);
     });
 };
 
-let _setDisplayAttrOfMatchingElements = function (queries, displayValue) {
-    for (let query of queries) {
-        document.querySelector(query).style.display = displayValue;
+let _hideElementsByQuery = function (query, baseElement) {
+    _setDisplayAttributeForElementsByQuery(query, baseElement, "none");
+};
+
+let _showElementsByQuery = function (query, baseElement) {
+    _setDisplayAttributeForElementsByQuery(query, baseElement, "");
+};
+
+let _setDisplayAttributeForElementsByQuery = function (query, baseElement, displayValue) {
+    baseElement = baseElement || document;
+    for (let element of baseElement.querySelectorAll(query)) {
+        element.style.display = displayValue;
     }
 };
 
@@ -95,18 +140,15 @@ sap.github.showNames.replaceIds = function () {
         sap.github.showNames._replaceAllChildsWhichAreUserId(document.body);
     });
 
-    const observer = new MutationObserver((mutations, _observer) => {
+    domObserver.registerCallbackFunction(sap.github.showNames.optionName,
+    function (mutations, _observer) {
         for (let { target } of mutations) {
             sap.github.showNames._replaceAllChildsWhichAreUserId(target);
         }
     });
-    observer.observe(document.body, {
-        childList: true,
-        characterData: true,
-        subtree: true
-    });
 };
 sap.github.showNames.showIdsAgain = function () {
+    domObserver.unregisterCallbackFunction(sap.github.showNames.optionName);
     for (let element of document.querySelectorAll("[data-sap-addon-user-id]")) {
         element.textContent = element.getAttribute("data-sap-addon-user-id");
         element.removeAttribute("data-sap-addon-user-id");
@@ -120,7 +162,6 @@ sap.github.showNames._replaceAllChildsWhichAreUserId = function (element) {
 sap.github.showNames._replaceElementIfUserId = async function (element) {
     const userId = sap.github.showNames._getUserIdIfElementIsUserId(element);
     if (userId) {
-        // TODO: can userId be an already replaced id? then it would be the name already 
         let username = await sap.github.showNames._getUsername(userId);
         if (username) {
             element.textContent = username;
