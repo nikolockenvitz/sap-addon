@@ -7,6 +7,7 @@
 * `github.wdf.sap.corp`
   * sign in automatically
   * hide yellow notice box
+  * show name instead of user id
 
 ## install
 Find the xpi of this addon in the release section of this repository to install in Firefox (just drag into browser or use tools in `about:addons` to install from file).

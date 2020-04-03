@@ -27,6 +27,11 @@ let sap = {
         flashNotice: {
             optionName: "github-hide-notice",
             queries: [".flash.flash-full.js-notice.flash-warn.flash-length-limited"]
+        },
+        showNames: {
+            optionName: "github-show-names",
+            query: ".user-mention, [data-hovercard-type=user]",
+            regexNameOnProfilePage: `<span class="p-name vcard-fullname d-block overflow-hidden" itemprop="name">([^<]*)</span>`
         }
     }
 };
@@ -80,6 +85,70 @@ let _setDisplayAttrOfMatchingElements = function (queries, displayValue) {
     for (let query of queries) {
         document.querySelector(query).style.display = displayValue;
     }
+};
+
+sap.github.showNames.replaceIds = function () {
+    executeFunctionAfterPageLoaded(function () {
+        /* execute once in cases where observer is not registered before
+         * elements are changed/created (e.g. gets enabled in options)
+         */
+        sap.github.showNames._replaceAllChildsWhichAreUserId(document.body);
+    });
+
+    const observer = new MutationObserver((mutations, _observer) => {
+        for (let { target } of mutations) {
+            sap.github.showNames._replaceAllChildsWhichAreUserId(target);
+        }
+    });
+    observer.observe(document.body, {
+        childList: true,
+        characterData: true,
+        subtree: true
+    });
+};
+sap.github.showNames.showIdsAgain = function () {
+    for (let element of document.querySelectorAll("[data-sap-addon-user-id]")) {
+        element.textContent = element.getAttribute("data-sap-addon-user-id");
+        element.removeAttribute("data-sap-addon-user-id");
+    }
+};
+sap.github.showNames._replaceAllChildsWhichAreUserId = function (element) {
+    for (let queryMatch of element.querySelectorAll(sap.github.showNames.query)) {
+        sap.github.showNames._replaceElementIfUserId(queryMatch);
+    }
+};
+sap.github.showNames._replaceElementIfUserId = async function (element) {
+    const userId = sap.github.showNames._getUserIdIfElementIsUserId(element);
+    if (userId) {
+        // TODO: can userId be an already replaced id? then it would be the name already 
+        let username = await sap.github.showNames._getUsername(userId);
+        if (username) {
+            element.textContent = username;
+            element.setAttribute("data-sap-addon-user-id", userId);
+        }
+    }
+};
+sap.github.showNames._getUserIdIfElementIsUserId = function (element) {
+    return (element.childNodes.length === 1
+        && element.firstChild.nodeName === "#text"
+        && !element.hasAttribute("data-sap-addon-user-id") ? element.textContent : null);
+};
+sap.github.showNames._getUsername = function (userId) {
+    // TODO: further caching needed?
+    return new Promise(async function (resolve, reject) {
+        fetch("https://" + sap.github.hostname + "/" + userId, {
+            method: "GET",
+            cache: "force-cache"
+        }).then(response => response.text())
+        .then(html => {
+            const searchRegex = new RegExp(sap.github.showNames.regexNameOnProfilePage);
+            const match = searchRegex.exec(html);
+            resolve(match[1]);
+        }).catch(error => {
+            console.log("SAP Addon", error);
+            resolve(null); // reject?
+        });
+    });
 };
 
 
@@ -137,6 +206,11 @@ async function main () {
                 sap.github.flashNotice.hide();
             } else {
                 sap.github.flashNotice.show();
+            }
+            if (isEnabled(sap.github.showNames.optionName)) {
+                sap.github.showNames.replaceIds();
+            } else {
+                sap.github.showNames.showIdsAgain();
             }
             break;
     }

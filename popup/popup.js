@@ -5,7 +5,10 @@ if (typeof browser !== "undefined") {
     window.browser = chrome;
 }
 
-const inputIds = ["portal-redirect", "portal-focus-searchbar", "github-sign-in", "github-hide-notice"];
+const inputIds = [
+    "portal-redirect", "portal-focus-searchbar",
+    "github-sign-in", "github-hide-notice", "github-show-names",
+];
 
 let options = {};
 
