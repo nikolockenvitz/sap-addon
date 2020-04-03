@@ -5,7 +5,7 @@ if (typeof browser !== "undefined") {
     window.browser = chrome;
 }
 
-const inputIds = ["portal-redirect", "portal-focus-searchbar", "github-hide-notice"];
+const inputIds = ["portal-redirect", "portal-focus-searchbar", "github-sign-in", "github-hide-notice"];
 
 let options = {};
 
@@ -22,8 +22,10 @@ let onChangeInput = async function (inputId) {
     options[inputId] = document.getElementById(inputId).checked;
     await saveOptionsToStorage();
     function onTabsQuery (tabs) {
-        // connect will trigger main function of sap-addon.js
-        browser.tabs.connect(tabs[0].id).disconnect();
+        for (let tab of tabs) {
+            // connect will trigger main function of sap-addon.js
+            browser.tabs.connect(tab.id).disconnect();
+        }
     }
     if (usePromisesForAsync) {
         browser.tabs.query({currentWindow: true, active: true}).then(onTabsQuery);

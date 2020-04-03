@@ -36,11 +36,17 @@ sap.portal.redirect.redirect = function () {
 };
 
 sap.portal.searchbar.focus = function () {
+    let intervalId = setInterval(function () {
+        let searchbar = document.getElementById(sap.portal.searchbar.searchbarId);
+        if (searchbar) { searchbar.focus(); }
+    }, 250);
     executeFunctionAfterPageLoaded(function () {
+        let searchbar = document.getElementById(sap.portal.searchbar.searchbarId);
+        clearInterval(intervalId);
         // sometimes the focus gets resetted when executing directly
         let timesOfExecution = 5;
         function focus () {
-            document.getElementById(sap.portal.searchbar.searchbarId).focus();
+            searchbar.focus();
             if (--timesOfExecution > 0) {
                 setTimeout(focus, 250);
             }
