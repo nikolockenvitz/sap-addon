@@ -36,6 +36,14 @@ body {
 }
 .section-text {
     cursor: pointer;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+.section-text.disabled {
+    cursor: unset;
+    opacity: 0.4;
+    -webkit-transition: .4s;
+    transition: .4s;
 }
 .section-text > *:nth-child(1) {
     float: left;

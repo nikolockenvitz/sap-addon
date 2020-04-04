@@ -24,6 +24,7 @@ window.onload = async function () {
 
 let onChangeInput = async function (inputId) {
     options[inputId] = document.getElementById(inputId).checked;
+    updateDependingInputs(inputId);
     await saveOptionsToStorage();
     function onTabsQuery (tabs) {
         for (let tab of tabs) {
@@ -45,17 +46,56 @@ let onChangeInput = async function (inputId) {
 
 let toggleInputOnSectionTextClick = function (inputId) {
     let inputEl = document.getElementById(inputId);
-    let el = inputEl;
-    while (el) {
-        el = el.parentElement;
-        if (el.classList.contains('section-text')) {
-            el.addEventListener("click", function (event) {
+    let sectionText = getSectionTextParent(inputEl);
+    if (sectionText) {
+        sectionText.addEventListener("click", function (event) {
+            if (!inputEl.disabled) {
                 inputEl.checked = !inputEl.checked;
-                onChangeInput(inputId);
-            });
-            break;
+                if (!event.target.classList.contains("slider")) {
+                    /* click on slider creates two onclick events, so we
+                    * can ignore the click on the slider and just use the
+                    * click on the input
+                    */
+                    onChangeInput(inputId);
+                }
+            }
+        });
+    }
+};
+
+let updateDependingInputs = function (inputId) {
+    /* some inputs depend on others
+     * -> disable them if the input they depend on is unchecked
+     * -> enable them if the input they depend on is checked
+     *
+     * the attribute 'data-depending-inputs' contains the ids
+     * of all depending inputs (separated with a space)
+     */
+    let input = document.getElementById(inputId);
+    if (input.hasAttribute("data-depending-inputs")) {
+        for (let depId of input.getAttribute("data-depending-inputs").split(" ")) {
+            let dependingInput = document.getElementById(depId);
+            let sectionText = getSectionTextParent(dependingInput);
+            if (input.checked) {
+                dependingInput.disabled = false;
+                if (sectionText) { sectionText.classList.remove("disabled"); }
+            } else {
+                dependingInput.disabled = true;
+                if (sectionText) { sectionText.classList.add("disabled"); }
+            }
+
         }
     }
+};
+
+let getSectionTextParent = function (element) {
+    while (element) {
+        if (element.classList.contains('section-text')) {
+            return element;
+        }
+        element = element.parentElement;
+    }
+    return null;
 };
 
 
@@ -89,5 +129,6 @@ let saveOptionsToStorage = function () {
 let initInputs = function () {
     for (let inputId of inputIds) {
         document.getElementById(inputId).checked = (!options || options[inputId] !== false);
+        updateDependingInputs(inputId);
     }
 };
