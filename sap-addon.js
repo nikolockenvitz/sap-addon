@@ -22,7 +22,8 @@ let sap = {
         hostname: "github.wdf.sap.corp",
         signIn: {
             optionName: "github-sign-in",
-            query: "a[href^='/login?']"
+            query: "a[href^='/login?']",
+            signInOtherTabQuery: ".js-stale-session-flash-signed-in a"
         },
         flashNotice: {
             optionName: "github-hide-notice",
@@ -98,10 +99,42 @@ sap.portal.searchbar.focus = function () {
 
 sap.github.signIn.signIn = function () {
     executeFunctionAfterPageLoaded(function () {
-        // TODO: .signed-in-tab-flash
-        let signInBtn = document.querySelector(sap.github.signIn.query);
-        if (signInBtn) { signInBtn.click(); }
+        sap.github.signIn.getSignInButtonAndClick();
     });
+
+    domObserver.registerCallbackFunction(sap.github.signIn.optionName,
+    function (mutations, _observer) {
+        for (let { target } of mutations) {
+            sap.github.signIn.getSignInButtonAndClick(target);
+        }
+    });
+};
+sap.github.signIn.getSignInButtonAndClick = function (element) {
+    element = element || document;
+    let signInBtn = element.querySelector(sap.github.signIn.query);
+    if (signInBtn) { signInBtn.click(); }
+};
+sap.github.signIn.stopAutoSignIn = function () {
+    domObserver.unregisterCallbackFunction(sap.github.signIn.optionName);
+};
+sap.github.signIn.listenForSignInOtherTab = function () {
+    /* when also non-active tabs are notified that settings changed and user
+     * should get signed in, these tabs will be redirected to
+     * github.wdf.sap.corp/saml/consume which throws a 404
+     * -> only regularly checking works, maybe can be combined with mutation observer
+     */
+    setInterval(async function () {
+        await loadOptionsFromStorage();
+        if (isEnabled(sap.github.signIn.optionName)) {
+            let signInBtn = document.querySelector(sap.github.signIn.signInOtherTabQuery);
+            if (signInBtn) {
+                let r = signInBtn.getBoundingClientRect();
+                if (r.width !== 0 && r.height !== 0) {
+                    signInBtn.click();
+                }
+            }
+        }
+    }, 2500);
 };
 
 sap.github.flashNotice.hide = function () {
@@ -270,7 +303,10 @@ async function main () {
         case sap.github.hostname:
             if (isEnabled(sap.github.signIn.optionName)) {
                 sap.github.signIn.signIn();
+            } else {
+                sap.github.signIn.stopAutoSignIn();
             }
+            sap.github.signIn.listenForSignInOtherTab();
             if (isEnabled(sap.github.flashNotice.optionName)) {
                 sap.github.flashNotice.hide();
             } else {
