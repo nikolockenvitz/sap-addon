@@ -8,6 +8,7 @@
   * sign in automatically
   * hide yellow notice box
   * show name instead of user id (inspired by https://github.com/cgrail/github-chrome-fullname)
+  * get name from `people.wdf.sap.corp` (use GitHub only as a fallback)
 * `fiorilaunchpad.sap.com` <!-- it's the Fiori Lunchpad ;) name created by Erik Jansky -->
   * show lunchmenu in German (even if default language is English)
 

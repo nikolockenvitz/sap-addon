@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "SAP Addon",
-  "version": "1.4",
+  "version": "1.5",
   "description": "*.wdf.sap.corp",
   "icons": {
     "48": "icons/icon48.png",
@@ -20,7 +20,8 @@
     "storage",
     "webRequest",
     "webRequestBlocking",
-    "https://fiorilaunchpad.sap.com/sap/fiori/lunchmenu/*"
+    "https://fiorilaunchpad.sap.com/sap/fiori/lunchmenu/*",
+    "https://people.wdf.sap.corp/*"
   ],
   "background": {
     "scripts": [

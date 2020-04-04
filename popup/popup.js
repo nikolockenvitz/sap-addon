@@ -7,7 +7,7 @@ if (typeof browser !== "undefined") {
 
 const inputIds = [
     "portal-redirect", "portal-focus-searchbar",
-    "github-sign-in", "github-hide-notice", "github-show-names",
+    "github-sign-in", "github-hide-notice", "github-show-names", "github-get-names-from-people",
     "fiori-lunchmenu-german",
 ];
 

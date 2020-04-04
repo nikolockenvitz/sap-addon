@@ -32,7 +32,14 @@ let sap = {
             optionName: "github-show-names",
             query: ".user-mention, [data-hovercard-type=user]",
             regexNameOnProfilePage: `<span class="p-name vcard-fullname d-block overflow-hidden" itemprop="name">([^<]*)</span>`
+        },
+        getNamesFromPeople: {
+            optionName: "github-get-names-from-people",
+            regexNameOnProfilePage: `<span class='salutation'>[^<]*</span>([^<]*)<`
         }
+    },
+    people: {
+        hostname: "people.wdf.sap.corp"
     }
 };
 
@@ -177,14 +184,35 @@ sap.github.showNames._getUserIdIfElementIsUserId = function (element) {
 sap.github.showNames._getUsername = function (userId) {
     // TODO: further caching needed?
     return new Promise(async function (resolve, reject) {
+        if (isEnabled(sap.github.getNamesFromPeople.optionName)) {
+            fetch("https://" + sap.people.hostname + "/profiles/" + userId, {
+                method: "GET",
+                cache: "force-cache"
+            }).then(response => response.text())
+            .then(html => {
+                const searchRegex = new RegExp(sap.github.getNamesFromPeople.regexNameOnProfilePage);
+                let match = searchRegex.exec(html)[1];
+                /* currently the salutation is not in the span which is named
+                 * salutation but direclty in front of the name -> we need
+                 * to split that away
+                 * e.g.: <span class='salutation'></span>Mr. Firstname Lastname
+                 */
+                match = match.split(". ").pop().trim();
+                resolve(match);
+            }).catch(error => {
+                console.log("SAP Addon", error);
+            });
+        }
+
+        // use github as fallback or if people is disabled
         fetch("https://" + sap.github.hostname + "/" + userId, {
             method: "GET",
             cache: "force-cache"
         }).then(response => response.text())
         .then(html => {
             const searchRegex = new RegExp(sap.github.showNames.regexNameOnProfilePage);
-            const match = searchRegex.exec(html);
-            resolve(match[1]);
+            const match = searchRegex.exec(html)[1];
+            resolve(match);
         }).catch(error => {
             console.log("SAP Addon", error);
             resolve(null); // reject?
