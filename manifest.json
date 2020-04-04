@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "SAP Addon",
-  "version": "1.3",
+  "version": "1.4",
   "description": "*.wdf.sap.corp",
   "icons": {
     "48": "icons/icon48.png",
@@ -17,8 +17,16 @@
     }
   ],
   "permissions": [
-    "storage"
+    "storage",
+    "webRequest",
+    "webRequestBlocking",
+    "https://fiorilaunchpad.sap.com/sap/fiori/lunchmenu/*"
   ],
+  "background": {
+    "scripts": [
+      "background.js"
+    ]
+  },
   "browser_action": {
     "default_icon": "icons/icon48.png",
     "default_title": "SAP Addon",

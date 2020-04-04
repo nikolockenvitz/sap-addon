@@ -8,6 +8,7 @@ if (typeof browser !== "undefined") {
 const inputIds = [
     "portal-redirect", "portal-focus-searchbar",
     "github-sign-in", "github-hide-notice", "github-show-names",
+    "fiori-lunchmenu-german",
 ];
 
 let options = {};
@@ -30,10 +31,15 @@ let onChangeInput = async function (inputId) {
             browser.tabs.connect(tab.id).disconnect();
         }
     }
+    function onBackgroundWindow (backgroundWindow) {
+        backgroundWindow.main();
+    }
     if (usePromisesForAsync) {
         browser.tabs.query({currentWindow: true, active: true}).then(onTabsQuery);
+        browser.runtime.getBackgroundPage().then(onBackgroundWindow);
     } else {
         browser.tabs.query({currentWindow: true, active: true}, onTabsQuery);
+        browser.runtime.getBackgroundPage(onBackgroundWindow);
     }
 };
 
