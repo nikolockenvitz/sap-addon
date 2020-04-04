@@ -1,5 +1,5 @@
 html {
-    width: 180px;
+    width: 210px;
 }
 body {
     width: inherit;
@@ -11,27 +11,18 @@ body {
 }
 
 .section {
-    margin: 0px 0px;
-    padding: 8px;
+    margin: 0px;
     border-bottom: 1px solid #6a6a6f;
+    padding: 2px 0;
 }
-.section *:first-child,
-.section *:first-child * {
-    margin-top: 0;
-}
-.section *:last-child,
-.section *:last-child * {
-    margin-bottom: 0;
-}
-.section:first-child,
-.section:last-child {
-    margin: 0;
+.section p {
+    margin: 6px 8px;
 }
 .section:last-child {
     border-bottom: none;
 }
 
-.section-heading {
+.section .section-heading {
     color: #a1a1a4;
 }
 .section-text {
@@ -45,16 +36,19 @@ body {
     -webkit-transition: .4s;
     transition: .4s;
 }
-.section-text > *:nth-child(1) {
+.section-text:hover:not(.disabled) {
+    background-color: #6a6a6f;
+}
+.section-text > p:nth-child(1) {
     float: left;
-    max-width: 130px; /* needs to be kept aligned with width of popup and width of switch */
+    max-width: 160px; /* needs to be kept aligned with width of popup and width of switch */
     word-wrap: break-word;
+    margin-right: 0;
 }
-.section-text > *:nth-child(2) {
+.section-text > p:nth-child(2) {
     float: right;
-    margin: 0;
 }
-.section-text > *:nth-child(3) {
+.section-text > p:nth-child(3) {
     clear: both;
     margin: 0;
 }
