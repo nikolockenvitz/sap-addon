@@ -200,19 +200,23 @@ sap.github.showNames._replaceAllChildsWhichAreUserId = function (element) {
     }
 };
 sap.github.showNames._replaceElementIfUserId = async function (element) {
-    const userId = sap.github.showNames._getUserIdIfElementIsUserId(element);
+    const {userId, prefix} = sap.github.showNames._getUserIdIfElementIsUserId(element);
     if (userId) {
         let username = await sap.github.showNames._getUsername(userId);
         if (username) {
-            element.textContent = username;
-            element.setAttribute("data-sap-addon-user-id", userId);
+            element.textContent = prefix + username;
+            element.setAttribute("data-sap-addon-user-id", prefix + userId);
         }
     }
 };
 sap.github.showNames._getUserIdIfElementIsUserId = function (element) {
-    return (element.childNodes.length === 1
+    let userId = (element.childNodes.length === 1
         && element.firstChild.nodeName === "#text"
         && !element.hasAttribute("data-sap-addon-user-id") ? element.textContent : null);
+    if (userId && element.classList.contains("user-mention") && userId.startsWith("@")) {
+        return { prefix: "@", userId: userId.substr(1) };
+    }
+    return { prefix: "", userId };
 };
 sap.github.showNames._getUsername = function (userId) {
     // TODO: further caching needed?
