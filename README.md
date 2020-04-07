@@ -4,7 +4,7 @@
 * `portal.wdf.sap.corp`
   * redirect from login page (`/home`) to main page (`/irj/portal`)
   * focus the search bar automatically when loading page
-* `github.wdf.sap.corp`
+* `github.wdf.sap.corp` / `github.tools.sap`
   * sign in automatically
   * hide yellow notice box
   * show name instead of user id (inspired by https://github.com/cgrail/github-chrome-fullname)
