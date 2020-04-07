@@ -137,6 +137,7 @@ github.showNames.replaceIds = function () {
          * elements are changed/created (e.g. gets enabled in options)
          */
         github.showNames._replaceAllChildsWhichAreUserId(document.body);
+        saveUsernameCacheToStorage();
     });
 
     domObserver.registerCallbackFunction(github.showNames.optionName,
@@ -144,6 +145,7 @@ github.showNames.replaceIds = function () {
         for (let { target } of mutations) {
             github.showNames._replaceAllChildsWhichAreUserId(target);
         }
+        saveUsernameCacheToStorage();
     });
 };
 github.showNames.showIdsAgain = function () {
@@ -171,16 +173,36 @@ github.showNames._replaceElementIfUserId = async function (element) {
 github.showNames._getUserIdIfElementIsUserId = function (element) {
     let userId = (element.childNodes.length === 1
         && element.firstChild.nodeName === "#text"
+        && element.hasAttribute("href")
         && !element.hasAttribute("data-sap-addon-user-id") ? element.textContent : null);
     if (userId && element.classList.contains("user-mention") && userId.startsWith("@")) {
         return { prefix: "@", userId: userId.substr(1) };
     }
     return { prefix: "", userId };
 };
-github.showNames._getUsername = function (userId) {
-    // TODO: further caching needed?
+
+github.showNames._getUsername = async function (userId) {
+    let user = usernameCache[userId];
+    if (user && user.username) {
+        usernameCache[userId].usedAt = getUnixTimestamp();
+        usernameCache[userId].used += 1;
+        return user.username;
+    } else {
+        let username = await github.showNames._fetchUsername(userId);
+        if (username) {
+            usernameCache[userId] = {
+                username: username,
+                updatedAt: getUnixTimestamp(),
+                usedAt: getUnixTimestamp(),
+                used: 1,
+            };
+        }
+        return username;
+    }
+};
+
+github.showNames._fetchUsername = function (userId) {
     return new Promise(async function (resolve, reject) {
-        console.log("getting username for", userId);
         if (isEnabled(github.getNamesFromPeople.optionName)) {
             fetch("https://" + github.getNamesFromPeople.hostname + "/profiles/" + userId, {
                 method: "GET",
@@ -218,6 +240,10 @@ github.showNames._getUsername = function (userId) {
 };
 
 
+let getUnixTimestamp = function () {
+    return Math.floor((new Date()).getTime());
+};
+
 let redirectToURL = function (url) {
     window.location.replace(url);
 };
@@ -250,8 +276,30 @@ let isEnabled = function (optionName) {
     return !options || options[optionName] !== false; // enabled per default
 };
 
+let usernameCache = undefined;
+let loadUsernameCacheFromStorage = async function () {
+    return new Promise(async function (resolve, reject) {
+        function onLocalStorageGet (res) {
+            usernameCache = res.usernameCache || {};
+            resolve();
+        }
+        if (usePromisesForAsync) {
+            browser.storage.local.get("usernameCache").then(onLocalStorageGet);
+        } else {
+            browser.storage.local.get("usernameCache", onLocalStorageGet);
+        }
+    });
+};
+
+let saveUsernameCacheToStorage = function () {
+    browser.storage.local.set({usernameCache: usernameCache});
+};
+
 async function main () {
-    await loadOptionsFromStorage();
+    await Promise.all([
+        loadUsernameCacheFromStorage(),
+        loadOptionsFromStorage(),
+    ]);
 
     if (isEnabled(github.signIn.optionName)) {
         github.signIn.signIn();
