@@ -18,7 +18,7 @@ let github = {
     },
     showNames: {
         optionName: "github-show-names",
-        query: ".user-mention, [data-hovercard-type=user]",
+        query: ".user-mention, [data-hovercard-type=user], a.text-emphasized.link-gray-dark, .merge-status-item.review-item.bg-white.js-details-container.Details strong.text-emphasized",
         regexNameOnProfilePage: `<span class="p-name vcard-fullname d-block overflow-hidden" itemprop="name">([^<]*)</span>`,
     },
     getNamesFromPeople: {
@@ -165,16 +165,21 @@ github.showNames._replaceElementIfUserId = async function (element) {
     if (userId) {
         let username = await github.showNames._getUsername(userId);
         if (username) {
-            element.textContent = prefix + username;
-            element.setAttribute("data-sap-addon-user-id", prefix + userId);
+            let el = getDirectParentOfText(element, userId);
+            el.textContent = prefix + username;
+            el.setAttribute("data-sap-addon-user-id", prefix + userId);
         }
     }
 };
 github.showNames._getUserIdIfElementIsUserId = function (element) {
-    let userId = (element.childNodes.length === 1
-        && element.firstChild.nodeName === "#text"
-        && element.hasAttribute("href")
-        && !element.hasAttribute("data-sap-addon-user-id") ? element.textContent : null);
+    let userId = (!element.hasAttribute("data-sap-addon-user-id")
+            && !element.querySelector("[data-sap-addon-user-id]"))
+            ? element.textContent.trim() : null;
+    if (userId === "" || !isElementALink(element)) {
+        if (!github.showNames._hrefExceptionForReviewer(element)) {
+            userId = null;
+        }
+    }
     if (userId && element.classList.contains("user-mention") && userId.startsWith("@")) {
         return { prefix: "@", userId: userId.substr(1) };
     }
@@ -204,7 +209,8 @@ github.showNames._getUsername = async function (userId) {
 github.showNames._fetchUsername = function (userId) {
     return new Promise(async function (resolve, reject) {
         if (isEnabled(github.getNamesFromPeople.optionName)) {
-            fetch("https://" + github.getNamesFromPeople.hostname + "/profiles/" + userId, {
+            let url = "https://" + github.getNamesFromPeople.hostname + "/profiles/" + userId;
+            fetch(url, {
                 method: "GET",
                 cache: "force-cache"
             }).then(response => response.text())
@@ -219,12 +225,13 @@ github.showNames._fetchUsername = function (userId) {
                 match = match.split(". ").pop().trim();
                 resolve(match);
             }).catch(error => {
-                console.log("SAP Addon", error);
+                github.showNames._logFetchError(userId, url, error);
             });
         }
 
         // use github as fallback or if people is disabled
-        fetch("https://" + url.hostname + "/" + userId, {
+        let url = "https://" + url.hostname + "/" + userId;
+        fetch(url, {
             method: "GET",
             cache: "force-cache"
         }).then(response => response.text())
@@ -233,15 +240,66 @@ github.showNames._fetchUsername = function (userId) {
             const match = searchRegex.exec(html)[1];
             resolve(match);
         }).catch(error => {
-            console.log("SAP Addon", error);
+            github.showNames._logFetchError(userId, url, error);
             resolve(null); // reject?
         });
     });
 };
 
+github.showNames._logFetchError = function (userId, url, error) {
+    if ((new RegExp(`[di]\d{6}|c\d{7}`, "i")).exec(userId)) {
+        // only logs error when it looks like a correct userId
+        // either d/D/i/I + 6 numbers or c/C + 7 numbers
+        console.log("SAP Addon - Error when fetching", url, error);
+    }
+};
+
+github.showNames._hrefExceptionForReviewer = function (element) {
+    // reviewer (approval / pending) don't have a link to the user -> therefore exception needs to be added
+    if (element.classList.contains("text-emphasized")
+        && element.parentElement
+        && element.parentElement.parentElement
+        && element.parentElement.parentElement.querySelector("[data-hovercard-type=user]")) {
+        return true;
+    }
+};
+
+
 
 let getUnixTimestamp = function () {
     return Math.floor((new Date()).getTime());
+};
+
+let isElementALink = function (element) {
+    // check childs
+    for (let linkChild of element.querySelectorAll("[href]")) {
+        if (linkChild && element.textContent.trim() === linkChild.textContent.trim()) {
+            return true;
+        }
+    }
+    // check parents
+    while (true) {
+        if (!element) return false;
+        if (element.hasAttribute("href")) return true;
+        element = element.parentElement;
+    }
+};
+
+let getDirectParentOfText = function (baseElement, text) {
+    if (baseElement.childNodes.length === 1
+        && baseElement.firstChild.nodeName === "#text"
+        && baseElement.textContent.trim() === text) {
+        return baseElement;
+    } else {
+        for (let child of baseElement.childNodes) {
+            if (child.childNodes.length > 0) {
+                let r = getDirectParentOfText(child, text);
+                if (r) {
+                    return r;
+                }
+            }
+        }
+    }
 };
 
 let redirectToURL = function (url) {
