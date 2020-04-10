@@ -1,8 +1,8 @@
 # sap-addon
 
 ## install
-It is not listed on addons.mozilla.org (AMO).
-You can find the xpi of this addon in the release section of this repository to install in Firefox (just drag into browser or use tools in `about:addons` to install from file).
+You can find the xpi of this addon in the corresponding folder of this repository to install in Firefox (just drag into browser or use tools in `about:addons` to install from file).
+https://github.com/nikolockenvitz/sap-addon/tree/master/xpi
 
 There is no version published to Chrome Web Store because there is a registration fee of $5.
 

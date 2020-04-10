@@ -1,0 +1,13 @@
+{
+  "addons": {
+    "{1375a016-3548-4cc2-a6c9-290f24b5b53d}": {
+      "updates": [
+        {
+          "version": "1.10",
+          "update_link": "https://nikolockenvitz.github.io/sap-addon/xpi/sap_addon-1.10-fx.xpi",
+          "update_hash": "sha256:89fd19891ffc1d6fdc75e0549216e39d3caf522f57bbe58477d1b35e1b074411"
+        }
+      ]
+    }
+  }
+}

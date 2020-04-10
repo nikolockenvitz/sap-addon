@@ -40,5 +40,10 @@
     "default_icon": "icons/icon48.png",
     "default_title": "SAP Addon",
     "default_popup": "popup/popup.html"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "update_url": "https://nikolockenvitz.github.io/sap-addon/updates.json"
+    }
   }
 }
