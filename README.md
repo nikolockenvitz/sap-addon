@@ -1,5 +1,11 @@
 # sap-addon
 
+## install
+It is not listed on addons.mozilla.org (AMO).
+You can find the xpi of this addon in the release section of this repository to install in Firefox (just drag into browser or use tools in `about:addons` to install from file).
+
+There is no version published to Chrome Web Store because there is a registration fee of $5.
+
 ## current features
 * `portal.wdf.sap.corp`
   * redirect from login page (`/home`) to main page (`/irj/portal`)
@@ -9,13 +15,13 @@
   * hide yellow notice box
   * show name instead of user id (inspired by https://github.com/cgrail/github-chrome-fullname)
   * get name from `people.wdf.sap.corp` (use GitHub only as a fallback)
+  * names are cached in local storage
 * `fiorilaunchpad.sap.com` <!-- it's the Fiori Lunchpad ;) name created by Erik Jansky -->
   * show lunchmenu in German (even if default language is English)
 
-## install
-Find the xpi of this addon in the release section of this repository to install in Firefox (just drag into browser or use tools in `about:addons` to install from file).
+All features are enabled by default but can be disabled in the settings popup.
 
-There is no version published to Chrome Web Store because there is a registration fee of $5.
+![Screenshot of popup](docs/screenshot-popup-1.10.png)
 
 ## install [dev]
 Download or clone this repository.
