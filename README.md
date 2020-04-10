@@ -1,10 +1,22 @@
 # sap-addon
 
 ## install
-You can find the xpi of this addon in the corresponding folder of this repository to install in Firefox (just drag into browser or use tools in `about:addons` to install from file).
+<a href="https://nikolockenvitz.github.io/sap-addon/xpi/sap_addon-1.11.1-fx.xpi">
+<img src="https://img.shields.io/badge/firefox-v1.11.1-FF7139?logo=mozilla-firefox" /></a>
+<a href="https://www.mozilla.org/en-US/firefox/new/">
+<img src="https://img.shields.io/badge/chrome----4285F4?logo=google-chrome" /></a>
+
+Install by clicking on the badge above.
+Additionally you can find the `.xpi`s of this addon in the corresponding folder of this repository to install for Firefox (just drag into browser or use tools in `about:addons` to install from file).
 https://github.com/nikolockenvitz/sap-addon/tree/master/xpi
 
+Updates are handled automatically.
+
 There is no version published to Chrome Web Store because there is a registration fee of $5.
+Also, since I don't use Chrome, I am unable to offer good support.
+If you want to use it in Chrome, see below for other installation options.
+
+If you want to help to support other browsers than Firefox, just open a pull request or contact me.
 
 ## current features
 * `portal.wdf.sap.corp`
