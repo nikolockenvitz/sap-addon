@@ -7,8 +7,8 @@
 <img src="https://img.shields.io/badge/chrome----4285F4?logo=google-chrome" /></a>
 
 Install by clicking on the badge above.
-Additionally you can find the `.xpi`s of this addon in the corresponding folder of this repository to install for Firefox (just drag into browser or use tools in `about:addons` to install from file).
-https://github.com/nikolockenvitz/sap-addon/tree/master/xpi
+Additionally you can find the `.xpi`s of this addon and the previous versions in the [corresponding folder of this repository](https://github.com/nikolockenvitz/sap-addon/tree/master/xpi) to download and install in Firefox (just drag into browser or use tools in `about:addons` to install from file).
+There is no version published to [addons.mozilla.org (AMO)](https://addons.mozilla.org) because reviewers of AMO complained that it can only be used by a small number of people and thus it's not relevant for AMO.
 
 Updates are handled automatically.
 
