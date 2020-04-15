@@ -165,7 +165,7 @@ github.showNames._replaceElementIfUserId = async function (element) {
     if (userId) {
         let username = await github.showNames._getUsername(userId);
         if (username) {
-            let el = getDirectParentOfText(element, userId);
+            let el = getDirectParentOfText(element, prefix + userId);
             el.textContent = prefix + username;
             el.setAttribute("data-sap-addon-user-id", prefix + userId);
         }
