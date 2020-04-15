@@ -18,7 +18,11 @@ let github = {
     },
     showNames: {
         optionName: "github-show-names",
-        query: ".user-mention, [data-hovercard-type=user], a.text-emphasized.link-gray-dark, .merge-status-item.review-item.bg-white.js-details-container.Details strong.text-emphasized",
+        query: `.user-mention,
+            [data-hovercard-type=user],
+            a.text-emphasized.link-gray-dark,
+            .merge-status-item.review-item.bg-white.js-details-container.Details strong.text-emphasized,
+            small a.text-gray-dark`,
         regexNameOnProfilePage: `<span class="p-name vcard-fullname d-block overflow-hidden" itemprop="name">([^<]*)</span>`,
     },
     getNamesFromPeople: {

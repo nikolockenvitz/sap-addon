@@ -1,8 +1,8 @@
 # sap-addon
 
 ## install
-<a href="https://nikolockenvitz.github.io/sap-addon/xpi/sap_addon-1.11.1-fx.xpi">
-<img src="https://img.shields.io/badge/firefox-v1.11.1-FF7139?logo=mozilla-firefox" /></a>
+<a href="https://nikolockenvitz.github.io/sap-addon/xpi/sap_addon-1.12-fx.xpi">
+<img src="https://img.shields.io/badge/firefox-v1.12-FF7139?logo=mozilla-firefox" /></a>
 <a href="https://www.mozilla.org/en-US/firefox/new/">
 <img src="https://img.shields.io/badge/chrome----4285F4?logo=google-chrome" /></a>
 
