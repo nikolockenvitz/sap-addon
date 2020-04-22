@@ -9,6 +9,7 @@ const inputIds = [
     "portal-redirect", "portal-focus-searchbar",
     "github-sign-in", "github-hide-notice", "github-show-names", "github-get-names-from-people",
     "fiori-lunchmenu-german",
+    "sharepoint-login",
 ];
 
 let options = {};
@@ -20,6 +21,7 @@ window.onload = async function () {
         toggleInputOnSectionTextClick(inputId); // sectionText includes also the input itself
     }
     initInputs();
+    initModals();
 };
 
 let onChangeInput = async function (inputId) {
@@ -131,4 +133,20 @@ let initInputs = function () {
         document.getElementById(inputId).checked = (!options || options[inputId] !== false);
         updateDependingInputs(inputId);
     }
+};
+
+let initModals = function () {
+    let configurationModal = document.getElementById("modal-configuration");
+    document.getElementById("btn-show-configuration").addEventListener("click", function () {
+        console.log("show");
+        configurationModal.style.display = "block";
+    });
+    console.log(document.getElementById("btn-hide-configuration"));
+    document.getElementById("btn-hide-configuration").addEventListener("click", function () {
+        configurationModal.classList.add("hide");
+        setTimeout(function () {
+            configurationModal.style.display = "none";
+            configurationModal.classList.remove("hide");
+        }, 400); // needs to be equal to what is specified in css animation
+    });
 };

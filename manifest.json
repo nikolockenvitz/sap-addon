@@ -22,6 +22,14 @@
       ],
       "js": ["sap-addon-github.js"],
       "run_at": "document_start"
+    },
+    {
+      "matches": [
+        "*://sap-my.sharepoint.com/*",
+        "*://login.microsoftonline.com/*"
+      ],
+      "js": ["sap-addon-sharepoint.js"],
+      "run_at": "document_start"
     }
   ],
   "permissions": [
