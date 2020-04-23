@@ -9,6 +9,7 @@ let url = new URL(window.location.href);
 let sharepoint = {
     login: {
         optionName: "sharepoint-login",
+        configNameEmailAddress: "config-email",
         sharepointOnlyClickNextBtnQuery: `div.form-input-container input[type=button][name=btnSubmitSignIn][value=Next]#btnSubmitSignIn.form-submit.disable-on-submit`,
         microsoftonlineSelectAccount: `#tilesHolder div.tile-container div.row.tile div.table div.table-row div.table-cell div`,
         sharepointEnterEmailAndClickNextInputQuery: `#TOAAEmailEntryControls div.form-input-container input#txtTOAAEmail[type=email]`,
@@ -42,11 +43,17 @@ sharepoint.login.executeLogin = function () {
         btn = document.querySelector(sharepoint.login.sharepointEnterEmailAndClickNextBtnQuery);
         if (emailInput && btn) {
             if (emailInput.value === "") {
-                // TODO: get email address => add configuration in popup
-                // then: btn.click();
-                //emailInput.value = "test@sap.com";
+                let configEmail = config[sharepoint.login.configNameEmailAddress]
+                if (configEmail) {
+                    emailInput.value = configEmail;
+                    btn.click();
+                    return;
+                }
+                // TODO: insert notice to configure email in addon?
             } else {
+                // TODO: hopefully not during typing?!
                 btn.click();
+                return;
             }
         }
     });
@@ -80,8 +87,26 @@ let isEnabled = function (optionName) {
     return !options || options[optionName] !== false; // enabled per default
 };
 
+let config = {};
+let loadConfigFromStorage = async function () {
+    return new Promise(async function (resolve, reject) {
+        function onLocalStorageGet (res) {
+            config = res.config;
+            resolve();
+        }
+        if (usePromisesForAsync) {
+            browser.storage.local.get("config").then(onLocalStorageGet);
+        } else {
+            browser.storage.local.get("config", onLocalStorageGet);
+        }
+    });
+};
+
 async function main () {
-    await loadOptionsFromStorage();
+    await Promise.all([
+        loadOptionsFromStorage(),
+        loadConfigFromStorage(),
+    ]);
 
     if (isEnabled(sharepoint.login.optionName)) {
         sharepoint.login.executeLogin();

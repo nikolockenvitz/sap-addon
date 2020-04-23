@@ -11,17 +11,30 @@ const inputIds = [
     "fiori-lunchmenu-german",
     "sharepoint-login",
 ];
+const configInputIds = [
+    "config-email",
+    "config-lunchmenu-language",
+];
 
 let options = {};
+let config = {};
 
 window.onload = async function () {
-    await loadOptionsFromStorage();
+    await Promise.all([
+        loadOptionsFromStorage(),
+        loadConfigFromStorage(),
+    ]);
 
     for (let inputId of inputIds) {
         toggleInputOnSectionTextClick(inputId); // sectionText includes also the input itself
     }
     initInputs();
     initModals();
+    for (let configInputId of configInputIds) {
+        initConfigInput(configInputId);
+    }
+
+    addEventListenersToClosePopupOnLinkClicks();
 };
 
 let onChangeInput = async function (inputId) {
@@ -128,6 +141,25 @@ let saveOptionsToStorage = function () {
     });
 };
 
+let loadConfigFromStorage = async function () {
+    return new Promise(async function (resolve, reject) {
+        function onLocalStorageGet (res) {
+            config = res.config || {};
+            resolve();
+        }
+        if (usePromisesForAsync) {
+            browser.storage.local.get('config').then(onLocalStorageGet);
+        } else {
+            browser.storage.local.get('config', onLocalStorageGet);
+        }
+    });
+};
+
+let saveConfigToStorage = function () {
+    browser.storage.local.set({config: config});
+};
+
+
 let initInputs = function () {
     for (let inputId of inputIds) {
         document.getElementById(inputId).checked = (!options || options[inputId] !== false);
@@ -149,4 +181,24 @@ let initModals = function () {
             configurationModal.classList.remove("hide");
         }, 400); // needs to be equal to what is specified in css animation
     });
+};
+
+let initConfigInput = function (inputId) {
+    let el = document.getElementById(inputId);
+    el.value = config[inputId] || "";
+    el.addEventListener("change", function () { // change will only fire after input loses focus (-> not on every keystroke)
+        config[inputId] = el.value;
+        saveConfigToStorage();
+    });
+};
+
+let addEventListenersToClosePopupOnLinkClicks = function () {
+    let links = document.getElementsByClassName("external-link");
+    for (let el of links) {
+        el.addEventListener("click", function () {
+            setTimeout(function () {
+                window.close();
+            }, 1); // w/o timeout the link would not be opened
+        });
+    }
 };

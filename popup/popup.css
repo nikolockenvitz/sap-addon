@@ -129,6 +129,12 @@ span.arrow {
     display: inline-block;
     padding: 3px;
 }
+span.arrow.arrow-white {
+    border-color: #fff;
+}
+span.arrow.arrow-larger {
+    padding: 4px;
+}
 .right {
     transform: rotate(-45deg);
     -webkit-transform: rotate(-45deg);
@@ -192,6 +198,50 @@ span.arrow {
     -webkit-animation-duration: 0.4s;
     animation-name: slideIn;
     animation-duration: 0.4s;
+}
+
+
+/* Modal Header */
+.modal-header {
+    margin: 0;
+    padding: 8px;
+    color: #fff;
+}
+
+.modal-header > *:nth-child(1) { /* The back button */
+    padding: 4px 6px 4px 2px;
+    color: inherit;
+    display: table-cell; /* needed to center heading */
+}
+.modal-header > *:nth-child(1):hover {
+    background-color: #6a6a6f;
+}
+.modal-header > *:nth-child(2) { /* The heading */
+    display: table-cell;
+    width: 100%;
+    text-align: center;
+    font-weight: 520;
+}
+.modal-header > *:nth-child(3) { 
+    /* clone of back button to have correct centering of heading */
+    display: table-cell;
+    padding: 4px 2px 4px 6px;
+    visibility: hidden;
+}
+
+.modal-content input[type=text],
+.modal-content input[type=email] {
+    width: 99%;
+    border: 0;
+    background: inherit; /*#525257;*/
+    color: inherit;
+    margin-bottom: 12px;
+}
+
+p.footer-text {
+    color: #ccc;
+    text-align: center;
+    font-size: 0.8em;
 }
 
 

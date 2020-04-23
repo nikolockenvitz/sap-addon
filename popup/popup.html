@@ -66,8 +66,9 @@
             </div>
             <div class="section">
                 <p class="section-heading" title="fiorilaunchpad.sap.com">Fiori Launchpad</p>
-                <div class="section-text">
-                    <p>German Lunchmenu</p>
+                <div class="section-text"
+                    title="Sets the language of the lunchmenu to what you specify in the configuration (by default German) regardless of your Fiori Launchpad settings">
+                    <p>Override Lunchmenu Language</p>
                     <p><label class="switch">
                         <input type="checkbox" id="fiori-lunchmenu-german" checked>
                         <span class="slider round"></span>
@@ -87,30 +88,48 @@
                 </div>
             </div>
             <div class="section">
+                <p class="section-heading">More</p>
                 <div class="section-text" id="btn-show-configuration">
                     <p>Configuration</p>
-                    <p><span class="arrow right" /></p>
+                    <p><span class="arrow right"></span></p>
                     <p></p>
                 </div>
-                <a class="div" href="https://github.com/nikolockenvitz/sap-addon"><span class="div section-text" id="btn-show-configuration">
-                    <span class="p">View on GitHub</span>
-                    <span class="p"><span class="open-in-new-tab"><svg viewBox="0 0 10 10">
-                        <polyline points="4,2 2,2 2,8 8,8 8,6" />
-                        <polyline points="6,1 9,1 9,4" />
-                        <polyline points="5,5 9,1" />
-                      </svg></span></span>
-                    <span class="p"></span>
-                </span></a>
+                <a class="div external-link" href="https://github.com/nikolockenvitz/sap-addon">
+                    <span class="div section-text">
+                        <span class="p">View on GitHub</span>
+                        <span class="p"><span class="open-in-new-tab"><svg viewBox="0 0 10 10">
+                            <polyline points="4,2 2,2 2,8 8,8 8,6" />
+                            <polyline points="6,1 9,1 9,4" />
+                            <polyline points="5,5 9,1" />
+                        </svg></span></span>
+                        <span class="p"></span>
+                    </span>
+                </a>
             </div>
         </div>
 
         <div class="modal" id="modal-configuration">
             <div class="modal-content">
-                <div class="section">
-                    <p id="btn-hide-configuration"><span class="arrow left" /></p>
+                <div class="section modal-header">
+                    <span id="btn-hide-configuration"><span class="arrow arrow-white arrow-larger left"></span></span>
+                    <span>Configuration</span>
+                    <span><span class="arrow arrow-white arrow-larger right"></span></span>
                 </div>
                 <div class="section">
-                    <p class="section-heading">Coming Soon!</p>
+                    <p class="section-heading">E-Mail <span title="Used to log in automatically (Sharepoint)">ⓘ</span></p>
+                    <p><input type="email" id="config-email" placeholder="your.email@sap.com" /></p>
+
+                    <p class="section-heading">Lunchmenu Language <span title="Only applies if enabled in settings">ⓘ</span></p>
+                    <p><input type="text" id="config-lunchmenu-language" placeholder="de, en, ..." value="de"
+                            pattern="^de|en$" title="de - German (default); en - English" /></p>
+
+                    <p id="debug"></p>
+                </div>
+                <div class="section">
+                    <p class="footer-text">
+                        All data is stored locally in your browser cache and not shared with anyone.
+                        You are not required to provide any data, this is completely voluntary.
+                    </p>
                 </div>
             </div>
         </div>

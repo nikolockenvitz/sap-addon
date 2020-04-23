@@ -41,7 +41,7 @@
   ],
   "background": {
     "scripts": [
-      "background.js"
+      "sap-addon-fiori-lunchmenu-bs.js"
     ]
   },
   "browser_action": {
