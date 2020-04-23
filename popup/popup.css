@@ -1,8 +1,8 @@
 html {
-    width: 260px;
+    min-width: 260px;
 }
 body {
-    width: inherit;
+    min-width: inherit;
     margin: 0;
     background-color: #4a4a4f;
     color: #fff;
@@ -175,7 +175,7 @@ span.arrow {
 .modal.hide {
     visibility: 0;
     -webkit-animation-name: slideOut;
-    -webkit-animation-duration: 0.4s;
+    -webkit-animation-duration: 0.4s; /* also hardcoded in javascript -> needs also be changed there */
     animation-name: slideOut;
     animation-duration: 0.4s;
 }
@@ -197,21 +197,21 @@ span.arrow {
 
 /* Add Animation */
 @-webkit-keyframes slideIn {
-    from {right: -260px; opacity: 0.5} /* needs to be kept aligned with width of popup */
-    to {right: 0; opacity: 1}
+    from {left: 100%; opacity: 0.5}
+    to {left: 0; opacity: 1}
 }
 @keyframes slideIn {
-    from {right: -260px; opacity: 0.5}
-    to {right: 0; opacity: 1}
+    from {left: 100%; opacity: 0.5}
+    to {left: 0; opacity: 1}
 }
 
 @-webkit-keyframes slideOut {
     from {left: 0; opacity: 1}
-    to {left: 260px; opacity: 0.5}
+    to {left: 100%; opacity: 0.5}
 }
 @keyframes slideOut {
     from {left: 0; opacity: 1}
-    to {left: 260px; opacity: 0.5}
+    to {left: 100%; opacity: 0.5}
 }
 
 
