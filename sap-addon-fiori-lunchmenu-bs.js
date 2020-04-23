@@ -56,7 +56,6 @@ fiorilaunchpad.overrideLunchmenu.rewriteLunchMenuHeader = function (requestDetai
     requestDetails.requestHeaders.forEach(function(header){
         if (header.name.toLowerCase() === "accept-language") {
             header.value = config[fiorilaunchpad.overrideLunchmenu.configNameLanguage] || "de";
-            // TODO: when testing it takes a while between changing the config and having a result on this; needs to be investigated
           }
     });
     return {requestHeaders: requestDetails.requestHeaders};

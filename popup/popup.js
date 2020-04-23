@@ -41,9 +41,13 @@ let onChangeInput = async function (inputId) {
     options[inputId] = document.getElementById(inputId).checked;
     updateDependingInputs(inputId);
     await saveOptionsToStorage();
+    runMainFunctionOfContentAndBackgroundScripts();
+};
+
+let runMainFunctionOfContentAndBackgroundScripts = function () {
     function onTabsQuery (tabs) {
         for (let tab of tabs) {
-            // connect will trigger main function of sap-addon.js
+            // connect will trigger main function of content scripts
             browser.tabs.connect(tab.id).disconnect();
         }
     }
@@ -156,7 +160,16 @@ let loadConfigFromStorage = async function () {
 };
 
 let saveConfigToStorage = function () {
-    browser.storage.local.set({config: config});
+    return new Promise(async function (resolve, reject) {
+        function onLocalStorageSet () {
+            resolve();
+        }
+        if (usePromisesForAsync) {
+            browser.storage.local.set({config: config}).then(onLocalStorageSet);
+        } else {
+            browser.storage.local.set({config: config}, onLocalStorageSet);
+        }
+    });
 };
 
 
@@ -170,10 +183,8 @@ let initInputs = function () {
 let initModals = function () {
     let configurationModal = document.getElementById("modal-configuration");
     document.getElementById("btn-show-configuration").addEventListener("click", function () {
-        console.log("show");
         configurationModal.style.display = "block";
     });
-    console.log(document.getElementById("btn-hide-configuration"));
     document.getElementById("btn-hide-configuration").addEventListener("click", function () {
         configurationModal.classList.add("hide");
         setTimeout(function () {
@@ -186,9 +197,10 @@ let initModals = function () {
 let initConfigInput = function (inputId) {
     let el = document.getElementById(inputId);
     el.value = config[inputId] || "";
-    el.addEventListener("change", function () { // change will only fire after input loses focus (-> not on every keystroke)
+    el.addEventListener("change", async function () { // change will only fire after input loses focus (-> not on every keystroke)
         config[inputId] = el.value;
-        saveConfigToStorage();
+        await saveConfigToStorage();
+        runMainFunctionOfContentAndBackgroundScripts();
     });
 };
 
