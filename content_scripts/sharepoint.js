@@ -17,9 +17,36 @@ let sharepoint = {
     },
 };
 
+class DOMObserver {
+    constructor () {
+        this.observerCallbacks = {};
+        let that = this;
+        this.observer = new MutationObserver(function (mutation, _observer) {
+            for (let id in that.observerCallbacks) {
+                that.observerCallbacks[id](mutation, _observer);
+            }
+        });
+        this.observer.observe(document, {
+            childList: true,
+            characterData: true,
+            subtree: true
+        });
+    }
+
+    registerCallbackFunction (id, callback) {
+        if (!this.observerCallbacks[id]) {
+            this.observerCallbacks[id] = callback;
+        }
+    }
+
+    unregisterCallbackFunction (id) {
+        this.observerCallbacks[id] = undefined;
+    }
+}
+const domObserver = new DOMObserver();
+
 sharepoint.login.executeLogin = function () {
-    // TODO: can be made even faster by using mutation observer
-    executeFunctionAfterPageLoaded(function () {
+    function login () {
         let emailInput, btn;
 
         // sap-my.sharepoint.com, only button "Next" to continue
@@ -27,6 +54,7 @@ sharepoint.login.executeLogin = function () {
         if (btn) {
             // could also be used to obtain email address: document.querySelector("#SigninControls div.form-message #lblSignInDescription span b").textContent
             btn.click();
+            sharepoint.login.stopAutoSignIn();
             return;
         }
 
@@ -34,7 +62,10 @@ sharepoint.login.executeLogin = function () {
         btn = document.querySelector(sharepoint.login.microsoftonlineSelectAccount);
         if (btn) {
             // could also be used to obtain email address (btn.textContent)
-            btn.click();
+            setTimeout(function () {
+                btn.click();
+            }, 100); // clicking button directly didn't worked when testing
+            sharepoint.login.stopAutoSignIn();
             return;
         }
 
@@ -42,22 +73,33 @@ sharepoint.login.executeLogin = function () {
         emailInput = document.querySelector(sharepoint.login.sharepointEnterEmailAndClickNextInputQuery);
         btn = document.querySelector(sharepoint.login.sharepointEnterEmailAndClickNextBtnQuery);
         if (emailInput && btn) {
+            let configEmail = config[sharepoint.login.configNameEmailAddress];
             if (emailInput.value === "") {
-                let configEmail = config[sharepoint.login.configNameEmailAddress]
                 if (configEmail) {
                     emailInput.value = configEmail;
                     btn.click();
                     return;
                 }
                 // TODO: insert notice to configure email in addon?
-            } else {
-                // TODO: hopefully not during typing?!
+            } else if (emailInput.value === configEmail) {
                 btn.click();
+                sharepoint.login.stopAutoSignIn();
                 return;
             }
         }
-    });
-}
+    };
+
+    executeFunctionAfterPageLoaded(login);
+    domObserver.registerCallbackFunction(sharepoint.login.optionName,
+        function (mutations, _observer) {
+            login();
+        }
+    );
+};
+
+sharepoint.login.stopAutoSignIn = function () {
+    domObserver.unregisterCallbackFunction(sharepoint.login.optionName);
+};
 
 let executeFunctionAfterPageLoaded = function (func, args=[]) {
     window.addEventListener("load", (e) => {
