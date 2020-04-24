@@ -211,6 +211,7 @@ span.arrow.arrow-larger {
 .modal-header > *:nth-child(1) { /* The back button */
     padding: 4px 6px 4px 2px;
     color: inherit;
+    cursor: pointer;
     display: table-cell; /* needed to center heading */
 }
 .modal-header > *:nth-child(1):hover {
