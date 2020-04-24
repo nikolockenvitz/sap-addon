@@ -31,10 +31,10 @@ If you want to use it in Chrome anyway, see below for [other installation option
   * override language of lunchmenu (by default German) so that you will see it e.g. in German even if language in the Fiori Launchpad settings is set to English
     * language can be configured
     * currently supports `de` and `en`
-    * other values will work too but you
+    * other values will work too but you will see a warning (just contact me if you have other valid values and I will add them as well)
 * `sap-my.sharepoint.com` / `login.microsoftonline.com`
   * log in automatically
-  * e-mail can be set in configuration
+  * sometimes e-mail address is needed to log in, you can specify it in configuration
 
 All features are enabled by default but can be disabled in the settings popup.
 
