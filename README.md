@@ -1,9 +1,11 @@
 # sap-addon
 
+<!-- SHIELD IO BADGES INSTALL START -->
 <a href="https://nikolockenvitz.github.io/sap-addon/xpi/sap_addon-1.13-fx.xpi">
 <img src="https://img.shields.io/badge/firefox-v1.13-FF7139?logo=mozilla-firefox" alt="Install for Firefox" /></a>
 <a href="https://www.mozilla.org/en-US/firefox/new/">
 <img src="https://img.shields.io/badge/chrome----4285F4?logo=google-chrome" alt="Not yet available in Chrome Web Store" /></a>
+<!-- SHIELD IO BADGES INSTALL END -->
 
 Install by clicking on the badge above.
 There is no version published to addons.mozilla.org (AMO) because reviewers of AMO complained that it can only be used by a small number of people and thus it's not relevant for AMO.

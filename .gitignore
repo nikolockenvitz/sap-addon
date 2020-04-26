@@ -1,3 +1,2 @@
 *.zip
-
-icons/
+node_modules/
