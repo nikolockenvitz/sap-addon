@@ -41,7 +41,8 @@
   ],
   "background": {
     "scripts": [
-      "background_scripts/fiori-lunchmenu.js"
+      "background_scripts/fiori-lunchmenu.js",
+      "background_scripts/on-tab-change.js"
     ]
   },
   "browser_action": {

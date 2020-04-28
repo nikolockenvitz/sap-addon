@@ -23,6 +23,7 @@ let github = {
             a.text-emphasized.link-gray-dark,
             .merge-status-item.review-item.bg-white.js-details-container.Details strong.text-emphasized,
             small a.text-gray-dark`,
+        queryEmojiReactions: `div.comment-reactions-options button.btn-link.reaction-summary-item.tooltipped[type=submit]`,
         regexNameOnProfilePage: `<span class="p-name vcard-fullname d-block overflow-hidden" itemprop="name">([^<]*)</span>`,
     },
     getNamesFromPeople: {
@@ -158,10 +159,17 @@ github.showNames.showIdsAgain = function () {
         element.textContent = element.getAttribute("data-sap-addon-user-id");
         element.removeAttribute("data-sap-addon-user-id");
     }
+    for (let element of document.querySelectorAll("[data-sap-addon-tooltip-original-content]")) {
+        element.setAttribute("aria-label", element.getAttribute("data-sap-addon-tooltip-original-content"));
+        element.removeAttribute("data-sap-addon-tooltip-original-content");
+    }
 };
 github.showNames._replaceAllChildsWhichAreUserId = function (element) {
     for (let queryMatch of element.querySelectorAll(github.showNames.query)) {
         github.showNames._replaceElementIfUserId(queryMatch);
+    }
+    for (let queryMatch of element.querySelectorAll(github.showNames.queryEmojiReactions)) {
+        github.showNames._replaceElementsTooltip(queryMatch);
     }
 };
 github.showNames._replaceElementIfUserId = async function (element) {
@@ -188,6 +196,57 @@ github.showNames._getUserIdIfElementIsUserId = function (element) {
         return { prefix: "@", userId: userId.substr(1) };
     }
     return { prefix: "", userId };
+};
+
+github.showNames._replaceElementsTooltip = async function (element) {
+    if (element.hasAttribute("data-sap-addon-tooltip-original-content")) {
+        return; // already replaced
+    }
+    let originalTooltipText = element.getAttribute("aria-label");
+    let replacedTooltipText = await github.showNames._getNewTooltipText(originalTooltipText);
+    element.setAttribute("data-sap-addon-tooltip-original-content", originalTooltipText);
+    element.setAttribute("aria-label", replacedTooltipText);
+};
+github.showNames._getNewTooltipText = async function (originalTooltipText) {
+    // text: (A | A and B | A, B, and C) reacted with ... emoji
+    // TODO: more than three?
+    const tooltipSeparator = " reacted with ";
+    let [userIds, emoji] = splitAtLast(originalTooltipText, tooltipSeparator);
+    let usernames = [];
+    if (userIds.includes(", and ")) { // more than two names
+        let [firstUserIds, lastUserId] = userIds.splitAtLast(", and ");
+        usernames.push(await github.showNames._getUsername(lastUserId));
+        for (let userId of firstUserIds) {
+            usernames.push(await github.showNames._getUsername(userId));
+        }
+    } else if (userIds.includes(" and ")) { // two names
+        for (let userId of userIds.split(" and ")) {
+            usernames.push(await github.showNames._getUsername(userId));
+        }
+    } else { // one name
+        usernames.push(await github.showNames._getUsername(userIds));
+    }
+    return github.showNames._makeUsernameTextForTooltip(usernames) + tooltipSeparator + emoji;
+};
+github.showNames._makeUsernameTextForTooltip = function (usernames) {
+    let usernameText = "";
+    for (let i=0; i<usernames.length; i++) {
+        if (i !== 0 && usernames.length !== 2) {
+            usernameText += ", ";
+        }
+        if (i === usernames.length-1) {
+            if (i === 0) {
+                // only one username, no "and" needed
+            } else if (i === 1) {
+                usernameText += " and ";
+            } else {
+                // if more than two usernames there will already be a ", " (including a space)
+                usernameText += "and ";
+            }
+        }
+        usernameText += usernames[i];
+    }
+    return usernameText;
 };
 
 github.showNames._getUsername = async function (userId) {
@@ -305,6 +364,13 @@ let getDirectParentOfText = function (baseElement, text) {
         }
     }
 };
+
+let splitAtLast = function (text, separator) {
+    let temp = text.split(separator);
+    let last = temp.pop();
+    return [temp.join(separator), last];
+};
+
 
 let redirectToURL = function (url) {
     window.location.replace(url);
