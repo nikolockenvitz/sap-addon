@@ -28,10 +28,23 @@ const ZIP_CONTENT = {
 const README_BADGE_INSERT_START = "<!-- SHIELD IO BADGES INSTALL START -->";
 const README_BADGE_INSERT_END   = "<!-- SHIELD IO BADGES INSTALL END -->";
 
+const CONSOLE_LOG_COLOR_FG_RED   = "\x1b[31m";
+const CONSOLE_LOG_COLOR_FG_GREEN = "\x1b[32m";
+const CONSOLE_LOG_COLOR_RESET    = "\x1b[0m";
+
+const LIST_OF_COMMANDS = `
+npm run help           logs this help
+npm run build          zips all files into ${getZipFilename()}
+npm run build -- amo   + opens the AMO page to upload a new version for this addon
+npm run deploy         adds xpi to updates.json and README.md + deletes previous versions
+`;
 
 async function main () {
     const options = process.argv.slice(3);
     switch (process.argv[2]) {
+        case "help":
+            logListOfCommands();
+            break;
         case "build":
             await buildAddon();
             if (options.includes("amo")) {
@@ -46,14 +59,23 @@ async function main () {
 main();
 
 
+function logListOfCommands () {
+    logInfo(LIST_OF_COMMANDS);
+}
+
+
 async function buildAddon () {
     // creates a .zip to be uploaded to AMO
-    const zipFilename = `${REPOSITORY_NAME}.zip`;
+    const zipFilename = getZipFilename();
 
     await deletePreviousZipFile(zipFilename);
     await createZip(zipFilename);
 
-    console.log(`created ${zipFilename}`);
+    logSuccess(`created ${zipFilename}`);
+}
+
+function getZipFilename () {
+    return `${REPOSITORY_NAME}.zip`;
 }
 
 async function deletePreviousZipFile (zipFilename) {
@@ -85,12 +107,16 @@ async function deployAddon () {
     // adds new addon version to updates.json and README.md + removes previous
     const version = await getVersion();
     const xpiFilepath = await getFilepathOfXPI(version);
+    if (!xpiFilepath) {
+        logError(`You need to download the .xpi of v${version} before you can run this deploy script`);
+        return;
+    }
     const xpiFileHash = await getFileHash(xpiFilepath);
 
     await updateUpdatesJSON(version, xpiFilepath, xpiFileHash);
     await updateReadme(version, xpiFilepath);
 
-    console.log(`added ${xpiFilepath} to ${FILEPATH_UPDATES} and ${FILEPATH_README}`);
+    logSuccess(`added ${xpiFilepath} to ${FILEPATH_UPDATES} and ${FILEPATH_README}`);
 }
 
 async function getVersion () {
@@ -128,7 +154,7 @@ function removePreviousPatchVersions (updatesJSON, addonVersion) {
         const curVersion = getSemanticVersion(version.version);
         if (addonVersion.major === curVersion.major && addonVersion.minor === curVersion.minor) {
             if (addonVersion.patch < curVersion.patch) {
-                console.error(`There is already a version ${version.version}`);
+                logError(`There is already a version ${version.version}`);
                 return true;
             } else if (addonVersion.patch === curVersion.patch) {
                 return false;
@@ -148,7 +174,7 @@ function getSemanticVersion (versionString) {
 
 async function deleteXPI (version) {
     const filepath = await getFilepathOfXPI(version);
-    console.log(`delete ${filepath}`);
+    logInfo(`delete ${filepath}`);
     await deleteFile(filepath);
 }
 
@@ -230,4 +256,15 @@ async function executeCommand (command) {
             }
         });
     });
+}
+
+
+function logError (message) {
+    console.log(`${CONSOLE_LOG_COLOR_FG_RED}${message}${CONSOLE_LOG_COLOR_RESET}`);
+}
+function logInfo (message) {
+    console.log(message);
+}
+function logSuccess (message) {
+    console.log(`${CONSOLE_LOG_COLOR_FG_GREEN}${message}${CONSOLE_LOG_COLOR_RESET}`);
 }

@@ -215,10 +215,10 @@ github.showNames._getNewTooltipText = async function (originalTooltipText) {
     let usernames = [];
     if (userIds.includes(", and ")) { // more than two names
         let [firstUserIds, lastUserId] = userIds.splitAtLast(", and ");
-        usernames.push(await github.showNames._getUsername(lastUserId));
         for (let userId of firstUserIds) {
             usernames.push(await github.showNames._getUsername(userId));
         }
+        usernames.push(await github.showNames._getUsername(lastUserId));
     } else if (userIds.includes(" and ")) { // two names
         for (let userId of userIds.split(" and ")) {
             usernames.push(await github.showNames._getUsername(userId));

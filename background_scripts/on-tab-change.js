@@ -3,7 +3,6 @@
  */
 
 function onTabActivated () {
-    console.log("tab activated");
     function onTabsQuery (tabs) {
         for (let tab of tabs) {
             // connect will trigger main function of content scripts

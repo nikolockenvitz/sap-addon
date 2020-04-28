@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
+    "help": "node npm_script.js help",
     "build": "node npm_script.js build",
     "deploy": "node npm_script.js deploy"
   },
