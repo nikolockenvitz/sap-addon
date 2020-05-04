@@ -10,6 +10,7 @@ let fiorilaunchpad = {
     overrideLunchmenu: {
         optionName: "fiori-lunchmenu-german",
         configNameLanguage: "config-lunchmenu-language",
+        defaultLanguage: "de",
         urls: [
             "https://fiorilaunchpad.sap.com/sap/fiori/lunchmenu/webapp/api/client/tiles/*",
             "https://fiorilaunchpad.sap.com/sap/fiori/lunchmenu/api/client/lunch*"
@@ -40,7 +41,7 @@ let config = {};
 let loadConfigFromStorage = async function () {
     return new Promise(async function (resolve, reject) {
         function onLocalStorageGet (res) {
-            config = res.config;
+            config = res.config || {};
             resolve();
         }
         if (usePromisesForAsync) {
@@ -53,11 +54,22 @@ let loadConfigFromStorage = async function () {
 
 /* Intercepting AJAX calls which are fetching lunch menu */
 fiorilaunchpad.overrideLunchmenu.rewriteLunchMenuHeader = function (requestDetails) {
-    requestDetails.requestHeaders.forEach(function(header){
+    const language = config[fiorilaunchpad.overrideLunchmenu.configNameLanguage]
+                    || fiorilaunchpad.overrideLunchmenu.defaultLanguage;
+    let rewroteHeader = false;
+    for (let header of requestDetails.requestHeaders) {
         if (header.name.toLowerCase() === "accept-language") {
-            header.value = config[fiorilaunchpad.overrideLunchmenu.configNameLanguage] || "de";
-          }
-    });
+            header.value = language;
+            rewroteHeader = true;
+            break;
+        }
+    }
+    if (!rewroteHeader) {
+        requestDetails.requestHeaders.push({
+            name: "Accept-Language",
+            value: language
+        });
+    }
     return {requestHeaders: requestDetails.requestHeaders};
 };
 

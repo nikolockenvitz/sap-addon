@@ -400,7 +400,7 @@ let options = {};
 let loadOptionsFromStorage = async function () {
     return new Promise(async function (resolve, reject) {
         function onLocalStorageGet (res) {
-            options = res.options;
+            options = res.options || {};
             resolve();
         }
         if (usePromisesForAsync) {
