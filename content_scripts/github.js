@@ -75,8 +75,10 @@ github.signIn.signIn = function () {
 };
 github.signIn.getSignInButtonAndClick = function (element) {
     element = element || document;
-    let signInBtn = element.querySelector(github.signIn.query);
-    if (signInBtn) { signInBtn.click(); }
+    try {
+        let signInBtn = element.querySelector(github.signIn.query);
+        if (signInBtn) { signInBtn.click(); }
+    } catch {}
 };
 github.signIn.stopAutoSignIn = function () {
     domObserver.unregisterCallbackFunction(github.signIn.optionName);
@@ -131,9 +133,11 @@ let _showElementsByQuery = function (query, baseElement) {
 
 let _setDisplayAttributeForElementsByQuery = function (query, baseElement, displayValue) {
     baseElement = baseElement || document;
-    for (let element of baseElement.querySelectorAll(query)) {
-        element.style.display = displayValue;
-    }
+    try {
+        for (let element of baseElement.querySelectorAll(query)) {
+            element.style.display = displayValue;
+        }
+    } catch {}
 };
 
 github.showNames.replaceIds = function () {
@@ -165,12 +169,16 @@ github.showNames.showIdsAgain = function () {
     }
 };
 github.showNames._replaceAllChildsWhichAreUserId = function (element) {
-    for (let queryMatch of element.querySelectorAll(github.showNames.query)) {
-        github.showNames._replaceElementIfUserId(queryMatch);
-    }
-    for (let queryMatch of element.querySelectorAll(github.showNames.queryEmojiReactions)) {
-        github.showNames._replaceElementsTooltip(queryMatch);
-    }
+    try {
+        for (let queryMatch of element.querySelectorAll(github.showNames.query)) {
+            github.showNames._replaceElementIfUserId(queryMatch);
+        }
+    } catch {}
+    try {
+        for (let queryMatch of element.querySelectorAll(github.showNames.queryEmojiReactions)) {
+            github.showNames._replaceElementsTooltip(queryMatch);
+        }
+    } catch {}
 };
 github.showNames._replaceElementIfUserId = async function (element) {
     const {userId, prefix} = github.showNames._getUserIdIfElementIsUserId(element);
@@ -178,8 +186,10 @@ github.showNames._replaceElementIfUserId = async function (element) {
         let username = await github.showNames._getUsername(userId);
         if (username) {
             let el = getDirectParentOfText(element, prefix + userId);
-            el.textContent = prefix + username;
-            el.setAttribute("data-sap-addon-user-id", prefix + userId);
+            if (el) {
+                el.textContent = prefix + username;
+                el.setAttribute("data-sap-addon-user-id", prefix + userId);
+            }
         }
     }
 };
@@ -271,9 +281,10 @@ github.showNames._getUsername = async function (userId) {
 
 github.showNames._fetchUsername = function (userId) {
     return new Promise(async function (resolve, reject) {
+        let fetchURL;
         if (isEnabled(github.getNamesFromPeople.optionName)) {
-            let url = "https://" + github.getNamesFromPeople.hostname + "/profiles/" + userId;
-            fetch(url, {
+            fetchURL = "https://" + github.getNamesFromPeople.hostname + "/profiles/" + userId;
+            fetch(fetchURL, {
                 method: "GET",
                 cache: "force-cache"
             }).then(response => response.text())
@@ -288,13 +299,13 @@ github.showNames._fetchUsername = function (userId) {
                 match = match.split(". ").pop().trim();
                 resolve(match);
             }).catch(error => {
-                github.showNames._logFetchError(userId, url, error);
+                github.showNames._logFetchError(userId, fetchURL, error);
             });
         }
 
         // use github as fallback or if people is disabled
-        let url = "https://" + url.hostname + "/" + userId;
-        fetch(url, {
+        fetchURL = "https://" + url.hostname + "/" + userId;
+        fetch(fetchURL, {
             method: "GET",
             cache: "force-cache"
         }).then(response => response.text())
@@ -303,7 +314,7 @@ github.showNames._fetchUsername = function (userId) {
             const match = searchRegex.exec(html)[1];
             resolve(match);
         }).catch(error => {
-            github.showNames._logFetchError(userId, url, error);
+            github.showNames._logFetchError(userId, fetchURL, error);
             resolve(null); // reject?
         });
     });
