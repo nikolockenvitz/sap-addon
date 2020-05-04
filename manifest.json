@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "SAP Addon",
-  "version": "1.13.2",
+  "version": "1.13.3",
   "description": "Extension for SAP related webpages: Portal, GitHub, Fiori Launchpad, Sharepoint",
   "icons": {
     "48": "icons/icon48.png",
@@ -36,7 +36,7 @@
     "storage",
     "webRequest",
     "webRequestBlocking",
-    "https://fiorilaunchpad.sap.com/sap/fiori/lunchmenu/*",
+    "*://fiorilaunchpad.sap.com/sap/fiori/lunchmenu/*",
     "*://people.wdf.sap.corp/*"
   ],
   "background": {

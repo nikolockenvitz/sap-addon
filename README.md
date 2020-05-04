@@ -1,17 +1,14 @@
 # sap-addon
 
 <!-- SHIELD IO BADGES INSTALL START -->
-<a href="https://nikolockenvitz.github.io/sap-addon/xpi/sap_addon-1.13.2-fx.xpi">
-<img src="https://img.shields.io/badge/firefox-v1.13.2-FF7139?logo=mozilla-firefox" alt="Install for Firefox" /></a>
-<a href="https://www.mozilla.org/en-US/firefox/new/">
-<img src="https://img.shields.io/badge/chrome----4285F4?logo=google-chrome" alt="Not yet available in Chrome Web Store" /></a>
+<a href="https://nikolockenvitz.github.io/sap-addon/xpi/sap_addon-1.13.3-fx.xpi">
+<img src="https://img.shields.io/badge/firefox-v1.13.3-FF7139?logo=mozilla-firefox" alt="Install for Firefox" /></a>
 <!-- SHIELD IO BADGES INSTALL END -->
+<a href="https://chrome.google.com/webstore/detail/sap-addon/ccjpkhcdklddbfpcboffbeihonalpjkc">
+<img src="https://img.shields.io/badge/chrome-v1.13.3-4285F4?logo=google-chrome" alt="Install for Chrome" /></a>
 
 Install by clicking on the badge above.
 Updates are handled automatically.
-
-I am currently examining deployment options for Chrome.
-If you want to use it in Chrome anyway, see below for [other installation options](#chrome).
 
 ## current features
 ![Screenshot of Popup](docs/screenshot-1.13-popup.png)
