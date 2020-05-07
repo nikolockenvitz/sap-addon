@@ -21,5 +21,7 @@ browserExtensionHelper.init({
     amoURL: AMO_URL,
     zipContent: ZIP_CONTENT,
     readmeBadgeText: README_BADGE_TEXT,
+    zipFoldername: "zip",
+    zipFilenameIncludeVersion: true,
 });
 browserExtensionHelper.main(process.argv);
