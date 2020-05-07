@@ -5,6 +5,7 @@ if (typeof browser !== "undefined") {
     window.browser = chrome;
 }
 
+const URL_GITHUB = "https://github.com/nikolockenvitz/sap-addon";
 const inputIds = [
     "portal-redirect", "portal-focus-searchbar",
     "github-sign-in", "github-hide-notice", "github-show-names", "github-get-names-from-people",
@@ -208,9 +209,14 @@ let addEventListenersToClosePopupOnLinkClicks = function () {
     let links = document.getElementsByClassName("external-link");
     for (let el of links) {
         el.addEventListener("click", function () {
-            setTimeout(function () {
+            function onTabCreated () {
                 window.close();
-            }, 1); // w/o timeout the link would not be opened
+            }
+            if (usePromisesForAsync) {
+                browser.tabs.create({url: URL_GITHUB}).then(onTabCreated);
+            } else {
+                browser.tabs.create({url: URL_GITHUB}, onTabCreated);
+            }
         });
     }
 };
