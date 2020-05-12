@@ -15,7 +15,7 @@ let sharepoint = {
         sharepointEnterEmailAndClickNextInputQuery: `#TOAAEmailEntryControls div.form-input-container input#txtTOAAEmail[type=email]`,
         sharepointEnterEmailAndClickNextBtnQuery: `#TOAAEmailEntryControls div.form-input-container input#btnSubmitEmail[type=button]`,
         microsoftonlineEnterEmailAndClickNextInputQuery: `div div.row div.form-group div.placeholderContainer input[type=email]`,
-        microsoftonlineEnterEmailAndClickNextBtnQuery: `div div.win-button-pin-bottom div.row.move-buttons div div div input[type=submit][value=Next]`,
+        microsoftonlineEnterEmailAndClickNextBtnQuery: `div div.win-button-pin-bottom div.row div div div input[type=submit][value=Next]`,
     },
 };
 
