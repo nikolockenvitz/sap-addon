@@ -56,7 +56,7 @@ class DOMObserver {
     }
 
     unregisterCallbackFunction (id) {
-        this.observerCallbacks[id] = undefined;
+        delete this.observerCallbacks[id];
     }
 }
 const domObserver = new DOMObserver();
@@ -77,7 +77,12 @@ github.signIn.getSignInButtonAndClick = function (element) {
     element = element || document;
     try {
         let signInBtn = element.querySelector(github.signIn.query);
-        if (signInBtn) { signInBtn.click(); }
+        if (signInBtn && signInBtn.click) {
+            setTimeout(function () {
+                signInBtn.click();
+            }, 100); // when click is executed directly, github.tools.sap crashes in chrome
+            github.signIn.stopAutoSignIn();
+        }
     } catch {}
 };
 github.signIn.stopAutoSignIn = function () {
