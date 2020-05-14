@@ -8,8 +8,8 @@
 <img src="https://img.shields.io/badge/chrome-v1.13.5-4285F4?logo=google-chrome" alt="Install for Chrome" /></a>
 <a href="https://chrome.google.com/webstore/detail/sap-addon/ccjpkhcdklddbfpcboffbeihonalpjkc">
 <img src="https://img.shields.io/badge/brave-v1.13.5-FB542B?logo=brave" alt="Install for Brave" /></a>
-<!--<a href="https://microsoftedge.microsoft.com/addons/detail/eonenobclhlhlpclebemkkljlameiipk">
-<img src="https://img.shields.io/badge/edge-v1.13.3-0078D7?logo=microsoft-edge" alt="Install for Edge" /></a>-->
+<a href="https://www.mozilla.org/en-US/firefox/new/">
+<img src="https://img.shields.io/badge/edge-not_available-0078D7?logo=microsoft-edge" alt="Not available for Edge" /></a>
 <a href="https://www.mozilla.org/en-US/firefox/new/">
 <img src="https://img.shields.io/badge/safari-not_available-000000?logo=safari" alt="Not available for Safari" /></a>
 
