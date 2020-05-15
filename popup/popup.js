@@ -4,6 +4,14 @@ if (typeof browser !== "undefined") {
 } else {
     window.browser = chrome;
 }
+function execAsync (asyncFunction, args, callback) {
+    if (!Array.isArray(args)) args = [args];
+    if (usePromisesForAsync) {
+        asyncFunction(...args).then(callback);
+    } else {
+        asyncFunction(...args, callback);
+    }
+}
 
 const URL_GITHUB = "https://github.com/nikolockenvitz/sap-addon";
 const inputIds = [
@@ -46,22 +54,15 @@ let onChangeInput = async function (inputId) {
 };
 
 let runMainFunctionOfContentAndBackgroundScripts = function () {
-    function onTabsQuery (tabs) {
+    execAsync(browser.tabs.query, {currentWindow: true, active: true}, (tabs) => {
         for (let tab of tabs) {
             // connect will trigger main function of content scripts
             browser.tabs.connect(tab.id).disconnect();
         }
-    }
-    function onBackgroundWindow (backgroundWindow) {
+    });
+    execAsync(browser.runtime.getBackgroundPage, undefined, (backgroundWindow) => {
         backgroundWindow.main();
-    }
-    if (usePromisesForAsync) {
-        browser.tabs.query({currentWindow: true, active: true}).then(onTabsQuery);
-        browser.runtime.getBackgroundPage().then(onBackgroundWindow);
-    } else {
-        browser.tabs.query({currentWindow: true, active: true}, onTabsQuery);
-        browser.runtime.getBackgroundPage(onBackgroundWindow);
-    }
+    });
 };
 
 let toggleInputOnSectionTextClick = function (inputId) {
@@ -121,55 +122,35 @@ let getSectionTextParent = function (element) {
 
 let loadOptionsFromStorage = async function () {
     return new Promise(async function (resolve, reject) {
-        function onLocalStorageGet (res) {
+        execAsync(browser.storage.local.get, "options", (res) => {
             options = res.options || {};
             resolve();
-        }
-        if (usePromisesForAsync) {
-            browser.storage.local.get('options').then(onLocalStorageGet);
-        } else {
-            browser.storage.local.get('options', onLocalStorageGet);
-        }
+        });
     });
 };
 
 let saveOptionsToStorage = function () {
     return new Promise(async function (resolve, reject) {
-        function onLocalStorageSet () {
+        execAsync(browser.storage.local.set, {options}, () => {
             resolve();
-        }
-        if (usePromisesForAsync) {
-            browser.storage.local.set({options: options}).then(onLocalStorageSet);
-        } else {
-            browser.storage.local.set({options: options}, onLocalStorageSet);
-        }
+        });
     });
 };
 
 let loadConfigFromStorage = async function () {
     return new Promise(async function (resolve, reject) {
-        function onLocalStorageGet (res) {
+        execAsync(browser.storage.local.get, "config", (res) => {
             config = res.config || {};
             resolve();
-        }
-        if (usePromisesForAsync) {
-            browser.storage.local.get('config').then(onLocalStorageGet);
-        } else {
-            browser.storage.local.get('config', onLocalStorageGet);
-        }
+        });
     });
 };
 
 let saveConfigToStorage = function () {
     return new Promise(async function (resolve, reject) {
-        function onLocalStorageSet () {
+        execAsync(browser.storage.local.set, {config}, () => {
             resolve();
-        }
-        if (usePromisesForAsync) {
-            browser.storage.local.set({config: config}).then(onLocalStorageSet);
-        } else {
-            browser.storage.local.set({config: config}, onLocalStorageSet);
-        }
+        });
     });
 };
 
@@ -209,14 +190,9 @@ let addEventListenersToClosePopupOnLinkClicks = function () {
     let links = document.getElementsByClassName("external-link");
     for (let el of links) {
         el.addEventListener("click", function () {
-            function onTabCreated () {
+            execAsync(browser.tabs.create, {url: URL_GITHUB}, () => {
                 window.close();
-            }
-            if (usePromisesForAsync) {
-                browser.tabs.create({url: URL_GITHUB}).then(onTabCreated);
-            } else {
-                browser.tabs.create({url: URL_GITHUB}, onTabCreated);
-            }
+            });
         });
     }
 };

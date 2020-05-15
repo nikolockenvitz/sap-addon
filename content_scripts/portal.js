@@ -4,6 +4,14 @@ if (typeof browser !== "undefined") {
 } else {
     window.browser = chrome;
 }
+function execAsync (asyncFunction, args, callback) {
+    if (!Array.isArray(args)) args = [args];
+    if (usePromisesForAsync) {
+        asyncFunction(...args).then(callback);
+    } else {
+        asyncFunction(...args, callback);
+    }
+}
 let url = new URL(window.location.href);
 
 let portal = {
@@ -61,15 +69,10 @@ let executeFunctionAfterPageLoaded = function (func, args=[]) {
 let options = {};
 let loadOptionsFromStorage = async function () {
     return new Promise(async function (resolve, reject) {
-        function onLocalStorageGet (res) {
+        execAsync(browser.storage.local.get, "options", (res) => {
             options = res.options || {};
             resolve();
-        }
-        if (usePromisesForAsync) {
-            browser.storage.local.get("options").then(onLocalStorageGet);
-        } else {
-            browser.storage.local.get("options", onLocalStorageGet);
-        }
+        });
     });
 };
 
