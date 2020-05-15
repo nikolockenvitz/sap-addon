@@ -13,7 +13,6 @@ function execAsync (asyncFunction, args, callback) {
     }
 }
 
-const URL_GITHUB = "https://github.com/nikolockenvitz/sap-addon";
 const inputIds = [
     "portal-redirect", "portal-focus-searchbar",
     "github-sign-in", "github-hide-notice", "github-show-names", "github-get-names-from-people",
@@ -190,7 +189,7 @@ let addEventListenersToClosePopupOnLinkClicks = function () {
     let links = document.getElementsByClassName("external-link");
     for (let el of links) {
         el.addEventListener("click", function () {
-            execAsync(browser.tabs.create, {url: URL_GITHUB}, () => {
+            execAsync(browser.tabs.create, {url: el.title}, () => {
                 window.close();
             });
         });
