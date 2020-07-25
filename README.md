@@ -4,7 +4,7 @@
 <img src="https://nikolockenvitz.github.io/sap-addon/icons/icon48.png" height="20px" /></a>
 <!-- SHIELD IO BADGES INSTALL START -->
 <a href="https://nikolockenvitz.github.io/sap-addon/xpi/sap_addon-1.13.5-fx.xpi">
-<img src="https://img.shields.io/badge/firefox-v1.13.5-FF7139?logo=mozilla-firefox" alt="Install for Firefox" /></a>
+<img src="https://img.shields.io/badge/firefox-v1.13.5-FF7139?logo=firefox-browser" alt="Install for Firefox" /></a>
 <!-- SHIELD IO BADGES INSTALL END -->
 <a href="https://chrome.google.com/webstore/detail/sap-addon/ccjpkhcdklddbfpcboffbeihonalpjkc">
 <img src="https://img.shields.io/badge/chrome-v1.13.5-4285F4?logo=google-chrome" alt="Install for Chrome" /></a>

@@ -15,7 +15,7 @@ const ZIP_CONTENT = {
 };
 
 const README_BADGE_TEXT = `<a href="{URL_UPDATES}/{XPI_FILEPATH}">
-<img src="https://img.shields.io/badge/firefox-v{VERSION}-FF7139?logo=mozilla-firefox" alt="Install for Firefox" /></a>`;
+<img src="https://img.shields.io/badge/firefox-v{VERSION}-FF7139?logo=firefox-browser" alt="Install for Firefox" /></a>`;
 
 browserExtensionHelper.init({
     amoURL: AMO_URL,
