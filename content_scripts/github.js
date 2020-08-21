@@ -30,7 +30,12 @@ let github = {
             [data-hovercard-type=user],
             a.text-emphasized.link-gray-dark,
             .merge-status-item.review-item.bg-white.js-details-container.Details strong.text-emphasized,
-            small a.text-gray-dark`,
+            small a.text-gray-dark,
+            span.js-comment-edit-history details summary div span,
+            span.js-comment-edit-history details details-menu.dropdown-menu.js-comment-edit-history-menu
+                ul li button.btn-link span.css-truncate-target.v-align-middle.text-bold,
+            details.details-overlay details-dialog div div div span.css-truncate-target.v-align-middle.text-bold.text-small
+        `,
         queryEmojiReactions: `div.comment-reactions-options button.btn-link.reaction-summary-item.tooltipped[type=submit]`,
         regexNameOnProfilePage: `<span class="p-name vcard-fullname d-block overflow-hidden" itemprop="name">([^<]*)</span>`,
     },
@@ -211,12 +216,26 @@ github.showNames._getUserIdIfElementIsUserId = function (element) {
             && !element.querySelector("[data-sap-addon-user-id]"))
             ? element.textContent.trim() : null;
     if (userId === "" || !isElementALink(element)) {
-        if (!github.showNames._hrefExceptionForReviewer(element)) {
+        if (!github.showNames._hrefExceptionForReviewer(element) &&
+            !github.showNames._hrefExceptionForCommentEditHistoryDialog(element)
+        ) {
             userId = null;
         }
     }
-    if (userId && element.classList.contains("user-mention") && userId.startsWith("@")) {
-        return { prefix: "@", userId: userId.substr(1) };
+    if (userId) {
+        for (const possiblePrefix of [
+            { prefix: "@", furtherChecks: element.classList.contains("user-mention") },
+            { prefix: "edited by " },
+        ]) {
+            if (userId.startsWith(possiblePrefix.prefix) &&
+                (!("furtherChecks" in possiblePrefix) || possiblePrefix.furtherChecks)
+            ) {
+                return {
+                    prefix: possiblePrefix.prefix,
+                    userId: userId.substr(possiblePrefix.prefix.length),
+                };
+            }
+        }
     }
     return { prefix: "", userId };
 };
@@ -350,6 +369,11 @@ github.showNames._hrefExceptionForReviewer = function (element) {
         return true;
     }
 };
+github.showNames._hrefExceptionForCommentEditHistoryDialog = function (element) {
+    // dialog which displays comment edit history doesn't has a link to the user
+    return element.matches(`details.details-overlay details-dialog div div div
+        span.css-truncate-target.v-align-middle.text-bold.text-small`); // same query string as in github.showNames.query
+};
 
 
 
@@ -368,6 +392,13 @@ let isElementALink = function (element) {
     while (true) {
         if (!element) return false;
         if (element.hasAttribute("href")) return true;
+        if (element.classList.contains("btn-link") &&
+            (element.tagName.toLowerCase() === "button" ||
+             (element.tagName.toLowerCase() === "summary" && element.getAttribute("role") === "button")
+            )
+        ) {
+            return true;
+        }
         element = element.parentElement;
     }
 };
