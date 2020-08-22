@@ -69,7 +69,7 @@ let executeFunctionAfterPageLoaded = function (func, args=[]) {
 let options = {};
 let loadOptionsFromStorage = async function () {
     return new Promise(async function (resolve, reject) {
-        execAsync(browser.storage.local.get, "options", (res) => {
+        execAsync(browser.storage.local.get.bind(browser.storage.local), "options", (res) => {
             options = res.options || {};
             resolve();
         });

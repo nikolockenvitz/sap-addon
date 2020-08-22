@@ -121,7 +121,7 @@ let getSectionTextParent = function (element) {
 
 let loadOptionsFromStorage = async function () {
     return new Promise(async function (resolve, reject) {
-        execAsync(browser.storage.local.get, "options", (res) => {
+        execAsync(browser.storage.local.get.bind(browser.storage.local), "options", (res) => {
             options = res.options || {};
             resolve();
         });
@@ -130,7 +130,7 @@ let loadOptionsFromStorage = async function () {
 
 let saveOptionsToStorage = function () {
     return new Promise(async function (resolve, reject) {
-        execAsync(browser.storage.local.set, {options}, () => {
+        execAsync(browser.storage.local.set.bind(browser.storage.local), {options}, () => {
             resolve();
         });
     });
@@ -138,7 +138,7 @@ let saveOptionsToStorage = function () {
 
 let loadConfigFromStorage = async function () {
     return new Promise(async function (resolve, reject) {
-        execAsync(browser.storage.local.get, "config", (res) => {
+        execAsync(browser.storage.local.get.bind(browser.storage.local), "config", (res) => {
             config = res.config || {};
             resolve();
         });
@@ -147,7 +147,7 @@ let loadConfigFromStorage = async function () {
 
 let saveConfigToStorage = function () {
     return new Promise(async function (resolve, reject) {
-        execAsync(browser.storage.local.set, {config}, () => {
+        execAsync(browser.storage.local.set.bind(browser.storage.local), {config}, () => {
             resolve();
         });
     });
