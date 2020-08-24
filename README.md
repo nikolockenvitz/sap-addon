@@ -48,17 +48,5 @@ Feel free to send feedback, share any ideas of what you think should be improved
 
 Please also report if you encounter bugs or things that are not working as you expect.
 
-If you want to help, you can just contact me or open a pull request.
-For testing you can download or clone this repository and install it as a temporary addon.
-
-### Firefox
-Open `about:debugging` and switch to `This Firefox` ([about:debugging#/runtime/this-firefox](about:debugging#/runtime/this-firefox)).
-Click button `Load Temporary Add-on...` in top right corner.
-Select `manifest.json` of this repository.
-
-This makes the add-on available until you close/restart Firefox.
-
-### Chrome
-Open `chrome://extensions/` and enable `Developer mode` in the top right corner.
-Click button `Load unpacked` in top left corner.
-Select this folder.
+If you want to help, just contact me or open a pull request.
+Check out [CONTRIBUTING.md](CONTRIBUTING.md) for more details and local setup instructions.
