@@ -49,4 +49,4 @@ Feel free to send feedback, share any ideas of what you think should be improved
 Please also report if you encounter bugs or things that are not working as you expect.
 
 If you want to help, just contact me or open a pull request.
-Check out [CONTRIBUTING.md](CONTRIBUTING.md) for more details and local setup instructions.
+Check out [CONTRIBUTING.md](https://github.com/nikolockenvitz/sap-addon/blob/master/CONTRIBUTING.md#readme) for more details and local setup instructions.
