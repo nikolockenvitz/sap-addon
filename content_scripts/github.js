@@ -96,7 +96,18 @@ github.signIn.getSignInButtonAndClick = function (element) {
             }, 100); // when click is executed directly, github.tools.sap crashes in chrome
             github.signIn.stopAutoSignIn();
         }
+
+        // there's a redirect during login; in case redirects are blocked by the browser: click link
+        const redirectLink = github.signIn.getSignInRedirectLink(element);
+        if (redirectLink && redirectLink.click) {
+            redirectLink.click();
+            github.signIn.stopAutoSignIn();
+        }
     } catch {}
+};
+github.signIn.getSignInRedirectLink = function (element) {
+    const redirectLink = element.querySelector("a#redirect[href^='https://accounts.sap.com/']");
+    return (redirectLink && url.pathname === "/login") ? redirectLink : null;
 };
 github.signIn.stopAutoSignIn = function () {
     domObserver.unregisterCallbackFunction(github.signIn.optionName);
