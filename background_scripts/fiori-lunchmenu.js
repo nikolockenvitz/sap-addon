@@ -1,8 +1,10 @@
 let usePromisesForAsync = false;
+let isChromium = false;
 if (typeof browser !== "undefined") {
     usePromisesForAsync = true;
 } else {
     window.browser = chrome;
+    isChromium = true;
 }
 function execAsync (asyncFunction, args, callback) {
     if (!Array.isArray(args)) args = [args];
@@ -78,10 +80,12 @@ async function main () {
     ]);
 
     if (isEnabled(fiorilaunchpad.overrideLunchmenu.optionName)) {
+        const opt_extraInfoSpec = ["blocking", "requestHeaders"];
+        if (isChromium) opt_extraInfoSpec.push("extraHeaders");
         browser.webRequest.onBeforeSendHeaders.addListener(
             fiorilaunchpad.overrideLunchmenu.rewriteLunchMenuHeader,
             { urls: fiorilaunchpad.overrideLunchmenu.urls },
-            ["blocking", "requestHeaders"]
+            opt_extraInfoSpec
         );
     } else {
         browser.webRequest.onBeforeSendHeaders.removeListener(
