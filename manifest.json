@@ -5,7 +5,8 @@
   "description": "Extension for SAP related webpages: Portal, GitHub, Fiori Launchpad, Sharepoint",
   "icons": {
     "48": "icons/icon48.png",
-    "96": "icons/icon96.png"
+    "96": "icons/icon96.png",
+    "128": "icons/icon128-96.png"
   },
   "content_scripts": [
     {
