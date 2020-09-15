@@ -366,7 +366,7 @@ github.showNames._fetchUsername = function (userId) {
 };
 
 github.showNames._logFetchError = function (userId, url, error) {
-    if ((new RegExp(`[di]\d{6}|c\d{7}`, "i")).exec(userId)) {
+    if ((new RegExp(`[di]\\d{6}|c\\d{7}`, "i")).exec(userId)) {
         // only logs error when it looks like a correct userId
         // either d/D/i/I + 6 numbers or c/C + 7 numbers
         console.log("SAP Addon - Error when fetching", url, error);
