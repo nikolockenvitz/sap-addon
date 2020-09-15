@@ -262,16 +262,18 @@ github.showNames._replaceElementsTooltip = async function (element) {
 };
 github.showNames._getNewTooltipText = async function (originalTooltipText) {
     // text: (A | A and B | A, B, and C) reacted with ... emoji
-    // TODO: more than three?
     const tooltipSeparator = " reacted with ";
     let [userIds, emoji] = splitAtLast(originalTooltipText, tooltipSeparator);
     let usernames = [];
     if (userIds.includes(", and ")) { // more than two names
-        let [firstUserIds, lastUserId] = userIds.splitAtLast(", and ");
-        for (let userId of firstUserIds) {
+        let [firstUserIds, lastUserId] = splitAtLast(userIds, ", and ");
+        for (let userId of firstUserIds.split(", ")) {
             usernames.push(await github.showNames._getUsername(userId));
         }
-        usernames.push(await github.showNames._getUsername(lastUserId));
+        // lastUserId should not match something like "5 more" (e.g. in A, ..., B, and 5 more)
+        if (!(new RegExp(`\\d+ more`)).exec(lastUserId)) {
+            usernames.push(await github.showNames._getUsername(lastUserId));
+        }
     } else if (userIds.includes(" and ")) { // two names
         for (let userId of userIds.split(" and ")) {
             usernames.push(await github.showNames._getUsername(userId));
