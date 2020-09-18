@@ -38,6 +38,7 @@ let github = {
         `,
         queryEmojiReactions: `div.comment-reactions-options button.btn-link.reaction-summary-item.tooltipped[type=submit]`,
         regexNameOnProfilePage: `<span class="p-name vcard-fullname d-block overflow-hidden" itemprop="name">([^<]*)</span>`,
+        userIdFalsePositives: [ "edited" ],
     },
     getNamesFromPeople: {
         optionName: "github-get-names-from-people",
@@ -304,13 +305,34 @@ github.showNames._makeUsernameTextForTooltip = function (usernames) {
     return usernameText;
 };
 
+/* The request queue will store an array for each userId that should be retrieved from People/GitHub.
+This array is to avoid multiple requests when a userId is requested multiple times (so that only
+one request is made in the end). All waiting "observers" will be notified once the first call
+received a username. When a username has been retrieved and is stored in the cache this queue is no
+longer needed; it's only for the first time when _getUsername is called simultaniously multiple times
+and there's no username in the cache yet.
+*/
+const userIdRequestQueue = {};
+
 github.showNames._getUsername = async function (userId) {
+    if (github.showNames.userIdFalsePositives.includes(userId)) return null;
     let user = usernameCache[userId];
     if (user && user.username) {
         usernameCache[userId].usedAt = getUnixTimestamp();
         usernameCache[userId].used += 1;
         return user.username;
+    } else if (userId in userIdRequestQueue) {
+        return new Promise((resolve) => {
+            userIdRequestQueue[userId].push(function (username) {
+                if (username) {
+                    usernameCache[userId].usedAt = getUnixTimestamp();
+                    usernameCache[userId].used += 1;
+                }
+                resolve(username);
+            });
+        });
     } else {
+        userIdRequestQueue[userId] = [];
         let username = await github.showNames._fetchUsername(userId);
         if (username) {
             usernameCache[userId] = {
@@ -320,57 +342,23 @@ github.showNames._getUsername = async function (userId) {
                 used: 1,
             };
         }
+        const observers = userIdRequestQueue[userId];
+        delete userIdRequestQueue[userId];
+        for (const notify of observers) { notify(username); }
         return username;
     }
 };
 
 github.showNames._fetchUsername = function (userId) {
-    return new Promise(async function (resolve, reject) {
-        let fetchURL;
-        if (isEnabled(github.getNamesFromPeople.optionName)) {
-            fetchURL = "https://" + github.getNamesFromPeople.hostname + "/profiles/" + userId;
-            fetch(fetchURL, {
-                method: "GET",
-                cache: "force-cache"
-            }).then(response => response.text())
-            .then(html => {
-                const searchRegex = new RegExp(github.getNamesFromPeople.regexNameOnProfilePage);
-                let match = searchRegex.exec(html)[1];
-                /* currently the salutation is not in the span which is named
-                 * salutation but direclty in front of the name -> we need
-                 * to split that away
-                 * e.g.: <span class='salutation'></span>Mr. Firstname Lastname
-                 */
-                match = match.split(". ").pop().trim();
-                resolve(match);
-            }).catch(error => {
-                github.showNames._logFetchError(userId, fetchURL, error);
-            });
-        }
-
-        // use github as fallback or if people is disabled
-        fetchURL = "https://" + url.hostname + "/" + userId;
-        fetch(fetchURL, {
-            method: "GET",
-            cache: "force-cache"
-        }).then(response => response.text())
-        .then(html => {
-            const searchRegex = new RegExp(github.showNames.regexNameOnProfilePage);
-            const match = searchRegex.exec(html)[1];
-            resolve(match);
-        }).catch(error => {
-            github.showNames._logFetchError(userId, fetchURL, error);
-            resolve(null); // reject?
+    return new Promise(function (resolve) {
+        execAsync(browser.runtime.sendMessage.bind(browser.runtime), {
+            contentScriptQuery: "githubFetchUsername",
+            args: [ userId, isEnabled(github.getNamesFromPeople.optionName), github.getNamesFromPeople.hostname,
+                github.getNamesFromPeople.regexNameOnProfilePage, url.hostname, github.showNames.regexNameOnProfilePage ]
+        }, (username) => {
+            resolve(username);
         });
     });
-};
-
-github.showNames._logFetchError = function (userId, url, error) {
-    if ((new RegExp(`[di]\\d{6}|c\\d{7}`, "i")).exec(userId)) {
-        // only logs error when it looks like a correct userId
-        // either d/D/i/I + 6 numbers or c/C + 7 numbers
-        console.log("SAP Addon - Error when fetching", url, error);
-    }
 };
 
 github.showNames._hrefExceptionForReviewer = function (element) {
