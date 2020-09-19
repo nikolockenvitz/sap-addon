@@ -213,6 +213,9 @@ github.showNames._replaceAllChildsWhichAreUserId = function (element) {
 github.showNames._replaceElementIfUserId = async function (element) {
     const {userId, prefix} = github.showNames._getUserIdIfElementIsUserId(element);
     if (userId) {
+        if (element.hasAttribute("data-sap-addon-already-getting-username")) return;
+        element.setAttribute("data-sap-addon-already-getting-username", "true");
+
         let username = await github.showNames._getUsername(userId);
         if (username) {
             let el = getDirectParentOfText(element, prefix + userId);
@@ -221,6 +224,7 @@ github.showNames._replaceElementIfUserId = async function (element) {
                 el.setAttribute("data-sap-addon-user-id", prefix + userId);
             }
         }
+        element.removeAttribute("data-sap-addon-already-getting-username");
     }
 };
 github.showNames._getUserIdIfElementIsUserId = function (element) {
