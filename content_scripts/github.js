@@ -34,7 +34,8 @@ let github = {
             span.js-comment-edit-history details summary div span,
             span.js-comment-edit-history details details-menu.dropdown-menu.js-comment-edit-history-menu
                 ul li button.btn-link span.css-truncate-target.v-align-middle.text-bold,
-            details.details-overlay details-dialog div div div span.css-truncate-target.v-align-middle.text-bold.text-small
+            details.details-overlay details-dialog div div div span.css-truncate-target.v-align-middle.text-bold.text-small,
+            form.js-resolvable-timeline-thread-form strong
         `,
         queryEmojiReactions: `div.comment-reactions-options button.btn-link.reaction-summary-item.tooltipped[type=submit]`,
         regexNameOnProfilePage: `<span class="p-name vcard-fullname d-block overflow-hidden" itemprop="name">([^<]*)</span>`,
@@ -232,9 +233,7 @@ github.showNames._getUserIdIfElementIsUserId = function (element) {
             && !element.querySelector("[data-sap-addon-user-id]"))
             ? element.textContent.trim() : null;
     if (userId === "" || !isElementALink(element)) {
-        if (!github.showNames._hrefExceptionForReviewer(element) &&
-            !github.showNames._hrefExceptionForCommentEditHistoryDialog(element)
-        ) {
+        if (!github.showNames._hrefException(element)) {
             userId = null;
         }
     }
@@ -255,6 +254,13 @@ github.showNames._getUserIdIfElementIsUserId = function (element) {
     }
     return { prefix: "", userId };
 };
+github.showNames._hrefException = function (element) {
+    return (
+        github.showNames._hrefExceptionForReviewer(element) ||
+        github.showNames._hrefExceptionForCommentEditHistoryDialog(element) ||
+        github.showNames._hrefExceptionForResolvedConversation(element)
+    );
+}
 
 github.showNames._replaceElementsTooltip = async function (element) {
     if (element.hasAttribute("data-sap-addon-tooltip-original-content")) {
@@ -378,6 +384,13 @@ github.showNames._hrefExceptionForCommentEditHistoryDialog = function (element) 
     // dialog which displays comment edit history doesn't has a link to the user
     return element.matches(`details.details-overlay details-dialog div div div
         span.css-truncate-target.v-align-middle.text-bold.text-small`); // same query string as in github.showNames.query
+};
+github.showNames._hrefExceptionForResolvedConversation = function (element) {
+    return (
+        element.parentElement &&
+        element.parentElement.tagName === "FORM" &&
+        element.parentElement.classList.contains("js-resolvable-timeline-thread-form")
+    );
 };
 
 
