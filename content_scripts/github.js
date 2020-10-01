@@ -37,7 +37,8 @@ let github = {
             details.details-overlay details-dialog div div div span.css-truncate-target.v-align-middle.text-bold.text-small,
             form.js-resolvable-timeline-thread-form strong
         `,
-        queryEmojiReactions: `div.comment-reactions-options button.btn-link.reaction-summary-item.tooltipped[type=submit]`,
+        queryTooltips: `div.comment-reactions-options button.btn-link.reaction-summary-item.tooltipped[type=submit],
+            div.AvatarStack div.AvatarStack-body.tooltipped`,
         regexNameOnProfilePage: `<span class="p-name vcard-fullname d-block overflow-hidden" itemprop="name">([^<]*)</span>`,
         userIdFalsePositives: [ "edited" ],
     },
@@ -206,7 +207,7 @@ github.showNames._replaceAllChildsWhichAreUserId = function (element) {
         }
     } catch {}
     try {
-        for (let queryMatch of element.querySelectorAll(github.showNames.queryEmojiReactions)) {
+        for (let queryMatch of element.querySelectorAll(github.showNames.queryTooltips)) {
             github.showNames._replaceElementsTooltip(queryMatch);
         }
     } catch {}
@@ -263,21 +264,51 @@ github.showNames._hrefException = function (element) {
 }
 
 github.showNames._replaceElementsTooltip = async function (element) {
-    if (element.hasAttribute("data-sap-addon-tooltip-original-content")) {
+    if (element.hasAttribute("data-sap-addon-tooltip-original-content") ||
+        element.hasAttribute("data-sap-addon-already-replacing-tooltip")
+    ) {
         return; // already replaced
     }
+    element.setAttribute("data-sap-addon-already-replacing-tooltip", "true");
     let originalTooltipText = element.getAttribute("aria-label");
     let replacedTooltipText = await github.showNames._getNewTooltipText(originalTooltipText);
     element.setAttribute("data-sap-addon-tooltip-original-content", originalTooltipText);
+    element.removeAttribute("data-sap-addon-already-replacing-tooltip");
     element.setAttribute("aria-label", replacedTooltipText);
 };
 github.showNames._getNewTooltipText = async function (originalTooltipText) {
-    // text: (A | A and B | A, B, and C) reacted with ... emoji
-    const tooltipSeparator = " reacted with ";
-    let [userIds, emoji] = splitAtLast(originalTooltipText, tooltipSeparator);
+    // currently supports: emoji reactions, project issues cards
+    // (A | A and B | A, B, and C) reacted with ... emoji
+    // Assigned to (A | A and B | A, B, and C)
+    const tooltipTypes = [
+        { textAfterUserIds: " reacted with " },
+        { textBeforeUserIds: "Assigned to " },
+    ];
+    let currentTooltipType;
+    for (const tooltipType of tooltipTypes) {
+        if ((!tooltipType.textBeforeUserIds || originalTooltipText.includes(tooltipType.textBeforeUserIds)) &&
+            (!tooltipType.textAfterUserIds || originalTooltipText.includes(tooltipType.textAfterUserIds))
+        ) {
+            currentTooltipType = tooltipType;
+            break;
+        }
+    }
+    if (!currentTooltipType) return;
+
+    // split tooltip text which has following structure: "<textBefore><textBeforeUserIds><userIds><textAfterUserIds><textAfter>"
+    let userIds;
+    let textBefore = textAfter = tempSplitResultAtTextBeforeUserIds = "";
+    if (currentTooltipType.textBeforeUserIds) {
+        [textBefore, tempSplitResultAtTextBeforeUserIds] = originalTooltipText.split(currentTooltipType.textBeforeUserIds);
+        userIds = tempSplitResultAtTextBeforeUserIds;
+    }
+    if (currentTooltipType.textAfterUserIds) {
+        [userIds, textAfter] = (tempSplitResultAtTextBeforeUserIds || originalTooltipText).split(currentTooltipType.textAfterUserIds);
+    }
+
     let usernames = [];
     if (userIds.includes(", and ")) { // more than two names
-        let [firstUserIds, lastUserId] = splitAtLast(userIds, ", and ");
+        let [firstUserIds, lastUserId] = userIds.split(", and ");
         for (let userId of firstUserIds.split(", ")) {
             usernames.push(await github.showNames._getUsername(userId));
         }
@@ -292,7 +323,13 @@ github.showNames._getNewTooltipText = async function (originalTooltipText) {
     } else { // one name
         usernames.push(await github.showNames._getUsername(userIds));
     }
-    return github.showNames._makeUsernameTextForTooltip(usernames) + tooltipSeparator + emoji;
+    return (
+        textBefore +
+        (currentTooltipType.textBeforeUserIds || "") +
+        github.showNames._makeUsernameTextForTooltip(usernames) +
+        (currentTooltipType.textAfterUserIds || "") +
+        textAfter
+    );
 };
 github.showNames._makeUsernameTextForTooltip = function (usernames) {
     let usernameText = "";
@@ -436,12 +473,6 @@ let getDirectParentOfText = function (baseElement, text) {
             }
         }
     }
-};
-
-let splitAtLast = function (text, separator) {
-    let temp = text.split(separator);
-    let last = temp.pop();
-    return [temp.join(separator), last];
 };
 
 
