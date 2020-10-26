@@ -27,13 +27,13 @@ Updates are handled automatically.
   * focus the search bar automatically when loading page
 * `github.wdf.sap.corp` / `github.tools.sap`
   * sign in automatically
-  * hide yellow notice box
+  * hide yellow notice box (disabled by default so you don't miss relevant information; working on a better solution)
   * show name instead of user id (inspired by https://github.com/cgrail/github-chrome-fullname)
   * get name from `people.wdf.sap.corp` (use GitHub only as a fallback)
     * names are cached in local storage
     * also some metadata is stored to be able to clean the cache based on usage later
 * `fiorilaunchpad.sap.com` <!-- it's the Fiori Lunchpad ;) name created by Erik Jansky -->
-  * override language of lunchmenu (by default German) so that you will see it e.g. in German even if language in the Fiori Launchpad settings is set to English
+  * override language of lunchmenu so that you will see it e.g. in German even if language in the Fiori Launchpad settings is set to English
     * language can be configured
     * currently supports `de` and `en`
     * other values will work too but you will see a warning (just contact me if you have other valid values and I will add them as well)
@@ -41,7 +41,7 @@ Updates are handled automatically.
   * log in automatically
   * sometimes e-mail address is needed to log in, you can specify it in configuration
 
-All features are enabled by default but can be disabled in the settings popup.
+Most features are enabled by default but can be disabled in the settings popup.
 
 ## feedback, contribute, ...
 Feel free to send feedback, share any ideas of what you think should be improved or can be added.

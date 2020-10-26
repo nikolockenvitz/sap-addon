@@ -20,7 +20,6 @@ let fiorilaunchpad = {
     overrideLunchmenu: {
         optionName: "fiori-lunchmenu-german",
         configNameLanguage: "config-lunchmenu-language",
-        defaultLanguage: "de",
         urls: [
             "https://fiorilaunchpad.sap.com/sap/fiori/lunchmenu/webapp/api/client/tiles/*",
             "https://fiorilaunchpad.sap.com/sap/fiori/lunchmenu/api/client/lunch*"
@@ -54,8 +53,8 @@ let loadConfigFromStorage = async function () {
 
 /* Intercepting AJAX calls which are fetching lunch menu */
 fiorilaunchpad.overrideLunchmenu.rewriteLunchMenuHeader = function (requestDetails) {
-    const language = config[fiorilaunchpad.overrideLunchmenu.configNameLanguage]
-                    || fiorilaunchpad.overrideLunchmenu.defaultLanguage;
+    const language = config[fiorilaunchpad.overrideLunchmenu.configNameLanguage];
+    if (!language) return;
     let rewroteHeader = false;
     for (let header of requestDetails.requestHeaders) {
         if (header.name.toLowerCase() === "accept-language") {

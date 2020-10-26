@@ -23,6 +23,7 @@ let github = {
     flashNotice: {
         optionName: "github-hide-notice",
         query: ".flash.flash-full.js-notice.flash-warn.flash-length-limited",
+        disabledByDefault: true,
     },
     showNames: {
         optionName: "github-show-names",
@@ -513,7 +514,12 @@ let loadOptionsFromStorage = async function () {
 };
 
 let isEnabled = function (optionName) {
-    return !options || options[optionName] !== false; // enabled per default
+    // enabled by default, except explicitly set to be disabled by default
+    return options && (optionName in options)
+        ? options[optionName] === true
+        : github[Object.keys(github).find(key => (
+            typeof github[key] === "object" && github[key].optionName === optionName
+          ))].disabledByDefault !== true;
 };
 
 let usernameCache = undefined;
