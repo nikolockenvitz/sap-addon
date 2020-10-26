@@ -156,9 +156,7 @@ let saveConfigToStorage = function () {
 
 let initInputs = function () {
     for (let inputId of inputIds) {
-        document.getElementById(inputId).checked = options && (inputId in options)
-            ? options[inputId] === true
-            : !["github-hide-notice"].includes(inputId); // TODO!
+        document.getElementById(inputId).checked = (!options || options[inputId] !== false);
         updateDependingInputs(inputId);
     }
 };

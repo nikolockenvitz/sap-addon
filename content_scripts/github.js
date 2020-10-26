@@ -23,7 +23,6 @@ let github = {
     flashNotice: {
         optionName: "github-hide-notice",
         query: ".flash.flash-full.js-notice.flash-warn.flash-length-limited",
-        disabledByDefault: true,
     },
     showNames: {
         optionName: "github-show-names",
@@ -149,7 +148,75 @@ github.flashNotice.hide = function () {
         }
     });
 };
+github.flashNotice.insertHideOverlay = function () {
+    function getTextOfNoticeBox (noticeBox) {
+        let text = "";
+        for (const containers of noticeBox.children) {
+            for (const el of containers.children) {
+                if (!el.classList.contains("sap-addon-hide-notice-box-overlay")) {
+                    text += el.textContent;
+                }
+            }
+        }
+        return text;
+    }
+    function hideIfMessageIsSetToHidden (noticeBox) {
+        if (getTextOfNoticeBox(noticeBox) in noticeBoxMessagesToHide) {
+            noticeBox.style.display = "none";
+        }
+    }
+    function insertOverlay (noticeBox) {
+        if (noticeBox.hasAttribute("data-sap-addon-notice-box-inserted-overlay")) return;
+        noticeBox.setAttribute("data-sap-addon-notice-box-inserted-overlay", "true");
+        const container = noticeBox.children[noticeBox.children.length - 1];
+        const overlay = document.createElement("p");
+        overlay.classList.add("sap-addon-hide-notice-box-overlay");
+        overlay.style = "text-align: right; font-size: 90%;";
+        overlay.innerHTML = `SAP Addon:
+        <a tabindex="0" style="cursor: pointer" data-sap-addon-link="hide-message">Don't show this message again</a> |
+        <a tabindex="0" style="cursor: pointer" data-sap-addon-link="hide-once">Hide once</a>
+        `;
+        for (const link of overlay.querySelectorAll("a[data-sap-addon-link]")) {
+            function listener (event) {
+                const action = link.getAttribute("data-sap-addon-link");
+                if (action === "hide-once") {
+                    noticeBox.style.display = "none";
+                } else if (action === "hide-message") {
+                    noticeBoxMessagesToHide[getTextOfNoticeBox(noticeBox)] = {
+                        dismissedAt: getUnixTimestamp(),
+                    };
+                    saveNoticeBoxMessagesToHideToStorage();
+                    noticeBox.style.display = "none";
+                }
+            }
+            link.addEventListener("click", listener);
+            link.addEventListener("keyup", (event) => event.keyCode === 13 ? listener(event) : null);
+        }
+        container.appendChild(overlay);
+    }
 
+    executeFunctionAfterPageLoaded(function () {
+        for (const match of document.querySelectorAll(github.flashNotice.query)) {
+            hideIfMessageIsSetToHidden(match);
+            insertOverlay(match);
+        }
+    });
+
+    _showElementsByQuery(`[data-sap-addon-notice-box-inserted-overlay] .sap-addon-hide-notice-box-overlay`);
+
+    domObserver.registerCallbackFunction(github.flashNotice.optionName,
+    function (mutations, _observer) {
+        for (let { target } of mutations) {
+            for (const match of target.querySelectorAll(github.flashNotice.query)) {
+                hideIfMessageIsSetToHidden(match);
+                insertOverlay(match);
+            }
+        }
+    });
+};
+github.flashNotice.removeHideOverlay = function () {
+    _hideElementsByQuery(`[data-sap-addon-notice-box-inserted-overlay] .sap-addon-hide-notice-box-overlay`);
+};
 github.flashNotice.show = function () {
     domObserver.unregisterCallbackFunction(github.flashNotice.optionName);
     executeFunctionAfterPageLoaded(function () {
@@ -514,12 +581,7 @@ let loadOptionsFromStorage = async function () {
 };
 
 let isEnabled = function (optionName) {
-    // enabled by default, except explicitly set to be disabled by default
-    return options && (optionName in options)
-        ? options[optionName] === true
-        : github[Object.keys(github).find(key => (
-            typeof github[key] === "object" && github[key].optionName === optionName
-          ))].disabledByDefault !== true;
+    return !options || options[optionName] !== false; // enabled by default
 };
 
 let usernameCache = undefined;
@@ -536,10 +598,25 @@ let saveUsernameCacheToStorage = function () {
     browser.storage.local.set({usernameCache: usernameCache});
 };
 
+let noticeBoxMessagesToHide = {};
+let loadNoticeBoxMessagesToHideFromStorage = async function () {
+    return new Promise(async function (resolve, reject) {
+        execAsync(browser.storage.local.get.bind(browser.storage.local), "githubNoticeBoxMessagesToHide", (res) => {
+            noticeBoxMessagesToHide = res.githubNoticeBoxMessagesToHide || {};
+            resolve();
+        });
+    });
+};
+
+let saveNoticeBoxMessagesToHideToStorage = function () {
+    browser.storage.local.set({githubNoticeBoxMessagesToHide: noticeBoxMessagesToHide});
+};
+
 async function main () {
     await Promise.all([
         loadUsernameCacheFromStorage(),
         loadOptionsFromStorage(),
+        loadNoticeBoxMessagesToHideFromStorage(),
     ]);
 
     if (isEnabled(github.signIn.optionName)) {
@@ -549,9 +626,9 @@ async function main () {
     }
     github.signIn.listenForSignInOtherTab();
     if (isEnabled(github.flashNotice.optionName)) {
-        github.flashNotice.hide();
+        github.flashNotice.insertHideOverlay();
     } else {
-        github.flashNotice.show();
+        github.flashNotice.removeHideOverlay();
     }
     if (isEnabled(github.showNames.optionName)) {
         github.showNames.replaceIds();
