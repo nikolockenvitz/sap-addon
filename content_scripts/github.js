@@ -31,6 +31,7 @@ let github = {
             a.text-emphasized.link-gray-dark,
             .merge-status-item.review-item.bg-white.js-details-container.Details strong.text-emphasized,
             small a.text-gray-dark,
+            div.js-recent-activity-container div.Box ul li.Box-row div.dashboard-break-word.lh-condensed.text-gray span.text-gray,
             span.js-comment-edit-history details summary div span,
             span.js-comment-edit-history details details-menu.dropdown-menu.js-comment-edit-history-menu
                 ul li button.btn-link span.css-truncate-target.v-align-middle.text-bold,
@@ -213,17 +214,17 @@ github.showNames._replaceAllChildsWhichAreUserId = function (element) {
     } catch {}
 };
 github.showNames._replaceElementIfUserId = async function (element) {
-    const {userId, prefix} = github.showNames._getUserIdIfElementIsUserId(element);
+    const {userId, prefix, suffix} = github.showNames._getUserIdIfElementIsUserId(element);
     if (userId) {
         if (element.hasAttribute("data-sap-addon-already-getting-username")) return;
         element.setAttribute("data-sap-addon-already-getting-username", "true");
 
         let username = await github.showNames._getUsername(userId);
         if (username) {
-            let el = getDirectParentOfText(element, prefix + userId);
+            let el = getDirectParentOfText(element, prefix + userId + suffix);
             if (el) {
-                el.textContent = prefix + username;
-                el.setAttribute("data-sap-addon-user-id", prefix + userId);
+                el.textContent = prefix + username + suffix;
+                el.setAttribute("data-sap-addon-user-id", prefix + userId + suffix);
             }
         }
         element.removeAttribute("data-sap-addon-already-getting-username");
@@ -239,27 +240,33 @@ github.showNames._getUserIdIfElementIsUserId = function (element) {
         }
     }
     if (userId) {
-        for (const possiblePrefix of [
+        for (const possiblePrefixOrSuffix of [
             { prefix: "@", furtherChecks: element.classList.contains("user-mention") },
             { prefix: "edited by " },
+            { suffix: " commented" },
         ]) {
-            if (userId.startsWith(possiblePrefix.prefix) &&
-                (!("furtherChecks" in possiblePrefix) || possiblePrefix.furtherChecks)
+            if ((possiblePrefixOrSuffix.prefix && userId.startsWith(possiblePrefixOrSuffix.prefix) ||
+                 possiblePrefixOrSuffix.suffix && userId.endsWith(possiblePrefixOrSuffix.suffix)) &&
+                (!("furtherChecks" in possiblePrefixOrSuffix) || possiblePrefixOrSuffix.furtherChecks)
             ) {
                 return {
-                    prefix: possiblePrefix.prefix,
-                    userId: userId.substr(possiblePrefix.prefix.length),
+                    prefix: possiblePrefixOrSuffix.prefix || "",
+                    userId: userId.substring(
+                        (possiblePrefixOrSuffix.prefix || "").length,
+                        userId.length - (possiblePrefixOrSuffix.suffix || "").length),
+                    suffix: possiblePrefixOrSuffix.suffix || "",
                 };
             }
         }
     }
-    return { prefix: "", userId };
+    return { prefix: "", userId, suffix: "" };
 };
 github.showNames._hrefException = function (element) {
     return (
         github.showNames._hrefExceptionForReviewer(element) ||
         github.showNames._hrefExceptionForCommentEditHistoryDialog(element) ||
-        github.showNames._hrefExceptionForResolvedConversation(element)
+        github.showNames._hrefExceptionForResolvedConversation(element) ||
+        github.showNames._hrefExceptionForRecentActivity(element)
     );
 }
 
@@ -428,6 +435,12 @@ github.showNames._hrefExceptionForResolvedConversation = function (element) {
         element.parentElement.tagName === "FORM" &&
         element.parentElement.classList.contains("js-resolvable-timeline-thread-form")
     );
+};
+github.showNames._hrefExceptionForRecentActivity = function (element) {
+    return element.textContent.trim().endsWith(" commented") &&
+        element.textContent.trim() !== "You commented" &&
+        element.matches(`div.js-recent-activity-container div.Box ul li.Box-row
+            div.dashboard-break-word.lh-condensed.text-gray span.text-gray`); // same query string as in github.showNames.query
 };
 
 
