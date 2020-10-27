@@ -19,6 +19,9 @@ const inputIds = [
     "fiori-lunchmenu-german",
     "sharepoint-login",
 ];
+const buttonInputIds = [
+    "github-hide-notice-show-all-again",
+];
 const configInputIds = [
     "config-email",
     "config-lunchmenu-language",
@@ -35,6 +38,9 @@ window.onload = async function () {
 
     for (let inputId of inputIds) {
         toggleInputOnSectionTextClick(inputId); // sectionText includes also the input itself
+    }
+    for (const inputId of buttonInputIds) {
+        addOnClickListenerForButton(inputId);
     }
     initInputs();
     initModals();
@@ -116,6 +122,18 @@ let getSectionTextParent = function (element) {
         element = element.parentElement;
     }
     return null;
+};
+
+let addOnClickListenerForButton = function (buttonInputId) {
+    const button = document.getElementById(buttonInputId);
+    button.addEventListener("click", function (event) {
+        // send message (buttonInputId) to content script(s)
+        execAsync(browser.tabs.query, {currentWindow: true, active: true}, (tabs) => {
+            for (const tab of tabs) {
+                browser.tabs.sendMessage(tab.id, { message: buttonInputId });
+            }
+        });
+    });
 };
 
 
