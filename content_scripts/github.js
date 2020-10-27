@@ -136,19 +136,7 @@ github.signIn.listenForSignInOtherTab = function () {
     }, 2500);
 };
 
-github.flashNotice.hide = function () {
-    executeFunctionAfterPageLoaded(function () {
-        _hideElementsByQuery(github.flashNotice.query);
-    });
-
-    domObserver.registerCallbackFunction(github.flashNotice.optionName,
-    function (mutations, _observer) {
-        for (let { target } of mutations) {
-            _hideElementsByQuery(github.flashNotice.query, target);
-        }
-    });
-};
-github.flashNotice.insertHideOverlay = function () {
+github.flashNotice.hideDismissedNoticeBoxesAndInsertHideOverlayIfEnabled = function (insertOverlayEnabled=false) {
     function getTextOfNoticeBox (noticeBox) {
         let text = "";
         for (const containers of noticeBox.children) {
@@ -166,6 +154,7 @@ github.flashNotice.insertHideOverlay = function () {
         }
     }
     function insertOverlay (noticeBox) {
+        if (!insertOverlayEnabled) return;
         if (noticeBox.hasAttribute("data-sap-addon-notice-box-inserted-overlay")) return;
         noticeBox.setAttribute("data-sap-addon-notice-box-inserted-overlay", "true");
         const container = noticeBox.children[noticeBox.children.length - 1];
@@ -625,11 +614,13 @@ async function main () {
         github.signIn.stopAutoSignIn();
     }
     github.signIn.listenForSignInOtherTab();
-    if (isEnabled(github.flashNotice.optionName)) {
-        github.flashNotice.insertHideOverlay();
-    } else {
+
+    const insertOverlayToHideFlashNoticeEnabled = isEnabled(github.flashNotice.optionName);
+    github.flashNotice.hideDismissedNoticeBoxesAndInsertHideOverlayIfEnabled(insertOverlayToHideFlashNoticeEnabled);
+    if (!insertOverlayToHideFlashNoticeEnabled) {
         github.flashNotice.removeHideOverlay();
     }
+
     if (isEnabled(github.showNames.optionName)) {
         github.showNames.replaceIds();
     } else {
