@@ -153,6 +153,16 @@ github.flashNotice.hideDismissedNoticeBoxesAndInsertHideOverlayIfEnabled = funct
             noticeBox.style.display = "none";
         }
     }
+    function clearOldNoticeBoxMessages () {
+        const _90_DAYS_IN_MS = 90 * 24 * 60 * 60 * 1000;
+        const now = getUnixTimestamp();
+        for (const message in noticeBoxMessagesToHide) {
+            const { dismissedAt } = noticeBoxMessagesToHide[message];
+            if (now - dismissedAt > _90_DAYS_IN_MS) {
+                delete noticeBoxMessagesToHide[message];
+            }
+        }
+    }
     function insertOverlay (noticeBox) {
         if (!insertOverlayEnabled) return;
         if (noticeBox.hasAttribute("data-sap-addon-notice-box-inserted-overlay")) return;
@@ -174,6 +184,7 @@ github.flashNotice.hideDismissedNoticeBoxesAndInsertHideOverlayIfEnabled = funct
                     noticeBoxMessagesToHide[getTextOfNoticeBox(noticeBox)] = {
                         dismissedAt: getUnixTimestamp(),
                     };
+                    clearOldNoticeBoxMessages();
                     saveNoticeBoxMessagesToHideToStorage();
                     noticeBox.style.display = "none";
                 }
