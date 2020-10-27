@@ -138,7 +138,7 @@ github.signIn.listenForSignInOtherTab = function () {
 
 github.flashNotice.hideDismissedNoticeBoxesAndInsertHideOverlayIfEnabled = function (insertOverlayEnabled=false) {
     function getTextOfNoticeBox (noticeBox) {
-        let text = "";
+        let text = `${url.host} `;
         for (const containers of noticeBox.children) {
             for (const el of containers.children) {
                 if (!el.classList.contains("sap-addon-hide-notice-box-overlay")) {
