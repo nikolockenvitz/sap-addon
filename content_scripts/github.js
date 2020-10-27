@@ -217,7 +217,12 @@ github.flashNotice.hideDismissedNoticeBoxesAndInsertHideOverlayIfEnabled = funct
 github.flashNotice.removeHideOverlay = function () {
     _hideElementsByQuery(`[data-sap-addon-notice-box-inserted-overlay] .sap-addon-hide-notice-box-overlay`);
 };
-github.flashNotice.show = function () {
+github.flashNotice.showAllAgain = function () {
+    for (const message in noticeBoxMessagesToHide) {
+        delete noticeBoxMessagesToHide[message];
+    }
+    saveNoticeBoxMessagesToHideToStorage();
+
     domObserver.unregisterCallbackFunction(github.flashNotice.optionName);
     executeFunctionAfterPageLoaded(function () {
         _showElementsByQuery(github.flashNotice.query);
@@ -641,4 +646,9 @@ async function main () {
 main();
 browser.runtime.onConnect.addListener(() => {
     main();
+});
+browser.runtime.onMessage.addListener((message) => {
+    if (message.message === "github-hide-notice-show-all-again") {
+        github.flashNotice.showAllAgain();
+    }
 });
