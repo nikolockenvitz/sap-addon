@@ -59,6 +59,10 @@ span.div, a.div {
     margin: 0;
 }
 
+.section-text.button-active > *:nth-child(1) {
+    transform: translate(1px, 1px);
+}
+
 /* The switch - the box around the slider */
 .switch {
     position: relative;

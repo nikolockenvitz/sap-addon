@@ -126,7 +126,13 @@ let getSectionTextParent = function (element) {
 
 let addOnClickListenerForButton = function (buttonInputId) {
     const button = document.getElementById(buttonInputId);
+    button.addEventListener("mousedown", function (event) {
+        if (event.buttons === 1) {
+            button.classList.add("button-active");
+        }
+    });
     button.addEventListener("click", function (event) {
+        button.classList.remove("button-active");
         // send message (buttonInputId) to content script(s)
         execAsync(browser.tabs.query, {currentWindow: true, active: true}, (tabs) => {
             for (const tab of tabs) {
