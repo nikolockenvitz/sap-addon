@@ -15,7 +15,7 @@ function execAsync (asyncFunction, args, callback) {
 
 const inputIds = [
     "portal-redirect", "portal-focus-searchbar",
-    "github-sign-in", "github-hide-notice", "github-show-names", "github-get-names-from-people",
+    "github-sign-in", "github-hide-notice-overlay", "github-show-names", "github-get-names-from-people",
     "fiori-lunchmenu-german",
     "sharepoint-login",
 ];
