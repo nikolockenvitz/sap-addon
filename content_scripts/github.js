@@ -36,7 +36,8 @@ let github = {
             span.js-comment-edit-history details details-menu.dropdown-menu.js-comment-edit-history-menu
                 ul li button.btn-link span.css-truncate-target.v-align-middle.text-bold,
             details.details-overlay details-dialog div div div span.css-truncate-target.v-align-middle.text-bold.text-small,
-            form.js-resolvable-timeline-thread-form strong
+            form.js-resolvable-timeline-thread-form strong,
+            div.js-resolvable-timeline-thread-container div.comment-holder.js-line-comments div.js-resolvable-thread-toggler-container strong
         `,
         queryTooltips: `div.comment-reactions-options button.btn-link.reaction-summary-item.tooltipped[type=submit],
             div.AvatarStack div.AvatarStack-body.tooltipped`,
@@ -339,6 +340,7 @@ github.showNames._hrefException = function (element) {
         github.showNames._hrefExceptionForReviewer(element) ||
         github.showNames._hrefExceptionForCommentEditHistoryDialog(element) ||
         github.showNames._hrefExceptionForResolvedConversation(element) ||
+        github.showNames._hrefExceptionForResolvedConversationPrReview(element) ||
         github.showNames._hrefExceptionForRecentActivity(element)
     );
 }
@@ -508,6 +510,10 @@ github.showNames._hrefExceptionForResolvedConversation = function (element) {
         element.parentElement.tagName === "FORM" &&
         element.parentElement.classList.contains("js-resolvable-timeline-thread-form")
     );
+};
+github.showNames._hrefExceptionForResolvedConversationPrReview = function (element) {
+    return element.matches(`div.js-resolvable-timeline-thread-container div.comment-holder.js-line-comments
+        div.js-resolvable-thread-toggler-container strong`); // same query string as in github.showNames.query
 };
 github.showNames._hrefExceptionForRecentActivity = function (element) {
     return element.textContent.trim().endsWith(" commented") &&
