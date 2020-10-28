@@ -21,7 +21,7 @@ let github = {
         signInOtherTabQuery: ".js-stale-session-flash-signed-in a",
     },
     flashNotice: {
-        optionName: "github-hide-notice",
+        optionName: "github-hide-notice-overlay",
         query: ".flash.flash-full.js-notice.flash-warn.flash-length-limited",
     },
     showNames: {
