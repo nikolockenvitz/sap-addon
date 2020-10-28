@@ -3,15 +3,15 @@
 <a href="https://nikolockenvitz.github.io/sap-addon/">
 <img src="https://nikolockenvitz.github.io/sap-addon/icons/icon48.png" height="20px" /></a>
 <!-- SHIELD IO BADGES INSTALL START -->
-<a href="https://nikolockenvitz.github.io/sap-addon/xpi/sap_addon-1.13.9-fx.xpi">
-<img src="https://img.shields.io/badge/firefox-v1.13.9-FF7139?logo=firefox-browser" alt="Install for Firefox" /></a>
+<a href="https://nikolockenvitz.github.io/sap-addon/xpi/sap_addon-1.14.0-fx.xpi">
+<img src="https://img.shields.io/badge/firefox-v1.14.0-FF7139?logo=firefox-browser" alt="Install for Firefox" /></a>
 <!-- SHIELD IO BADGES INSTALL END -->
 <a href="https://chrome.google.com/webstore/detail/sap-addon/ccjpkhcdklddbfpcboffbeihonalpjkc">
-<img src="https://img.shields.io/badge/chrome-v1.13.9-4285F4?logo=google-chrome" alt="Install for Chrome" /></a>
+<img src="https://img.shields.io/badge/chrome-v1.14.0-4285F4?logo=google-chrome" alt="Install for Chrome" /></a>
 <a href="https://chrome.google.com/webstore/detail/sap-addon/ccjpkhcdklddbfpcboffbeihonalpjkc">
-<img src="https://img.shields.io/badge/brave-v1.13.9-FB542B?logo=brave" alt="Install for Brave" /></a>
+<img src="https://img.shields.io/badge/brave-v1.14.0-FB542B?logo=brave" alt="Install for Brave" /></a>
 <a href="https://chrome.google.com/webstore/detail/sap-addon/ccjpkhcdklddbfpcboffbeihonalpjkc">
-<img src="https://img.shields.io/badge/edge-v.1.13.9-0078D7?logo=microsoft-edge" alt="Install for Edge" /></a>
+<img src="https://img.shields.io/badge/edge-v1.14.0-0078D7?logo=microsoft-edge" alt="Install for Edge" /></a>
 <a href="https://www.mozilla.org/en-US/firefox/new/">
 <img src="https://img.shields.io/badge/safari-not_available-000000?logo=safari" alt="Not available for Safari" /></a>
 
@@ -19,6 +19,7 @@ Install by clicking on the badge above.
 Updates are handled automatically.
 
 ## current features
+<!-- TODO: update screenshots -->
 ![Screenshot of Popup](docs/screenshot-1.13-popup.png)
 ![Screenshot of Configuration in Popup](docs/screenshot-1.13-popup-config.png)
 
@@ -27,7 +28,9 @@ Updates are handled automatically.
   * focus the search bar automatically when loading page
 * `github.wdf.sap.corp` / `github.tools.sap`
   * sign in automatically
-  * hide yellow notice box (disabled by default so you don't miss relevant information; working on a better solution)
+  * hide yellow notice box messages
+    * dismiss a specific messasge
+    * always see new messages
   * show name instead of user id (inspired by https://github.com/cgrail/github-chrome-fullname)
   * get name from `people.wdf.sap.corp` (use GitHub only as a fallback)
     * names are cached in local storage
@@ -41,7 +44,11 @@ Updates are handled automatically.
   * log in automatically
   * sometimes e-mail address is needed to log in, you can specify it in configuration
 
-Most features are enabled by default but can be disabled in the settings popup.
+All features are enabled by default but can be disabled in the settings popup.
+
+You may want to configure everything before starting.
+After installation, just click on the icon and go to configuration.
+There you can customize the addon to your needs.
 
 ## feedback, contribute, ...
 Feel free to send feedback, share any ideas of what you think should be improved or can be added.
