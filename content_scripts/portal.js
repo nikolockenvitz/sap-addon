@@ -12,9 +12,9 @@ function execAsync (asyncFunction, args, callback) {
         asyncFunction(...args, callback);
     }
 }
-let url = new URL(window.location.href);
+const url = new URL(window.location.href);
 
-let portal = {
+const portal = {
     redirect: {
         optionName: "portal-redirect",
         pathnamesFrom: ["/", "/home"],
@@ -31,12 +31,12 @@ portal.redirect.redirect = function () {
 };
 
 portal.searchbar.focus = function () {
-    let intervalId = setInterval(function () {
-        let searchbar = document.getElementById(portal.searchbar.searchbarId);
+    const intervalId = setInterval(function () {
+        const searchbar = document.getElementById(portal.searchbar.searchbarId);
         if (searchbar) { searchbar.focus(); }
     }, 250);
     executeFunctionAfterPageLoaded(function () {
-        let searchbar = document.getElementById(portal.searchbar.searchbarId);
+        const searchbar = document.getElementById(portal.searchbar.searchbarId);
         clearInterval(intervalId);
         // sometimes the focus gets resetted when executing directly
         let timesOfExecution = 5;
@@ -53,12 +53,12 @@ portal.searchbar.focus = function () {
 
 
 
-let redirectToURL = function (url) {
+function redirectToURL (url) {
     window.location.replace(url);
 };
 
-let executeFunctionAfterPageLoaded = function (func, args=[]) {
-    window.addEventListener("load", (e) => {
+function executeFunctionAfterPageLoaded (func, args=[]) {
+    window.addEventListener("load", () => {
         func(...args);
     });
     if (document.readyState === "complete") {
@@ -67,8 +67,8 @@ let executeFunctionAfterPageLoaded = function (func, args=[]) {
 };
 
 let options = {};
-let loadOptionsFromStorage = async function () {
-    return new Promise(async function (resolve, reject) {
+function loadOptionsFromStorage () {
+    return new Promise(function (resolve) {
         execAsync(browser.storage.local.get.bind(browser.storage.local), "options", (res) => {
             options = res.options || {};
             resolve();
@@ -76,7 +76,7 @@ let loadOptionsFromStorage = async function () {
     });
 };
 
-let isEnabled = function (optionName) {
+function isEnabled (optionName) {
     return !options || options[optionName] !== false; // enabled per default
 };
 

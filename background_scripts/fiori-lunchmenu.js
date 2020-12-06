@@ -15,7 +15,7 @@ function execAsync (asyncFunction, args, callback) {
     }
 }
 
-let fiorilaunchpad = {
+const fiorilaunchpad = {
     hostname: "fiorilaunchpad.sap.com",
     overrideLunchmenu: {
         optionName: "fiori-lunchmenu-german",
@@ -28,35 +28,35 @@ let fiorilaunchpad = {
 };
 
 let options = {};
-let loadOptionsFromStorage = async function () {
-    return new Promise(async function (resolve, reject) {
+function loadOptionsFromStorage () {
+    return new Promise(function (resolve) {
         execAsync(browser.storage.local.get.bind(browser.storage.local), "options", (res) => {
             options = res.options;
             resolve();
         });
     });
-};
+}
 
-let isEnabled = function (optionName) {
+function isEnabled (optionName) {
     return !options || options[optionName] !== false; // enabled per default
-};
+}
 
 let config = {};
-let loadConfigFromStorage = async function () {
-    return new Promise(async function (resolve, reject) {
+function loadConfigFromStorage () {
+    return new Promise(function (resolve) {
         execAsync(browser.storage.local.get.bind(browser.storage.local), "config", (res) => {
             config = res.config || {};
             resolve();
         });
     });
-};
+}
 
 /* Intercepting AJAX calls which are fetching lunch menu */
 fiorilaunchpad.overrideLunchmenu.rewriteLunchMenuHeader = function (requestDetails) {
     const language = config[fiorilaunchpad.overrideLunchmenu.configNameLanguage];
     if (!language) return;
     let rewroteHeader = false;
-    for (let header of requestDetails.requestHeaders) {
+    for (const header of requestDetails.requestHeaders) {
         if (header.name.toLowerCase() === "accept-language") {
             header.value = language;
             rewroteHeader = true;

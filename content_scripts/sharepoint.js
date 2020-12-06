@@ -12,9 +12,9 @@ function execAsync (asyncFunction, args, callback) {
         asyncFunction(...args, callback);
     }
 }
-let url = new URL(window.location.href);
+const url = new URL(window.location.href);
 
-let sharepoint = {
+const sharepoint = {
     login: {
         optionName: "sharepoint-login",
         configNameEmailAddress: "config-email",
@@ -30,9 +30,9 @@ let sharepoint = {
 class DOMObserver {
     constructor () {
         this.observerCallbacks = {};
-        let that = this;
+        const that = this;
         this.observer = new MutationObserver(function (mutation, _observer) {
-            for (let id in that.observerCallbacks) {
+            for (const id in that.observerCallbacks) {
                 that.observerCallbacks[id](mutation, _observer);
             }
         });
@@ -100,7 +100,7 @@ sharepoint.login.executeLogin = function () {
     );
 };
 sharepoint.login._enterEmailAndClickNext = function (emailInput, btn) {
-    let configEmail = config[sharepoint.login.configNameEmailAddress];
+    const configEmail = config[sharepoint.login.configNameEmailAddress];
     if (emailInput.value === "") {
         if (configEmail) {
             emailInput.value = configEmail;
@@ -133,38 +133,38 @@ sharepoint.login.stopAutoSignIn = function () {
     domObserver.unregisterCallbackFunction(sharepoint.login.optionName);
 };
 
-let executeFunctionAfterPageLoaded = function (func, args=[]) {
-    window.addEventListener("load", (e) => {
+function executeFunctionAfterPageLoaded (func, args=[]) {
+    window.addEventListener("load", () => {
         func(...args);
     });
     if (document.readyState === "complete") {
         func(...args);
     }
-};
+}
 
 let options = {};
-let loadOptionsFromStorage = async function () {
-    return new Promise(async function (resolve, reject) {
+function loadOptionsFromStorage () {
+    return new Promise(function (resolve) {
         execAsync(browser.storage.local.get.bind(browser.storage.local), "options", (res) => {
             options = res.options || {};
             resolve();
         });
     });
-};
+}
 
-let isEnabled = function (optionName) {
+function isEnabled (optionName) {
     return !options || options[optionName] !== false; // enabled per default
-};
+}
 
 let config = {};
-let loadConfigFromStorage = async function () {
-    return new Promise(async function (resolve, reject) {
+function loadConfigFromStorage () {
+    return new Promise(function (resolve) {
         execAsync(browser.storage.local.get.bind(browser.storage.local), "config", (res) => {
             config = res.config || {};
             resolve();
         });
     });
-};
+}
 
 async function main () {
     await Promise.all([

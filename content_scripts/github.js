@@ -12,9 +12,9 @@ function execAsync (asyncFunction, args, callback) {
         asyncFunction(...args, callback);
     }
 }
-let url = new URL(window.location.href);
+const url = new URL(window.location.href);
 
-let github = {
+const github = {
     signIn: {
         optionName: "github-sign-in",
         query: "a[href^='/login?']",
@@ -54,9 +54,9 @@ let github = {
 class DOMObserver {
     constructor () {
         this.observerCallbacks = {};
-        let that = this;
+        const that = this;
         this.observer = new MutationObserver(function (mutation, _observer) {
-            for (let id in that.observerCallbacks) {
+            for (const id in that.observerCallbacks) {
                 that.observerCallbacks[id](mutation, _observer);
             }
         });
@@ -86,7 +86,7 @@ github.signIn.signIn = function () {
 
     domObserver.registerCallbackFunction(github.signIn.optionName,
     function (mutations, _observer) {
-        for (let { target } of mutations) {
+        for (const { target } of mutations) {
             github.signIn.getSignInButtonAndClick(target);
         }
     });
@@ -94,7 +94,7 @@ github.signIn.signIn = function () {
 github.signIn.getSignInButtonAndClick = function (element) {
     element = element || document;
     try {
-        let signInBtn = element.querySelector(github.signIn.query);
+        const signInBtn = element.querySelector(github.signIn.query);
         if (signInBtn && signInBtn.click) {
             setTimeout(function () {
                 signInBtn.click();
@@ -126,9 +126,9 @@ github.signIn.listenForSignInOtherTab = function () {
     setInterval(async function () {
         await loadOptionsFromStorage();
         if (isEnabled(github.signIn.optionName)) {
-            let signInBtn = document.querySelector(github.signIn.signInOtherTabQuery);
+            const signInBtn = document.querySelector(github.signIn.signInOtherTabQuery);
             if (signInBtn) {
-                let r = signInBtn.getBoundingClientRect();
+                const r = signInBtn.getBoundingClientRect();
                 if (r.width !== 0 && r.height !== 0) {
                     signInBtn.click();
                 }
@@ -207,7 +207,7 @@ github.flashNotice.hideDismissedNoticeBoxesAndInsertHideOverlayIfEnabled = funct
 
     domObserver.registerCallbackFunction(github.flashNotice.optionName,
     function (mutations, _observer) {
-        for (let { target } of mutations) {
+        for (const { target } of mutations) {
             for (const match of target.querySelectorAll(github.flashNotice.query)) {
                 hideIfMessageIsSetToHidden(match);
                 insertOverlay(match);
@@ -230,22 +230,22 @@ github.flashNotice.showAllAgain = function () {
     });
 };
 
-let _hideElementsByQuery = function (query, baseElement) {
+function _hideElementsByQuery (query, baseElement) {
     _setDisplayAttributeForElementsByQuery(query, baseElement, "none");
-};
+}
 
-let _showElementsByQuery = function (query, baseElement) {
+function _showElementsByQuery (query, baseElement) {
     _setDisplayAttributeForElementsByQuery(query, baseElement, "");
-};
+}
 
-let _setDisplayAttributeForElementsByQuery = function (query, baseElement, displayValue) {
+function _setDisplayAttributeForElementsByQuery (query, baseElement, displayValue) {
     baseElement = baseElement || document;
     try {
-        for (let element of baseElement.querySelectorAll(query)) {
+        for (const element of baseElement.querySelectorAll(query)) {
             element.style.display = displayValue;
         }
     } catch {}
-};
+}
 
 github.showNames.replaceIds = function () {
     executeFunctionAfterPageLoaded(function () {
@@ -258,7 +258,7 @@ github.showNames.replaceIds = function () {
 
     domObserver.registerCallbackFunction(github.showNames.optionName,
     function (mutations, _observer) {
-        for (let { target } of mutations) {
+        for (const { target } of mutations) {
             github.showNames._replaceAllChildsWhichAreUserId(target);
         }
         saveUsernameCacheToStorage();
@@ -266,23 +266,23 @@ github.showNames.replaceIds = function () {
 };
 github.showNames.showIdsAgain = function () {
     domObserver.unregisterCallbackFunction(github.showNames.optionName);
-    for (let element of document.querySelectorAll("[data-sap-addon-user-id]")) {
+    for (const element of document.querySelectorAll("[data-sap-addon-user-id]")) {
         element.textContent = element.getAttribute("data-sap-addon-user-id");
         element.removeAttribute("data-sap-addon-user-id");
     }
-    for (let element of document.querySelectorAll("[data-sap-addon-tooltip-original-content]")) {
+    for (const element of document.querySelectorAll("[data-sap-addon-tooltip-original-content]")) {
         element.setAttribute("aria-label", element.getAttribute("data-sap-addon-tooltip-original-content"));
         element.removeAttribute("data-sap-addon-tooltip-original-content");
     }
 };
 github.showNames._replaceAllChildsWhichAreUserId = function (element) {
     try {
-        for (let queryMatch of element.querySelectorAll(github.showNames.query)) {
+        for (const queryMatch of element.querySelectorAll(github.showNames.query)) {
             github.showNames._replaceElementIfUserId(queryMatch);
         }
     } catch {}
     try {
-        for (let queryMatch of element.querySelectorAll(github.showNames.queryTooltips)) {
+        for (const queryMatch of element.querySelectorAll(github.showNames.queryTooltips)) {
             github.showNames._replaceElementsTooltip(queryMatch);
         }
     } catch {}
@@ -293,9 +293,9 @@ github.showNames._replaceElementIfUserId = async function (element) {
         if (element.hasAttribute("data-sap-addon-already-getting-username")) return;
         element.setAttribute("data-sap-addon-already-getting-username", "true");
 
-        let username = await github.showNames._getUsername(userId);
+        const username = await github.showNames._getUsername(userId);
         if (username) {
-            let el = getDirectParentOfText(element, prefix + userId + suffix);
+            const el = getDirectParentOfText(element, prefix + userId + suffix);
             if (el) {
                 el.textContent = prefix + username + suffix;
                 el.setAttribute("data-sap-addon-user-id", prefix + userId + suffix);
@@ -352,8 +352,8 @@ github.showNames._replaceElementsTooltip = async function (element) {
         return; // already replaced
     }
     element.setAttribute("data-sap-addon-already-replacing-tooltip", "true");
-    let originalTooltipText = element.getAttribute("aria-label");
-    let replacedTooltipText = await github.showNames._getNewTooltipText(originalTooltipText);
+    const originalTooltipText = element.getAttribute("aria-label");
+    const replacedTooltipText = await github.showNames._getNewTooltipText(originalTooltipText);
     element.setAttribute("data-sap-addon-tooltip-original-content", originalTooltipText);
     element.removeAttribute("data-sap-addon-already-replacing-tooltip");
     element.setAttribute("aria-label", replacedTooltipText);
@@ -388,10 +388,10 @@ github.showNames._getNewTooltipText = async function (originalTooltipText) {
         [userIds, textAfter] = (tempSplitResultAtTextBeforeUserIds || originalTooltipText).split(currentTooltipType.textAfterUserIds);
     }
 
-    let usernames = [];
+    const usernames = [];
     if (userIds.includes(", and ")) { // more than two names
-        let [firstUserIds, lastUserId] = userIds.split(", and ");
-        for (let userId of firstUserIds.split(", ")) {
+        const [firstUserIds, lastUserId] = userIds.split(", and ");
+        for (const userId of firstUserIds.split(", ")) {
             usernames.push(await github.showNames._getUsername(userId));
         }
         // lastUserId should not match something like "5 more" (e.g. in A, ..., B, and 5 more)
@@ -399,7 +399,7 @@ github.showNames._getNewTooltipText = async function (originalTooltipText) {
             usernames.push(await github.showNames._getUsername(lastUserId));
         }
     } else if (userIds.includes(" and ")) { // two names
-        for (let userId of userIds.split(" and ")) {
+        for (const userId of userIds.split(" and ")) {
             usernames.push(await github.showNames._getUsername(userId));
         }
     } else { // one name
@@ -445,7 +445,7 @@ const userIdRequestQueue = {};
 
 github.showNames._getUsername = async function (userId) {
     if (github.showNames.userIdFalsePositives.includes(userId)) return null;
-    let user = usernameCache[userId];
+    const user = usernameCache[userId];
     if (user && user.username) {
         usernameCache[userId].usedAt = getUnixTimestamp();
         usernameCache[userId].used += 1;
@@ -462,7 +462,7 @@ github.showNames._getUsername = async function (userId) {
         });
     } else {
         userIdRequestQueue[userId] = [];
-        let username = await github.showNames._fetchUsername(userId);
+        const username = await github.showNames._fetchUsername(userId);
         if (username) {
             usernameCache[userId] = {
                 username: username,
@@ -524,13 +524,13 @@ github.showNames._hrefExceptionForRecentActivity = function (element) {
 
 
 
-let getUnixTimestamp = function () {
+function getUnixTimestamp () {
     return Math.floor((new Date()).getTime());
-};
+}
 
-let isElementALink = function (element) {
+function isElementALink (element) {
     // check childs
-    for (let linkChild of element.querySelectorAll("[href]")) {
+    for (const linkChild of element.querySelectorAll("[href]")) {
         if (linkChild && element.textContent.trim() === linkChild.textContent.trim()) {
             return true;
         }
@@ -548,80 +548,80 @@ let isElementALink = function (element) {
         }
         element = element.parentElement;
     }
-};
+}
 
-let getDirectParentOfText = function (baseElement, text) {
+function getDirectParentOfText (baseElement, text) {
     if (baseElement.childNodes.length === 1
         && baseElement.firstChild.nodeName === "#text"
         && baseElement.textContent.trim() === text) {
         return baseElement;
     } else {
-        for (let child of baseElement.childNodes) {
+        for (const child of baseElement.childNodes) {
             if (child.childNodes.length > 0) {
-                let r = getDirectParentOfText(child, text);
+                const r = getDirectParentOfText(child, text);
                 if (r) {
                     return r;
                 }
             }
         }
     }
-};
+}
 
 
-let redirectToURL = function (url) {
+function redirectToURL (url) {
     window.location.replace(url);
-};
+}
 
-let executeFunctionAfterPageLoaded = function (func, args=[]) {
+function executeFunctionAfterPageLoaded (func, args=[]) {
     window.addEventListener("load", (e) => {
         func(...args);
     });
     if (document.readyState === "complete") {
         func(...args);
     }
-};
+}
 
 let options = {};
-let loadOptionsFromStorage = async function () {
-    return new Promise(async function (resolve, reject) {
+function loadOptionsFromStorage () {
+    return new Promise(function (resolve) {
         execAsync(browser.storage.local.get.bind(browser.storage.local), "options", (res) => {
             options = res.options || {};
             resolve();
         });
     });
-};
+}
 
-let isEnabled = function (optionName) {
+function isEnabled (optionName) {
     return !options || options[optionName] !== false; // enabled by default
-};
+}
 
 let usernameCache = undefined;
-let loadUsernameCacheFromStorage = async function () {
-    return new Promise(async function (resolve, reject) {
+function loadUsernameCacheFromStorage () {
+    return new Promise(function (resolve) {
         execAsync(browser.storage.local.get.bind(browser.storage.local), "usernameCache", (res) => {
             usernameCache = res.usernameCache || {};
             resolve();
         });
     });
-};
+}
 
-let saveUsernameCacheToStorage = function () {
+function saveUsernameCacheToStorage () {
     browser.storage.local.set({usernameCache: usernameCache});
-};
+}
 
 let noticeBoxMessagesToHide = {};
-let loadNoticeBoxMessagesToHideFromStorage = async function () {
-    return new Promise(async function (resolve, reject) {
+function loadNoticeBoxMessagesToHideFromStorage () {
+    return new Promise(function (resolve) {
         execAsync(browser.storage.local.get.bind(browser.storage.local), "githubNoticeBoxMessagesToHide", (res) => {
             noticeBoxMessagesToHide = res.githubNoticeBoxMessagesToHide || {};
             resolve();
         });
     });
-};
+}
 
-let saveNoticeBoxMessagesToHideToStorage = function () {
+function saveNoticeBoxMessagesToHideToStorage () {
     browser.storage.local.set({githubNoticeBoxMessagesToHide: noticeBoxMessagesToHide});
-};
+}
 
 async function main () {
     await Promise.all([
@@ -648,7 +648,7 @@ async function main () {
     } else {
         github.showNames.showIdsAgain();
     }
-};
+}
 main();
 browser.runtime.onConnect.addListener(() => {
     main();
