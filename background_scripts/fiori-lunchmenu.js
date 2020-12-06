@@ -6,7 +6,7 @@ if (typeof browser !== "undefined") {
     window.browser = chrome;
     isChromium = true;
 }
-function execAsync (asyncFunction, args, callback) {
+function execAsync(asyncFunction, args, callback) {
     if (!Array.isArray(args)) args = [args];
     if (usePromisesForAsync) {
         asyncFunction(...args).then(callback);
@@ -22,13 +22,13 @@ const fiorilaunchpad = {
         configNameLanguage: "config-lunchmenu-language",
         urls: [
             "https://fiorilaunchpad.sap.com/sap/fiori/lunchmenu/webapp/api/client/tiles/*",
-            "https://fiorilaunchpad.sap.com/sap/fiori/lunchmenu/api/client/lunch*"
-        ]
-    }
+            "https://fiorilaunchpad.sap.com/sap/fiori/lunchmenu/api/client/lunch*",
+        ],
+    },
 };
 
 let options = {};
-function loadOptionsFromStorage () {
+function loadOptionsFromStorage() {
     return new Promise(function (resolve) {
         execAsync(browser.storage.local.get.bind(browser.storage.local), "options", (res) => {
             options = res.options;
@@ -37,12 +37,12 @@ function loadOptionsFromStorage () {
     });
 }
 
-function isEnabled (optionName) {
+function isEnabled(optionName) {
     return !options || options[optionName] !== false; // enabled per default
 }
 
 let config = {};
-function loadConfigFromStorage () {
+function loadConfigFromStorage() {
     return new Promise(function (resolve) {
         execAsync(browser.storage.local.get.bind(browser.storage.local), "config", (res) => {
             config = res.config || {};
@@ -66,17 +66,14 @@ fiorilaunchpad.overrideLunchmenu.rewriteLunchMenuHeader = function (requestDetai
     if (!rewroteHeader) {
         requestDetails.requestHeaders.push({
             name: "Accept-Language",
-            value: language
+            value: language,
         });
     }
-    return {requestHeaders: requestDetails.requestHeaders};
+    return { requestHeaders: requestDetails.requestHeaders };
 };
 
-async function main () {
-    await Promise.all([
-        loadOptionsFromStorage(),
-        loadConfigFromStorage(),
-    ]);
+async function main() {
+    await Promise.all([loadOptionsFromStorage(), loadConfigFromStorage()]);
 
     if (isEnabled(fiorilaunchpad.overrideLunchmenu.optionName)) {
         const opt_extraInfoSpec = ["blocking", "requestHeaders"];
@@ -87,9 +84,7 @@ async function main () {
             opt_extraInfoSpec
         );
     } else {
-        browser.webRequest.onBeforeSendHeaders.removeListener(
-            fiorilaunchpad.overrideLunchmenu.rewriteLunchMenuHeader
-        );
+        browser.webRequest.onBeforeSendHeaders.removeListener(fiorilaunchpad.overrideLunchmenu.rewriteLunchMenuHeader);
     }
 }
 main();

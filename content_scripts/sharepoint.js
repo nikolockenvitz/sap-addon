@@ -4,7 +4,7 @@ if (typeof browser !== "undefined") {
 } else {
     window.browser = chrome;
 }
-function execAsync (asyncFunction, args, callback) {
+function execAsync(asyncFunction, args, callback) {
     if (!Array.isArray(args)) args = [args];
     if (usePromisesForAsync) {
         asyncFunction(...args).then(callback);
@@ -28,7 +28,7 @@ const sharepoint = {
 };
 
 class DOMObserver {
-    constructor () {
+    constructor() {
         this.observerCallbacks = {};
         const that = this;
         this.observer = new MutationObserver(function (mutation, _observer) {
@@ -39,24 +39,24 @@ class DOMObserver {
         this.observer.observe(document, {
             childList: true,
             characterData: true,
-            subtree: true
+            subtree: true,
         });
     }
 
-    registerCallbackFunction (id, callback) {
+    registerCallbackFunction(id, callback) {
         if (!this.observerCallbacks[id]) {
             this.observerCallbacks[id] = callback;
         }
     }
 
-    unregisterCallbackFunction (id) {
+    unregisterCallbackFunction(id) {
         delete this.observerCallbacks[id];
     }
 }
 const domObserver = new DOMObserver();
 
 sharepoint.login.executeLogin = function () {
-    function login () {
+    function login() {
         let emailInput, btn;
 
         // sap-my.sharepoint.com, only button "Next" to continue
@@ -90,22 +90,20 @@ sharepoint.login.executeLogin = function () {
             sharepoint.login._enterEmailAndClickNext(emailInput, btn);
             return sharepoint.login.stopAutoSignIn();
         }
-    };
+    }
 
     executeFunctionAfterPageLoaded(login);
-    domObserver.registerCallbackFunction(sharepoint.login.optionName,
-        function (mutations, _observer) {
-            login();
-        }
-    );
+    domObserver.registerCallbackFunction(sharepoint.login.optionName, function (mutations, _observer) {
+        login();
+    });
 };
 sharepoint.login._enterEmailAndClickNext = function (emailInput, btn) {
     const configEmail = config[sharepoint.login.configNameEmailAddress];
     if (emailInput.value === "") {
         if (configEmail) {
             emailInput.value = configEmail;
-            emailInput.dispatchEvent(new Event('change'));
-            emailInput.dispatchEvent(new Event('input'));
+            emailInput.dispatchEvent(new Event("change"));
+            emailInput.dispatchEvent(new Event("input"));
             sharepoint.login._clickButton(btn);
             sharepoint.login.stopAutoSignIn();
             return true;
@@ -119,7 +117,7 @@ sharepoint.login._enterEmailAndClickNext = function (emailInput, btn) {
     return false;
 };
 sharepoint.login._clickButton = function (btn) {
-    function click () {
+    function click() {
         btn.click();
     }
     if (url.hostname === "login.microsoftonline.com") {
@@ -133,7 +131,7 @@ sharepoint.login.stopAutoSignIn = function () {
     domObserver.unregisterCallbackFunction(sharepoint.login.optionName);
 };
 
-function executeFunctionAfterPageLoaded (func, args=[]) {
+function executeFunctionAfterPageLoaded(func, args = []) {
     window.addEventListener("load", () => {
         func(...args);
     });
@@ -143,7 +141,7 @@ function executeFunctionAfterPageLoaded (func, args=[]) {
 }
 
 let options = {};
-function loadOptionsFromStorage () {
+function loadOptionsFromStorage() {
     return new Promise(function (resolve) {
         execAsync(browser.storage.local.get.bind(browser.storage.local), "options", (res) => {
             options = res.options || {};
@@ -152,12 +150,12 @@ function loadOptionsFromStorage () {
     });
 }
 
-function isEnabled (optionName) {
+function isEnabled(optionName) {
     return !options || options[optionName] !== false; // enabled per default
 }
 
 let config = {};
-function loadConfigFromStorage () {
+function loadConfigFromStorage() {
     return new Promise(function (resolve) {
         execAsync(browser.storage.local.get.bind(browser.storage.local), "config", (res) => {
             config = res.config || {};
@@ -166,16 +164,13 @@ function loadConfigFromStorage () {
     });
 }
 
-async function main () {
-    await Promise.all([
-        loadOptionsFromStorage(),
-        loadConfigFromStorage(),
-    ]);
+async function main() {
+    await Promise.all([loadOptionsFromStorage(), loadConfigFromStorage()]);
 
     if (isEnabled(sharepoint.login.optionName)) {
         sharepoint.login.executeLogin();
     }
-};
+}
 main();
 browser.runtime.onConnect.addListener(() => {
     main();

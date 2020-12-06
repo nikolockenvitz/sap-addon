@@ -4,7 +4,7 @@ if (typeof browser !== "undefined") {
 } else {
     window.browser = chrome;
 }
-function execAsync (asyncFunction, args, callback) {
+function execAsync(asyncFunction, args, callback) {
     if (!Array.isArray(args)) args = [args];
     if (usePromisesForAsync) {
         asyncFunction(...args).then(callback);
@@ -14,27 +14,23 @@ function execAsync (asyncFunction, args, callback) {
 }
 
 const inputIds = [
-    "portal-redirect", "portal-focus-searchbar",
-    "github-sign-in", "github-hide-notice-overlay", "github-show-names", "github-get-names-from-people",
+    "portal-redirect",
+    "portal-focus-searchbar",
+    "github-sign-in",
+    "github-hide-notice-overlay",
+    "github-show-names",
+    "github-get-names-from-people",
     "fiori-lunchmenu-german",
     "sharepoint-login",
 ];
-const buttonInputIds = [
-    "github-hide-notice-show-all-again",
-];
-const configInputIds = [
-    "config-email",
-    "config-lunchmenu-language",
-];
+const buttonInputIds = ["github-hide-notice-show-all-again"];
+const configInputIds = ["config-email", "config-lunchmenu-language"];
 
 let options = {};
 let config = {};
 
 window.onload = async function () {
-    await Promise.all([
-        loadOptionsFromStorage(),
-        loadConfigFromStorage(),
-    ]);
+    await Promise.all([loadOptionsFromStorage(), loadConfigFromStorage()]);
 
     for (const inputId of inputIds) {
         toggleInputOnSectionTextClick(inputId); // sectionText includes also the input itself
@@ -51,15 +47,15 @@ window.onload = async function () {
     addEventListenersToClosePopupOnLinkClicks();
 };
 
-async function onChangeInput (inputId) {
+async function onChangeInput(inputId) {
     options[inputId] = document.getElementById(inputId).checked;
     updateDependingInputs(inputId);
     await saveOptionsToStorage();
     runMainFunctionOfContentAndBackgroundScripts();
 }
 
-function runMainFunctionOfContentAndBackgroundScripts () {
-    execAsync(browser.tabs.query, {currentWindow: true, active: true}, (tabs) => {
+function runMainFunctionOfContentAndBackgroundScripts() {
+    execAsync(browser.tabs.query, { currentWindow: true, active: true }, (tabs) => {
         for (const tab of tabs) {
             // connect will trigger main function of content scripts
             browser.tabs.connect(tab.id).disconnect();
@@ -70,7 +66,7 @@ function runMainFunctionOfContentAndBackgroundScripts () {
     });
 }
 
-function toggleInputOnSectionTextClick (inputId) {
+function toggleInputOnSectionTextClick(inputId) {
     const inputEl = document.getElementById(inputId);
     const sectionText = getSectionTextParent(inputEl);
     if (sectionText) {
@@ -79,9 +75,9 @@ function toggleInputOnSectionTextClick (inputId) {
                 inputEl.checked = !inputEl.checked;
                 if (!event.target.classList.contains("slider")) {
                     /* click on slider creates two onclick events, so we
-                    * can ignore the click on the slider and just use the
-                    * click on the input
-                    */
+                     * can ignore the click on the slider and just use the
+                     * click on the input
+                     */
                     onChangeInput(inputId);
                 }
             }
@@ -89,7 +85,7 @@ function toggleInputOnSectionTextClick (inputId) {
     }
 }
 
-function updateDependingInputs (inputId) {
+function updateDependingInputs(inputId) {
     /* some inputs depend on others
      * -> disable them if the input they depend on is unchecked
      * -> enable them if the input they depend on is checked
@@ -104,19 +100,22 @@ function updateDependingInputs (inputId) {
             const sectionText = getSectionTextParent(dependingInput);
             if (input.checked) {
                 dependingInput.disabled = false;
-                if (sectionText) { sectionText.classList.remove("disabled"); }
+                if (sectionText) {
+                    sectionText.classList.remove("disabled");
+                }
             } else {
                 dependingInput.disabled = true;
-                if (sectionText) { sectionText.classList.add("disabled"); }
+                if (sectionText) {
+                    sectionText.classList.add("disabled");
+                }
             }
-
         }
     }
 }
 
-function getSectionTextParent (element) {
+function getSectionTextParent(element) {
     while (element) {
-        if (element.classList.contains('section-text')) {
+        if (element.classList.contains("section-text")) {
             return element;
         }
         element = element.parentElement;
@@ -124,7 +123,7 @@ function getSectionTextParent (element) {
     return null;
 }
 
-function addOnClickListenerForButton (buttonInputId) {
+function addOnClickListenerForButton(buttonInputId) {
     const button = document.getElementById(buttonInputId);
     button.addEventListener("mousedown", function (event) {
         if (event.buttons === 1) {
@@ -134,7 +133,7 @@ function addOnClickListenerForButton (buttonInputId) {
     button.addEventListener("click", function () {
         button.classList.remove("button-active");
         // send message (buttonInputId) to content script(s)
-        execAsync(browser.tabs.query, {currentWindow: true, active: true}, (tabs) => {
+        execAsync(browser.tabs.query, { currentWindow: true, active: true }, (tabs) => {
             for (const tab of tabs) {
                 browser.tabs.sendMessage(tab.id, { message: buttonInputId });
             }
@@ -142,8 +141,7 @@ function addOnClickListenerForButton (buttonInputId) {
     });
 }
 
-
-function loadOptionsFromStorage () {
+function loadOptionsFromStorage() {
     return new Promise(function (resolve) {
         execAsync(browser.storage.local.get.bind(browser.storage.local), "options", (res) => {
             options = res.options || {};
@@ -152,15 +150,15 @@ function loadOptionsFromStorage () {
     });
 }
 
-function saveOptionsToStorage () {
+function saveOptionsToStorage() {
     return new Promise(function (resolve) {
-        execAsync(browser.storage.local.set.bind(browser.storage.local), {options}, () => {
+        execAsync(browser.storage.local.set.bind(browser.storage.local), { options }, () => {
             resolve();
         });
     });
 }
 
-function loadConfigFromStorage () {
+function loadConfigFromStorage() {
     return new Promise(function (resolve) {
         execAsync(browser.storage.local.get.bind(browser.storage.local), "config", (res) => {
             config = res.config || {};
@@ -169,23 +167,22 @@ function loadConfigFromStorage () {
     });
 }
 
-function saveConfigToStorage () {
+function saveConfigToStorage() {
     return new Promise(function (resolve) {
-        execAsync(browser.storage.local.set.bind(browser.storage.local), {config}, () => {
+        execAsync(browser.storage.local.set.bind(browser.storage.local), { config }, () => {
             resolve();
         });
     });
 }
 
-
-function initInputs () {
+function initInputs() {
     for (const inputId of inputIds) {
-        document.getElementById(inputId).checked = (!options || options[inputId] !== false);
+        document.getElementById(inputId).checked = !options || options[inputId] !== false;
         updateDependingInputs(inputId);
     }
 }
 
-function initModals () {
+function initModals() {
     const configurationModal = document.getElementById("modal-configuration");
     document.getElementById("btn-show-configuration").addEventListener("click", function () {
         configurationModal.style.display = "block";
@@ -199,21 +196,22 @@ function initModals () {
     });
 }
 
-function initConfigInput (inputId) {
+function initConfigInput(inputId) {
     const el = document.getElementById(inputId);
     el.value = config[inputId] || "";
-    el.addEventListener("change", async function () { // change will only fire after input loses focus (-> not on every keystroke)
+    el.addEventListener("change", async function () {
+        // change will only fire after input loses focus (-> not on every keystroke)
         config[inputId] = el.value;
         await saveConfigToStorage();
         runMainFunctionOfContentAndBackgroundScripts();
     });
 }
 
-function addEventListenersToClosePopupOnLinkClicks () {
+function addEventListenersToClosePopupOnLinkClicks() {
     let links = document.getElementsByClassName("external-link");
     for (const el of links) {
         el.addEventListener("click", function () {
-            execAsync(browser.tabs.create, {url: el.title}, () => {
+            execAsync(browser.tabs.create, { url: el.title }, () => {
                 window.close();
             });
         });

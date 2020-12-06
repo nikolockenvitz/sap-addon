@@ -4,7 +4,7 @@ if (typeof browser !== "undefined") {
 } else {
     window.browser = chrome;
 }
-function execAsync (asyncFunction, args, callback) {
+function execAsync(asyncFunction, args, callback) {
     if (!Array.isArray(args)) args = [args];
     if (usePromisesForAsync) {
         asyncFunction(...args).then(callback);
@@ -42,7 +42,7 @@ const github = {
         queryTooltips: `div.comment-reactions-options button.btn-link.reaction-summary-item.tooltipped[type=submit],
             div.AvatarStack div.AvatarStack-body.tooltipped`,
         regexNameOnProfilePage: `<span class="p-name vcard-fullname d-block overflow-hidden" itemprop="name">([^<]*)</span>`,
-        userIdFalsePositives: [ "edited" ],
+        userIdFalsePositives: ["edited"],
     },
     getNamesFromPeople: {
         optionName: "github-get-names-from-people",
@@ -52,7 +52,7 @@ const github = {
 };
 
 class DOMObserver {
-    constructor () {
+    constructor() {
         this.observerCallbacks = {};
         const that = this;
         this.observer = new MutationObserver(function (mutation, _observer) {
@@ -63,17 +63,17 @@ class DOMObserver {
         this.observer.observe(document, {
             childList: true,
             characterData: true,
-            subtree: true
+            subtree: true,
         });
     }
 
-    registerCallbackFunction (id, callback) {
+    registerCallbackFunction(id, callback) {
         if (!this.observerCallbacks[id]) {
             this.observerCallbacks[id] = callback;
         }
     }
 
-    unregisterCallbackFunction (id) {
+    unregisterCallbackFunction(id) {
         delete this.observerCallbacks[id];
     }
 }
@@ -84,8 +84,7 @@ github.signIn.signIn = function () {
         github.signIn.getSignInButtonAndClick();
     });
 
-    domObserver.registerCallbackFunction(github.signIn.optionName,
-    function (mutations, _observer) {
+    domObserver.registerCallbackFunction(github.signIn.optionName, function (mutations, _observer) {
         for (const { target } of mutations) {
             github.signIn.getSignInButtonAndClick(target);
         }
@@ -112,7 +111,7 @@ github.signIn.getSignInButtonAndClick = function (element) {
 };
 github.signIn.getSignInRedirectLink = function (element) {
     const redirectLink = element.querySelector("a#redirect[href^='https://accounts.sap.com/']");
-    return (redirectLink && url.pathname === "/login") ? redirectLink : null;
+    return redirectLink && url.pathname === "/login" ? redirectLink : null;
 };
 github.signIn.stopAutoSignIn = function () {
     domObserver.unregisterCallbackFunction(github.signIn.optionName);
@@ -137,8 +136,8 @@ github.signIn.listenForSignInOtherTab = function () {
     }, 2500);
 };
 
-github.flashNotice.hideDismissedNoticeBoxesAndInsertHideOverlayIfEnabled = function (insertOverlayEnabled=false) {
-    function getTextOfNoticeBox (noticeBox) {
+github.flashNotice.hideDismissedNoticeBoxesAndInsertHideOverlayIfEnabled = function (insertOverlayEnabled = false) {
+    function getTextOfNoticeBox(noticeBox) {
         let text = `${url.host} `;
         for (const containers of noticeBox.children) {
             for (const el of containers.children) {
@@ -149,12 +148,12 @@ github.flashNotice.hideDismissedNoticeBoxesAndInsertHideOverlayIfEnabled = funct
         }
         return text;
     }
-    function hideIfMessageIsSetToHidden (noticeBox) {
+    function hideIfMessageIsSetToHidden(noticeBox) {
         if (getTextOfNoticeBox(noticeBox) in noticeBoxMessagesToHide) {
             noticeBox.style.display = "none";
         }
     }
-    function clearOldNoticeBoxMessages () {
+    function clearOldNoticeBoxMessages() {
         const _90_DAYS_IN_MS = 90 * 24 * 60 * 60 * 1000;
         const now = getUnixTimestamp();
         for (const message in noticeBoxMessagesToHide) {
@@ -164,7 +163,7 @@ github.flashNotice.hideDismissedNoticeBoxesAndInsertHideOverlayIfEnabled = funct
             }
         }
     }
-    function insertOverlay (noticeBox) {
+    function insertOverlay(noticeBox) {
         if (!insertOverlayEnabled) return;
         if (noticeBox.hasAttribute("data-sap-addon-notice-box-inserted-overlay")) return;
         noticeBox.setAttribute("data-sap-addon-notice-box-inserted-overlay", "true");
@@ -177,7 +176,7 @@ github.flashNotice.hideDismissedNoticeBoxesAndInsertHideOverlayIfEnabled = funct
         <a tabindex="0" style="cursor: pointer" data-sap-addon-link="hide-once">Hide once</a>
         `;
         for (const link of overlay.querySelectorAll("a[data-sap-addon-link]")) {
-            function listener (event) {
+            function listener(event) {
                 const action = link.getAttribute("data-sap-addon-link");
                 if (action === "hide-once") {
                     noticeBox.style.display = "none";
@@ -191,7 +190,7 @@ github.flashNotice.hideDismissedNoticeBoxesAndInsertHideOverlayIfEnabled = funct
                 }
             }
             link.addEventListener("click", listener);
-            link.addEventListener("keyup", (event) => event.keyCode === 13 ? listener(event) : null);
+            link.addEventListener("keyup", (event) => (event.keyCode === 13 ? listener(event) : null));
         }
         container.appendChild(overlay);
     }
@@ -205,8 +204,7 @@ github.flashNotice.hideDismissedNoticeBoxesAndInsertHideOverlayIfEnabled = funct
 
     _showElementsByQuery(`[data-sap-addon-notice-box-inserted-overlay] .sap-addon-hide-notice-box-overlay`);
 
-    domObserver.registerCallbackFunction(github.flashNotice.optionName,
-    function (mutations, _observer) {
+    domObserver.registerCallbackFunction(github.flashNotice.optionName, function (mutations, _observer) {
         for (const { target } of mutations) {
             for (const match of target.querySelectorAll(github.flashNotice.query)) {
                 hideIfMessageIsSetToHidden(match);
@@ -230,15 +228,15 @@ github.flashNotice.showAllAgain = function () {
     });
 };
 
-function _hideElementsByQuery (query, baseElement) {
+function _hideElementsByQuery(query, baseElement) {
     _setDisplayAttributeForElementsByQuery(query, baseElement, "none");
 }
 
-function _showElementsByQuery (query, baseElement) {
+function _showElementsByQuery(query, baseElement) {
     _setDisplayAttributeForElementsByQuery(query, baseElement, "");
 }
 
-function _setDisplayAttributeForElementsByQuery (query, baseElement, displayValue) {
+function _setDisplayAttributeForElementsByQuery(query, baseElement, displayValue) {
     baseElement = baseElement || document;
     try {
         for (const element of baseElement.querySelectorAll(query)) {
@@ -256,8 +254,7 @@ github.showNames.replaceIds = function () {
         saveUsernameCacheToStorage();
     });
 
-    domObserver.registerCallbackFunction(github.showNames.optionName,
-    function (mutations, _observer) {
+    domObserver.registerCallbackFunction(github.showNames.optionName, function (mutations, _observer) {
         for (const { target } of mutations) {
             github.showNames._replaceAllChildsWhichAreUserId(target);
         }
@@ -288,7 +285,7 @@ github.showNames._replaceAllChildsWhichAreUserId = function (element) {
     } catch {}
 };
 github.showNames._replaceElementIfUserId = async function (element) {
-    const {userId, prefix, suffix} = github.showNames._getUserIdIfElementIsUserId(element);
+    const { userId, prefix, suffix } = github.showNames._getUserIdIfElementIsUserId(element);
     if (userId) {
         if (element.hasAttribute("data-sap-addon-already-getting-username")) return;
         element.setAttribute("data-sap-addon-already-getting-username", "true");
@@ -305,9 +302,10 @@ github.showNames._replaceElementIfUserId = async function (element) {
     }
 };
 github.showNames._getUserIdIfElementIsUserId = function (element) {
-    let userId = (!element.hasAttribute("data-sap-addon-user-id")
-            && !element.querySelector("[data-sap-addon-user-id]"))
-            ? element.textContent.trim() : null;
+    let userId =
+        !element.hasAttribute("data-sap-addon-user-id") && !element.querySelector("[data-sap-addon-user-id]")
+            ? element.textContent.trim()
+            : null;
     if (userId === "" || !isElementALink(element)) {
         if (!github.showNames._hrefException(element)) {
             userId = null;
@@ -315,19 +313,24 @@ github.showNames._getUserIdIfElementIsUserId = function (element) {
     }
     if (userId) {
         for (const possiblePrefixOrSuffix of [
-            { prefix: "@", furtherChecks: element.classList.contains("user-mention") },
+            {
+                prefix: "@",
+                furtherChecks: element.classList.contains("user-mention"),
+            },
             { prefix: "edited by " },
             { suffix: " commented" },
         ]) {
-            if ((possiblePrefixOrSuffix.prefix && userId.startsWith(possiblePrefixOrSuffix.prefix) ||
-                 possiblePrefixOrSuffix.suffix && userId.endsWith(possiblePrefixOrSuffix.suffix)) &&
+            if (
+                ((possiblePrefixOrSuffix.prefix && userId.startsWith(possiblePrefixOrSuffix.prefix)) ||
+                    (possiblePrefixOrSuffix.suffix && userId.endsWith(possiblePrefixOrSuffix.suffix))) &&
                 (!("furtherChecks" in possiblePrefixOrSuffix) || possiblePrefixOrSuffix.furtherChecks)
             ) {
                 return {
                     prefix: possiblePrefixOrSuffix.prefix || "",
                     userId: userId.substring(
                         (possiblePrefixOrSuffix.prefix || "").length,
-                        userId.length - (possiblePrefixOrSuffix.suffix || "").length),
+                        userId.length - (possiblePrefixOrSuffix.suffix || "").length
+                    ),
                     suffix: possiblePrefixOrSuffix.suffix || "",
                 };
             }
@@ -343,10 +346,11 @@ github.showNames._hrefException = function (element) {
         github.showNames._hrefExceptionForResolvedConversationPrReview(element) ||
         github.showNames._hrefExceptionForRecentActivity(element)
     );
-}
+};
 
 github.showNames._replaceElementsTooltip = async function (element) {
-    if (element.hasAttribute("data-sap-addon-tooltip-original-content") ||
+    if (
+        element.hasAttribute("data-sap-addon-tooltip-original-content") ||
         element.hasAttribute("data-sap-addon-already-replacing-tooltip")
     ) {
         return; // already replaced
@@ -362,13 +366,11 @@ github.showNames._getNewTooltipText = async function (originalTooltipText) {
     // currently supports: emoji reactions, project issues cards
     // (A | A and B | A, B, and C) reacted with ... emoji
     // Assigned to (A | A and B | A, B, and C)
-    const tooltipTypes = [
-        { textAfterUserIds: " reacted with " },
-        { textBeforeUserIds: "Assigned to " },
-    ];
+    const tooltipTypes = [{ textAfterUserIds: " reacted with " }, { textBeforeUserIds: "Assigned to " }];
     let currentTooltipType;
     for (const tooltipType of tooltipTypes) {
-        if ((!tooltipType.textBeforeUserIds || originalTooltipText.includes(tooltipType.textBeforeUserIds)) &&
+        if (
+            (!tooltipType.textBeforeUserIds || originalTooltipText.includes(tooltipType.textBeforeUserIds)) &&
             (!tooltipType.textAfterUserIds || originalTooltipText.includes(tooltipType.textAfterUserIds))
         ) {
             currentTooltipType = tooltipType;
@@ -379,7 +381,7 @@ github.showNames._getNewTooltipText = async function (originalTooltipText) {
 
     // split tooltip text which has following structure: "<textBefore><textBeforeUserIds><userIds><textAfterUserIds><textAfter>"
     let userIds;
-    let textBefore = textAfter = tempSplitResultAtTextBeforeUserIds = "";
+    let textBefore = (textAfter = tempSplitResultAtTextBeforeUserIds = "");
     if (currentTooltipType.textBeforeUserIds) {
         [textBefore, tempSplitResultAtTextBeforeUserIds] = originalTooltipText.split(currentTooltipType.textBeforeUserIds);
         userIds = tempSplitResultAtTextBeforeUserIds;
@@ -389,20 +391,23 @@ github.showNames._getNewTooltipText = async function (originalTooltipText) {
     }
 
     const usernames = [];
-    if (userIds.includes(", and ")) { // more than two names
+    if (userIds.includes(", and ")) {
+        // more than two names
         const [firstUserIds, lastUserId] = userIds.split(", and ");
         for (const userId of firstUserIds.split(", ")) {
             usernames.push(await github.showNames._getUsername(userId));
         }
         // lastUserId should not match something like "5 more" (e.g. in A, ..., B, and 5 more)
-        if (!(new RegExp(`\\d+ more`)).exec(lastUserId)) {
+        if (!new RegExp(`\\d+ more`).exec(lastUserId)) {
             usernames.push(await github.showNames._getUsername(lastUserId));
         }
-    } else if (userIds.includes(" and ")) { // two names
+    } else if (userIds.includes(" and ")) {
+        // two names
         for (const userId of userIds.split(" and ")) {
             usernames.push(await github.showNames._getUsername(userId));
         }
-    } else { // one name
+    } else {
+        // one name
         usernames.push(await github.showNames._getUsername(userIds));
     }
     return (
@@ -415,11 +420,11 @@ github.showNames._getNewTooltipText = async function (originalTooltipText) {
 };
 github.showNames._makeUsernameTextForTooltip = function (usernames) {
     let usernameText = "";
-    for (let i=0; i<usernames.length; i++) {
+    for (let i = 0; i < usernames.length; i++) {
         if (i !== 0 && usernames.length !== 2) {
             usernameText += ", ";
         }
-        if (i === usernames.length-1) {
+        if (i === usernames.length - 1) {
             if (i === 0) {
                 // only one username, no "and" needed
             } else if (i === 1) {
@@ -473,29 +478,43 @@ github.showNames._getUsername = async function (userId) {
         }
         const observers = userIdRequestQueue[userId];
         delete userIdRequestQueue[userId];
-        for (const notify of observers) { notify(username); }
+        for (const notify of observers) {
+            notify(username);
+        }
         return username;
     }
 };
 
 github.showNames._fetchUsername = function (userId) {
     return new Promise(function (resolve) {
-        execAsync(browser.runtime.sendMessage.bind(browser.runtime), {
-            contentScriptQuery: "githubFetchUsername",
-            args: [ userId, isEnabled(github.getNamesFromPeople.optionName), github.getNamesFromPeople.hostname,
-                github.getNamesFromPeople.regexNameOnProfilePage, url.hostname, github.showNames.regexNameOnProfilePage ]
-        }, (username) => {
-            resolve(username);
-        });
+        execAsync(
+            browser.runtime.sendMessage.bind(browser.runtime),
+            {
+                contentScriptQuery: "githubFetchUsername",
+                args: [
+                    userId,
+                    isEnabled(github.getNamesFromPeople.optionName),
+                    github.getNamesFromPeople.hostname,
+                    github.getNamesFromPeople.regexNameOnProfilePage,
+                    url.hostname,
+                    github.showNames.regexNameOnProfilePage,
+                ],
+            },
+            (username) => {
+                resolve(username);
+            }
+        );
     });
 };
 
 github.showNames._hrefExceptionForReviewer = function (element) {
     // reviewer (approval / pending) don't have a link to the user -> therefore exception needs to be added
-    if (element.classList.contains("text-emphasized")
-        && element.parentElement
-        && element.parentElement.parentElement
-        && element.parentElement.parentElement.querySelector("[data-hovercard-type=user]")) {
+    if (
+        element.classList.contains("text-emphasized") &&
+        element.parentElement &&
+        element.parentElement.parentElement &&
+        element.parentElement.parentElement.querySelector("[data-hovercard-type=user]")
+    ) {
         return true;
     }
 };
@@ -516,19 +535,19 @@ github.showNames._hrefExceptionForResolvedConversationPrReview = function (eleme
         div.js-resolvable-thread-toggler-container strong`); // same query string as in github.showNames.query
 };
 github.showNames._hrefExceptionForRecentActivity = function (element) {
-    return element.textContent.trim().endsWith(" commented") &&
+    return (
+        element.textContent.trim().endsWith(" commented") &&
         element.textContent.trim() !== "You commented" &&
         element.matches(`div.js-recent-activity-container div.Box ul li.Box-row
-            div.dashboard-break-word.lh-condensed.text-gray span.text-gray`); // same query string as in github.showNames.query
+            div.dashboard-break-word.lh-condensed.text-gray span.text-gray`)
+    ); // same query string as in github.showNames.query
 };
 
-
-
-function getUnixTimestamp () {
-    return Math.floor((new Date()).getTime());
+function getUnixTimestamp() {
+    return Math.floor(new Date().getTime());
 }
 
-function isElementALink (element) {
+function isElementALink(element) {
     // check childs
     for (const linkChild of element.querySelectorAll("[href]")) {
         if (linkChild && element.textContent.trim() === linkChild.textContent.trim()) {
@@ -539,10 +558,10 @@ function isElementALink (element) {
     while (true) {
         if (!element) return false;
         if (element.hasAttribute("href")) return true;
-        if (element.classList.contains("btn-link") &&
+        if (
+            element.classList.contains("btn-link") &&
             (element.tagName.toLowerCase() === "button" ||
-             (element.tagName.toLowerCase() === "summary" && element.getAttribute("role") === "button")
-            )
+                (element.tagName.toLowerCase() === "summary" && element.getAttribute("role") === "button"))
         ) {
             return true;
         }
@@ -550,10 +569,8 @@ function isElementALink (element) {
     }
 }
 
-function getDirectParentOfText (baseElement, text) {
-    if (baseElement.childNodes.length === 1
-        && baseElement.firstChild.nodeName === "#text"
-        && baseElement.textContent.trim() === text) {
+function getDirectParentOfText(baseElement, text) {
+    if (baseElement.childNodes.length === 1 && baseElement.firstChild.nodeName === "#text" && baseElement.textContent.trim() === text) {
         return baseElement;
     } else {
         for (const child of baseElement.childNodes) {
@@ -567,12 +584,11 @@ function getDirectParentOfText (baseElement, text) {
     }
 }
 
-
-function redirectToURL (url) {
+function redirectToURL(url) {
     window.location.replace(url);
 }
 
-function executeFunctionAfterPageLoaded (func, args=[]) {
+function executeFunctionAfterPageLoaded(func, args = []) {
     window.addEventListener("load", (e) => {
         func(...args);
     });
@@ -582,7 +598,7 @@ function executeFunctionAfterPageLoaded (func, args=[]) {
 }
 
 let options = {};
-function loadOptionsFromStorage () {
+function loadOptionsFromStorage() {
     return new Promise(function (resolve) {
         execAsync(browser.storage.local.get.bind(browser.storage.local), "options", (res) => {
             options = res.options || {};
@@ -591,12 +607,12 @@ function loadOptionsFromStorage () {
     });
 }
 
-function isEnabled (optionName) {
+function isEnabled(optionName) {
     return !options || options[optionName] !== false; // enabled by default
 }
 
 let usernameCache = undefined;
-function loadUsernameCacheFromStorage () {
+function loadUsernameCacheFromStorage() {
     return new Promise(function (resolve) {
         execAsync(browser.storage.local.get.bind(browser.storage.local), "usernameCache", (res) => {
             usernameCache = res.usernameCache || {};
@@ -605,12 +621,12 @@ function loadUsernameCacheFromStorage () {
     });
 }
 
-function saveUsernameCacheToStorage () {
-    browser.storage.local.set({usernameCache: usernameCache});
+function saveUsernameCacheToStorage() {
+    browser.storage.local.set({ usernameCache: usernameCache });
 }
 
 let noticeBoxMessagesToHide = {};
-function loadNoticeBoxMessagesToHideFromStorage () {
+function loadNoticeBoxMessagesToHideFromStorage() {
     return new Promise(function (resolve) {
         execAsync(browser.storage.local.get.bind(browser.storage.local), "githubNoticeBoxMessagesToHide", (res) => {
             noticeBoxMessagesToHide = res.githubNoticeBoxMessagesToHide || {};
@@ -619,16 +635,14 @@ function loadNoticeBoxMessagesToHideFromStorage () {
     });
 }
 
-function saveNoticeBoxMessagesToHideToStorage () {
-    browser.storage.local.set({githubNoticeBoxMessagesToHide: noticeBoxMessagesToHide});
+function saveNoticeBoxMessagesToHideToStorage() {
+    browser.storage.local.set({
+        githubNoticeBoxMessagesToHide: noticeBoxMessagesToHide,
+    });
 }
 
-async function main () {
-    await Promise.all([
-        loadUsernameCacheFromStorage(),
-        loadOptionsFromStorage(),
-        loadNoticeBoxMessagesToHideFromStorage(),
-    ]);
+async function main() {
+    await Promise.all([loadUsernameCacheFromStorage(), loadOptionsFromStorage(), loadNoticeBoxMessagesToHideFromStorage()]);
 
     if (isEnabled(github.signIn.optionName)) {
         github.signIn.signIn();
