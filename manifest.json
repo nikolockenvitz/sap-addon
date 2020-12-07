@@ -16,6 +16,8 @@
       "js": [
         "utils/browser-setup.js",
         "utils/storage.js",
+        "utils/option-helper.js",
+        "utils/dom-helper.js",
         "content_scripts/portal.js"
       ],
       "run_at": "document_start"
@@ -29,6 +31,8 @@
         "utils/browser-setup.js",
         "utils/storage.js",
         "utils/dom-observer.js",
+        "utils/option-helper.js",
+        "utils/dom-helper.js",
         "content_scripts/github.js"
       ],
       "run_at": "document_start"
@@ -42,6 +46,8 @@
         "utils/browser-setup.js",
         "utils/storage.js",
         "utils/dom-observer.js",
+        "utils/option-helper.js",
+        "utils/dom-helper.js",
         "content_scripts/sharepoint.js"
       ],
       "run_at": "document_start"

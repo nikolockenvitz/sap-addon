@@ -40,20 +40,7 @@ function redirectToURL(url) {
     window.location.replace(url);
 }
 
-function executeFunctionAfterPageLoaded(func, args = []) {
-    window.addEventListener("load", () => {
-        func(...args);
-    });
-    if (document.readyState === "complete") {
-        func(...args);
-    }
-}
-
 let options = {};
-
-function isEnabled(optionName) {
-    return !options || options[optionName] !== false; // enabled per default
-}
 
 async function main() {
     options = await loadFromStorage("options");

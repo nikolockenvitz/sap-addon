@@ -87,19 +87,6 @@ sharepoint.login.stopAutoSignIn = function () {
     domObserver.unregisterCallbackFunction(sharepoint.login.optionName);
 };
 
-function executeFunctionAfterPageLoaded(func, args = []) {
-    window.addEventListener("load", () => {
-        func(...args);
-    });
-    if (document.readyState === "complete") {
-        func(...args);
-    }
-}
-
-function isEnabled(optionName) {
-    return !options || options[optionName] !== false; // enabled per default
-}
-
 let options = {};
 let config = {};
 

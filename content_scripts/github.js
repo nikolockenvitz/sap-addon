@@ -540,23 +540,6 @@ function getDirectParentOfText(baseElement, text) {
     }
 }
 
-function redirectToURL(url) {
-    window.location.replace(url);
-}
-
-function executeFunctionAfterPageLoaded(func, args = []) {
-    window.addEventListener("load", (e) => {
-        func(...args);
-    });
-    if (document.readyState === "complete") {
-        func(...args);
-    }
-}
-
-function isEnabled(optionName) {
-    return !options || options[optionName] !== false; // enabled by default
-}
-
 let options;
 let usernameCache;
 function saveUsernameCacheToStorage() {
