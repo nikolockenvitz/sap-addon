@@ -1,7 +1,3 @@
-/* initial setup for browser and promises only needs to be done in first
- * background script
- */
-
 browser.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     if (request.contentScriptQuery === "githubFetchUsername") {
         const resultPromise = fetchUsername(...request.args);

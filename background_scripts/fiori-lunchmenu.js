@@ -1,20 +1,3 @@
-let usePromisesForAsync = false;
-let isChromium = false;
-if (typeof browser !== "undefined") {
-    usePromisesForAsync = true;
-} else {
-    window.browser = chrome;
-    isChromium = true;
-}
-function execAsync(asyncFunction, args, callback) {
-    if (!Array.isArray(args)) args = [args];
-    if (usePromisesForAsync) {
-        asyncFunction(...args).then(callback);
-    } else {
-        asyncFunction(...args, callback);
-    }
-}
-
 const fiorilaunchpad = {
     hostname: "fiorilaunchpad.sap.com",
     overrideLunchmenu: {
@@ -27,29 +10,12 @@ const fiorilaunchpad = {
     },
 };
 
-let options = {};
-function loadOptionsFromStorage() {
-    return new Promise(function (resolve) {
-        execAsync(browser.storage.local.get.bind(browser.storage.local), "options", (res) => {
-            options = res.options;
-            resolve();
-        });
-    });
-}
-
 function isEnabled(optionName) {
     return !options || options[optionName] !== false; // enabled per default
 }
 
+let options = {};
 let config = {};
-function loadConfigFromStorage() {
-    return new Promise(function (resolve) {
-        execAsync(browser.storage.local.get.bind(browser.storage.local), "config", (res) => {
-            config = res.config || {};
-            resolve();
-        });
-    });
-}
 
 /* Intercepting AJAX calls which are fetching lunch menu */
 fiorilaunchpad.overrideLunchmenu.rewriteLunchMenuHeader = function (requestDetails) {
@@ -73,7 +39,7 @@ fiorilaunchpad.overrideLunchmenu.rewriteLunchMenuHeader = function (requestDetai
 };
 
 async function main() {
-    await Promise.all([loadOptionsFromStorage(), loadConfigFromStorage()]);
+    [options, config] = await Promise.all([loadFromStorage("options"), loadFromStorage("config")]);
 
     if (isEnabled(fiorilaunchpad.overrideLunchmenu.optionName)) {
         const opt_extraInfoSpec = ["blocking", "requestHeaders"];

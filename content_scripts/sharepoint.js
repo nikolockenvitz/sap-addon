@@ -1,19 +1,3 @@
-let usePromisesForAsync = false;
-if (typeof browser !== "undefined") {
-    usePromisesForAsync = true;
-} else {
-    window.browser = chrome;
-}
-function execAsync(asyncFunction, args, callback) {
-    if (!Array.isArray(args)) args = [args];
-    if (usePromisesForAsync) {
-        asyncFunction(...args).then(callback);
-    } else {
-        asyncFunction(...args, callback);
-    }
-}
-const url = new URL(window.location.href);
-
 const sharepoint = {
     login: {
         optionName: "sharepoint-login",
@@ -26,34 +10,6 @@ const sharepoint = {
         microsoftonlineEnterEmailAndClickNextBtnQuery: `div div.win-button-pin-bottom div.row div div div input[type=submit][value=Next]`,
     },
 };
-
-class DOMObserver {
-    constructor() {
-        this.observerCallbacks = {};
-        const that = this;
-        this.observer = new MutationObserver(function (mutation, _observer) {
-            for (const id in that.observerCallbacks) {
-                that.observerCallbacks[id](mutation, _observer);
-            }
-        });
-        this.observer.observe(document, {
-            childList: true,
-            characterData: true,
-            subtree: true,
-        });
-    }
-
-    registerCallbackFunction(id, callback) {
-        if (!this.observerCallbacks[id]) {
-            this.observerCallbacks[id] = callback;
-        }
-    }
-
-    unregisterCallbackFunction(id) {
-        delete this.observerCallbacks[id];
-    }
-}
-const domObserver = new DOMObserver();
 
 sharepoint.login.executeLogin = function () {
     function login() {
@@ -140,32 +96,15 @@ function executeFunctionAfterPageLoaded(func, args = []) {
     }
 }
 
-let options = {};
-function loadOptionsFromStorage() {
-    return new Promise(function (resolve) {
-        execAsync(browser.storage.local.get.bind(browser.storage.local), "options", (res) => {
-            options = res.options || {};
-            resolve();
-        });
-    });
-}
-
 function isEnabled(optionName) {
     return !options || options[optionName] !== false; // enabled per default
 }
 
+let options = {};
 let config = {};
-function loadConfigFromStorage() {
-    return new Promise(function (resolve) {
-        execAsync(browser.storage.local.get.bind(browser.storage.local), "config", (res) => {
-            config = res.config || {};
-            resolve();
-        });
-    });
-}
 
 async function main() {
-    await Promise.all([loadOptionsFromStorage(), loadConfigFromStorage()]);
+    [options, config] = await Promise.all([loadFromStorage("options"), loadFromStorage("config")]);
 
     if (isEnabled(sharepoint.login.optionName)) {
         sharepoint.login.executeLogin();

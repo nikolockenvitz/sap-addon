@@ -1,19 +1,3 @@
-let usePromisesForAsync = false;
-if (typeof browser !== "undefined") {
-    usePromisesForAsync = true;
-} else {
-    window.browser = chrome;
-}
-function execAsync(asyncFunction, args, callback) {
-    if (!Array.isArray(args)) args = [args];
-    if (usePromisesForAsync) {
-        asyncFunction(...args).then(callback);
-    } else {
-        asyncFunction(...args, callback);
-    }
-}
-const url = new URL(window.location.href);
-
 const portal = {
     redirect: {
         optionName: "portal-redirect",
@@ -66,21 +50,13 @@ function executeFunctionAfterPageLoaded(func, args = []) {
 }
 
 let options = {};
-function loadOptionsFromStorage() {
-    return new Promise(function (resolve) {
-        execAsync(browser.storage.local.get.bind(browser.storage.local), "options", (res) => {
-            options = res.options || {};
-            resolve();
-        });
-    });
-}
 
 function isEnabled(optionName) {
     return !options || options[optionName] !== false; // enabled per default
 }
 
 async function main() {
-    await loadOptionsFromStorage();
+    options = await loadFromStorage("options");
 
     if (isEnabled(portal.redirect.optionName) && portal.redirect.pathnamesFrom.includes(url.pathname)) {
         portal.redirect.redirect();

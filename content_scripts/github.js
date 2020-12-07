@@ -1,19 +1,3 @@
-let usePromisesForAsync = false;
-if (typeof browser !== "undefined") {
-    usePromisesForAsync = true;
-} else {
-    window.browser = chrome;
-}
-function execAsync(asyncFunction, args, callback) {
-    if (!Array.isArray(args)) args = [args];
-    if (usePromisesForAsync) {
-        asyncFunction(...args).then(callback);
-    } else {
-        asyncFunction(...args, callback);
-    }
-}
-const url = new URL(window.location.href);
-
 const github = {
     signIn: {
         optionName: "github-sign-in",
@@ -50,34 +34,6 @@ const github = {
         regexNameOnProfilePage: `<span class='salutation'>[^<]*</span>([^<]*)<`,
     },
 };
-
-class DOMObserver {
-    constructor() {
-        this.observerCallbacks = {};
-        const that = this;
-        this.observer = new MutationObserver(function (mutation, _observer) {
-            for (const id in that.observerCallbacks) {
-                that.observerCallbacks[id](mutation, _observer);
-            }
-        });
-        this.observer.observe(document, {
-            childList: true,
-            characterData: true,
-            subtree: true,
-        });
-    }
-
-    registerCallbackFunction(id, callback) {
-        if (!this.observerCallbacks[id]) {
-            this.observerCallbacks[id] = callback;
-        }
-    }
-
-    unregisterCallbackFunction(id) {
-        delete this.observerCallbacks[id];
-    }
-}
-const domObserver = new DOMObserver();
 
 github.signIn.signIn = function () {
     executeFunctionAfterPageLoaded(function () {
@@ -123,7 +79,7 @@ github.signIn.listenForSignInOtherTab = function () {
      * -> only regularly checking works, maybe can be combined with mutation observer
      */
     setInterval(async function () {
-        await loadOptionsFromStorage();
+        options = await loadFromStorage("options");
         if (isEnabled(github.signIn.optionName)) {
             const signInBtn = document.querySelector(github.signIn.signInOtherTabQuery);
             if (signInBtn) {
@@ -597,52 +553,26 @@ function executeFunctionAfterPageLoaded(func, args = []) {
     }
 }
 
-let options = {};
-function loadOptionsFromStorage() {
-    return new Promise(function (resolve) {
-        execAsync(browser.storage.local.get.bind(browser.storage.local), "options", (res) => {
-            options = res.options || {};
-            resolve();
-        });
-    });
-}
-
 function isEnabled(optionName) {
     return !options || options[optionName] !== false; // enabled by default
 }
 
-let usernameCache = undefined;
-function loadUsernameCacheFromStorage() {
-    return new Promise(function (resolve) {
-        execAsync(browser.storage.local.get.bind(browser.storage.local), "usernameCache", (res) => {
-            usernameCache = res.usernameCache || {};
-            resolve();
-        });
-    });
-}
-
+let options;
+let usernameCache;
 function saveUsernameCacheToStorage() {
-    browser.storage.local.set({ usernameCache: usernameCache });
+    return saveToStorage("usernameCache", usernameCache);
 }
-
 let noticeBoxMessagesToHide = {};
-function loadNoticeBoxMessagesToHideFromStorage() {
-    return new Promise(function (resolve) {
-        execAsync(browser.storage.local.get.bind(browser.storage.local), "githubNoticeBoxMessagesToHide", (res) => {
-            noticeBoxMessagesToHide = res.githubNoticeBoxMessagesToHide || {};
-            resolve();
-        });
-    });
-}
-
 function saveNoticeBoxMessagesToHideToStorage() {
-    browser.storage.local.set({
-        githubNoticeBoxMessagesToHide: noticeBoxMessagesToHide,
-    });
+    return saveToStorage("githubNoticeBoxMessagesToHide", noticeBoxMessagesToHide);
 }
 
 async function main() {
-    await Promise.all([loadUsernameCacheFromStorage(), loadOptionsFromStorage(), loadNoticeBoxMessagesToHideFromStorage()]);
+    [usernameCache, options, noticeBoxMessagesToHide] = await Promise.all([
+        loadFromStorage("usernameCache"),
+        loadFromStorage("options"),
+        loadFromStorage("githubNoticeBoxMessagesToHide"),
+    ]);
 
     if (isEnabled(github.signIn.optionName)) {
         github.signIn.signIn();
