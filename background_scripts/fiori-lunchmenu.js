@@ -18,7 +18,7 @@ let options = {};
 let config = {};
 
 /* Intercepting AJAX calls which are fetching lunch menu */
-fiorilaunchpad.overrideLunchmenu.rewriteLunchMenuHeader = function (requestDetails) {
+function rewriteLunchMenuHeader(requestDetails) {
     const language = config[fiorilaunchpad.overrideLunchmenu.configNameLanguage];
     if (!language) return;
     let rewroteHeader = false;
@@ -36,7 +36,7 @@ fiorilaunchpad.overrideLunchmenu.rewriteLunchMenuHeader = function (requestDetai
         });
     }
     return { requestHeaders: requestDetails.requestHeaders };
-};
+}
 
 async function main() {
     [options, config] = await Promise.all([loadFromStorage("options"), loadFromStorage("config")]);
@@ -45,12 +45,12 @@ async function main() {
         const opt_extraInfoSpec = ["blocking", "requestHeaders"];
         if (isChromium) opt_extraInfoSpec.push("extraHeaders");
         browser.webRequest.onBeforeSendHeaders.addListener(
-            fiorilaunchpad.overrideLunchmenu.rewriteLunchMenuHeader,
+            rewriteLunchMenuHeader,
             { urls: fiorilaunchpad.overrideLunchmenu.urls },
             opt_extraInfoSpec
         );
     } else {
-        browser.webRequest.onBeforeSendHeaders.removeListener(fiorilaunchpad.overrideLunchmenu.rewriteLunchMenuHeader);
+        browser.webRequest.onBeforeSendHeaders.removeListener(rewriteLunchMenuHeader);
     }
 }
 main();

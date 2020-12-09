@@ -11,7 +11,7 @@ const sharepoint = {
     },
 };
 
-sharepoint.login.executeLogin = function () {
+function executeLogin() {
     function login() {
         let emailInput, btn;
 
@@ -19,32 +19,32 @@ sharepoint.login.executeLogin = function () {
         btn = document.querySelector(sharepoint.login.sharepointOnlyClickNextBtnQuery);
         if (btn) {
             // could also be used to obtain email address: document.querySelector("#SigninControls div.form-message #lblSignInDescription span b").textContent
-            sharepoint.login._clickButton(btn);
-            return sharepoint.login.stopAutoSignIn();
+            _clickButton(btn);
+            return stopAutoSignIn();
         }
 
         // login.microsoftonline.com, only to select first email address to continue
         btn = document.querySelector(sharepoint.login.microsoftonlineSelectAccount);
         if (btn) {
             // could also be used to obtain email address (btn.textContent)
-            sharepoint.login._clickButton(btn);
-            return sharepoint.login.stopAutoSignIn();
+            _clickButton(btn);
+            return stopAutoSignIn();
         }
 
         // sap-my.sharepoint.com, email input + button "Next" to continue
         emailInput = document.querySelector(sharepoint.login.sharepointEnterEmailAndClickNextInputQuery);
         btn = document.querySelector(sharepoint.login.sharepointEnterEmailAndClickNextBtnQuery);
         if (emailInput && btn) {
-            sharepoint.login._enterEmailAndClickNext(emailInput, btn);
-            return sharepoint.login.stopAutoSignIn();
+            _enterEmailAndClickNext(emailInput, btn);
+            return stopAutoSignIn();
         }
 
         // login.microsoftonline.com, email input + button "Next" to continue
         emailInput = document.querySelector(sharepoint.login.microsoftonlineEnterEmailAndClickNextInputQuery);
         btn = document.querySelector(sharepoint.login.microsoftonlineEnterEmailAndClickNextBtnQuery);
         if (emailInput && btn) {
-            sharepoint.login._enterEmailAndClickNext(emailInput, btn);
-            return sharepoint.login.stopAutoSignIn();
+            _enterEmailAndClickNext(emailInput, btn);
+            return stopAutoSignIn();
         }
     }
 
@@ -52,27 +52,27 @@ sharepoint.login.executeLogin = function () {
     domObserver.registerCallbackFunction(sharepoint.login.optionName, function (mutations, _observer) {
         login();
     });
-};
-sharepoint.login._enterEmailAndClickNext = function (emailInput, btn) {
+}
+function _enterEmailAndClickNext(emailInput, btn) {
     const configEmail = config[sharepoint.login.configNameEmailAddress];
     if (emailInput.value === "") {
         if (configEmail) {
             emailInput.value = configEmail;
             emailInput.dispatchEvent(new Event("change"));
             emailInput.dispatchEvent(new Event("input"));
-            sharepoint.login._clickButton(btn);
-            sharepoint.login.stopAutoSignIn();
+            _clickButton(btn);
+            stopAutoSignIn();
             return true;
         }
         // TODO: insert/show notice to configure email in addon?
     } else if (emailInput.value === configEmail) {
-        sharepoint.login._clickButton(btn);
-        sharepoint.login.stopAutoSignIn();
+        _clickButton(btn);
+        stopAutoSignIn();
         return true;
     }
     return false;
-};
-sharepoint.login._clickButton = function (btn) {
+}
+function _clickButton(btn) {
     function click() {
         btn.click();
     }
@@ -81,11 +81,11 @@ sharepoint.login._clickButton = function (btn) {
     } else {
         click();
     }
-};
+}
 
-sharepoint.login.stopAutoSignIn = function () {
+function stopAutoSignIn() {
     domObserver.unregisterCallbackFunction(sharepoint.login.optionName);
-};
+}
 
 let options = {};
 let config = {};
@@ -94,7 +94,7 @@ async function main() {
     [options, config] = await Promise.all([loadFromStorage("options"), loadFromStorage("config")]);
 
     if (isEnabled(sharepoint.login.optionName)) {
-        sharepoint.login.executeLogin();
+        executeLogin();
     }
 }
 main();

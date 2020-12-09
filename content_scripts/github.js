@@ -35,18 +35,18 @@ const github = {
     },
 };
 
-github.signIn.signIn = function () {
+function signIn() {
     executeFunctionAfterPageLoaded(function () {
-        github.signIn.getSignInButtonAndClick();
+        getSignInButtonAndClick();
     });
 
     domObserver.registerCallbackFunction(github.signIn.optionName, function (mutations, _observer) {
         for (const { target } of mutations) {
-            github.signIn.getSignInButtonAndClick(target);
+            getSignInButtonAndClick(target);
         }
     });
-};
-github.signIn.getSignInButtonAndClick = function (element) {
+}
+function getSignInButtonAndClick(element) {
     element = element || document;
     try {
         const signInBtn = element.querySelector(github.signIn.query);
@@ -54,25 +54,25 @@ github.signIn.getSignInButtonAndClick = function (element) {
             setTimeout(function () {
                 signInBtn.click();
             }, 100); // when click is executed directly, github.tools.sap crashes in chrome
-            github.signIn.stopAutoSignIn();
+            stopAutoSignIn();
         }
 
         // there's a redirect during login; in case redirects are blocked by the browser: click link
-        const redirectLink = github.signIn.getSignInRedirectLink(element);
+        const redirectLink = getSignInRedirectLink(element);
         if (redirectLink && redirectLink.click) {
             redirectLink.click();
-            github.signIn.stopAutoSignIn();
+            stopAutoSignIn();
         }
     } catch {}
-};
-github.signIn.getSignInRedirectLink = function (element) {
+}
+function getSignInRedirectLink(element) {
     const redirectLink = element.querySelector("a#redirect[href^='https://accounts.sap.com/']");
     return redirectLink && url.pathname === "/login" ? redirectLink : null;
-};
-github.signIn.stopAutoSignIn = function () {
+}
+function stopAutoSignIn() {
     domObserver.unregisterCallbackFunction(github.signIn.optionName);
-};
-github.signIn.listenForSignInOtherTab = function () {
+}
+function listenForSignInOtherTab() {
     /* when also non-active tabs are notified that settings changed and user
      * should get signed in, these tabs will be redirected to
      * github.wdf.sap.corp/saml/consume which throws a 404
@@ -90,9 +90,9 @@ github.signIn.listenForSignInOtherTab = function () {
             }
         }
     }, 2500);
-};
+}
 
-github.flashNotice.hideDismissedNoticeBoxesAndInsertHideOverlayIfEnabled = function (insertOverlayEnabled = false) {
+function hideDismissedNoticeBoxesAndInsertHideOverlayIfEnabled(insertOverlayEnabled = false) {
     function getTextOfNoticeBox(noticeBox) {
         let text = `${url.host} `;
         for (const containers of noticeBox.children) {
@@ -168,11 +168,11 @@ github.flashNotice.hideDismissedNoticeBoxesAndInsertHideOverlayIfEnabled = funct
             }
         }
     });
-};
-github.flashNotice.removeHideOverlay = function () {
+}
+function removeHideOverlayInNoticeBoxes() {
     _hideElementsByQuery(`[data-sap-addon-notice-box-inserted-overlay] .sap-addon-hide-notice-box-overlay`);
-};
-github.flashNotice.showAllAgain = function () {
+}
+function showAllNoticeBoxesAgain() {
     for (const message in noticeBoxMessagesToHide) {
         delete noticeBoxMessagesToHide[message];
     }
@@ -182,7 +182,7 @@ github.flashNotice.showAllAgain = function () {
     executeFunctionAfterPageLoaded(function () {
         _showElementsByQuery(github.flashNotice.query);
     });
-};
+}
 
 function _hideElementsByQuery(query, baseElement) {
     _setDisplayAttributeForElementsByQuery(query, baseElement, "none");
@@ -201,23 +201,23 @@ function _setDisplayAttributeForElementsByQuery(query, baseElement, displayValue
     } catch {}
 }
 
-github.showNames.replaceIds = function () {
+function replaceGitHubIdsWithUsername() {
     executeFunctionAfterPageLoaded(function () {
         /* execute once in cases where observer is not registered before
          * elements are changed/created (e.g. gets enabled in options)
          */
-        github.showNames._replaceAllChildsWhichAreUserId(document.body);
+        _replaceAllChildsWhichAreUserId(document.body);
         saveUsernameCacheToStorage();
     });
 
     domObserver.registerCallbackFunction(github.showNames.optionName, function (mutations, _observer) {
         for (const { target } of mutations) {
-            github.showNames._replaceAllChildsWhichAreUserId(target);
+            _replaceAllChildsWhichAreUserId(target);
         }
         saveUsernameCacheToStorage();
     });
-};
-github.showNames.showIdsAgain = function () {
+}
+function showGitHubIdsAgain() {
     domObserver.unregisterCallbackFunction(github.showNames.optionName);
     for (const element of document.querySelectorAll("[data-sap-addon-user-id]")) {
         element.textContent = element.getAttribute("data-sap-addon-user-id");
@@ -227,26 +227,26 @@ github.showNames.showIdsAgain = function () {
         element.setAttribute("aria-label", element.getAttribute("data-sap-addon-tooltip-original-content"));
         element.removeAttribute("data-sap-addon-tooltip-original-content");
     }
-};
-github.showNames._replaceAllChildsWhichAreUserId = function (element) {
+}
+function _replaceAllChildsWhichAreUserId(element) {
     try {
         for (const queryMatch of element.querySelectorAll(github.showNames.query)) {
-            github.showNames._replaceElementIfUserId(queryMatch);
+            _replaceElementIfUserId(queryMatch);
         }
     } catch {}
     try {
         for (const queryMatch of element.querySelectorAll(github.showNames.queryTooltips)) {
-            github.showNames._replaceElementsTooltip(queryMatch);
+            _replaceElementsTooltip(queryMatch);
         }
     } catch {}
-};
-github.showNames._replaceElementIfUserId = async function (element) {
-    const { userId, prefix, suffix } = github.showNames._getUserIdIfElementIsUserId(element);
+}
+async function _replaceElementIfUserId(element) {
+    const { userId, prefix, suffix } = _getUserIdIfElementIsUserId(element);
     if (userId) {
         if (element.hasAttribute("data-sap-addon-already-getting-username")) return;
         element.setAttribute("data-sap-addon-already-getting-username", "true");
 
-        const username = await github.showNames._getUsername(userId);
+        const username = await _getUsername(userId);
         if (username) {
             const el = getDirectParentOfText(element, prefix + userId + suffix);
             if (el) {
@@ -256,14 +256,14 @@ github.showNames._replaceElementIfUserId = async function (element) {
         }
         element.removeAttribute("data-sap-addon-already-getting-username");
     }
-};
-github.showNames._getUserIdIfElementIsUserId = function (element) {
+}
+function _getUserIdIfElementIsUserId(element) {
     let userId =
         !element.hasAttribute("data-sap-addon-user-id") && !element.querySelector("[data-sap-addon-user-id]")
             ? element.textContent.trim()
             : null;
     if (userId === "" || !isElementALink(element)) {
-        if (!github.showNames._hrefException(element)) {
+        if (!_hrefException(element)) {
             userId = null;
         }
     }
@@ -293,18 +293,18 @@ github.showNames._getUserIdIfElementIsUserId = function (element) {
         }
     }
     return { prefix: "", userId, suffix: "" };
-};
-github.showNames._hrefException = function (element) {
+}
+function _hrefException(element) {
     return (
-        github.showNames._hrefExceptionForReviewer(element) ||
-        github.showNames._hrefExceptionForCommentEditHistoryDialog(element) ||
-        github.showNames._hrefExceptionForResolvedConversation(element) ||
-        github.showNames._hrefExceptionForResolvedConversationPrReview(element) ||
-        github.showNames._hrefExceptionForRecentActivity(element)
+        _hrefExceptionForReviewer(element) ||
+        _hrefExceptionForCommentEditHistoryDialog(element) ||
+        _hrefExceptionForResolvedConversation(element) ||
+        _hrefExceptionForResolvedConversationPrReview(element) ||
+        _hrefExceptionForRecentActivity(element)
     );
-};
+}
 
-github.showNames._replaceElementsTooltip = async function (element) {
+async function _replaceElementsTooltip(element) {
     if (
         element.hasAttribute("data-sap-addon-tooltip-original-content") ||
         element.hasAttribute("data-sap-addon-already-replacing-tooltip")
@@ -313,12 +313,12 @@ github.showNames._replaceElementsTooltip = async function (element) {
     }
     element.setAttribute("data-sap-addon-already-replacing-tooltip", "true");
     const originalTooltipText = element.getAttribute("aria-label");
-    const replacedTooltipText = await github.showNames._getNewTooltipText(originalTooltipText);
+    const replacedTooltipText = await _getNewTooltipText(originalTooltipText);
     element.setAttribute("data-sap-addon-tooltip-original-content", originalTooltipText);
     element.removeAttribute("data-sap-addon-already-replacing-tooltip");
     element.setAttribute("aria-label", replacedTooltipText);
-};
-github.showNames._getNewTooltipText = async function (originalTooltipText) {
+}
+async function _getNewTooltipText(originalTooltipText) {
     // currently supports: emoji reactions, project issues cards
     // (A | A and B | A, B, and C) reacted with ... emoji
     // Assigned to (A | A and B | A, B, and C)
@@ -351,30 +351,30 @@ github.showNames._getNewTooltipText = async function (originalTooltipText) {
         // more than two names
         const [firstUserIds, lastUserId] = userIds.split(", and ");
         for (const userId of firstUserIds.split(", ")) {
-            usernames.push(await github.showNames._getUsername(userId));
+            usernames.push(await _getUsername(userId));
         }
         // lastUserId should not match something like "5 more" (e.g. in A, ..., B, and 5 more)
         if (!new RegExp(`\\d+ more`).exec(lastUserId)) {
-            usernames.push(await github.showNames._getUsername(lastUserId));
+            usernames.push(await _getUsername(lastUserId));
         }
     } else if (userIds.includes(" and ")) {
         // two names
         for (const userId of userIds.split(" and ")) {
-            usernames.push(await github.showNames._getUsername(userId));
+            usernames.push(await _getUsername(userId));
         }
     } else {
         // one name
-        usernames.push(await github.showNames._getUsername(userIds));
+        usernames.push(await _getUsername(userIds));
     }
     return (
         textBefore +
         (currentTooltipType.textBeforeUserIds || "") +
-        github.showNames._makeUsernameTextForTooltip(usernames) +
+        _makeUsernameTextForTooltip(usernames) +
         (currentTooltipType.textAfterUserIds || "") +
         textAfter
     );
-};
-github.showNames._makeUsernameTextForTooltip = function (usernames) {
+}
+function _makeUsernameTextForTooltip(usernames) {
     let usernameText = "";
     for (let i = 0; i < usernames.length; i++) {
         if (i !== 0 && usernames.length !== 2) {
@@ -393,7 +393,7 @@ github.showNames._makeUsernameTextForTooltip = function (usernames) {
         usernameText += usernames[i];
     }
     return usernameText;
-};
+}
 
 /* The request queue will store an array for each userId that should be retrieved from People/GitHub.
 This array is to avoid multiple requests when a userId is requested multiple times (so that only
@@ -404,7 +404,7 @@ and there's no username in the cache yet.
 */
 const userIdRequestQueue = {};
 
-github.showNames._getUsername = async function (userId) {
+async function _getUsername(userId) {
     if (github.showNames.userIdFalsePositives.includes(userId)) return null;
     const user = usernameCache[userId];
     if (user && user.username) {
@@ -423,7 +423,7 @@ github.showNames._getUsername = async function (userId) {
         });
     } else {
         userIdRequestQueue[userId] = [];
-        const username = await github.showNames._fetchUsername(userId);
+        const username = await _fetchUsername(userId);
         if (username) {
             usernameCache[userId] = {
                 username: username,
@@ -439,9 +439,9 @@ github.showNames._getUsername = async function (userId) {
         }
         return username;
     }
-};
+}
 
-github.showNames._fetchUsername = function (userId) {
+function _fetchUsername(userId) {
     return new Promise(function (resolve) {
         execAsync(
             browser.runtime.sendMessage.bind(browser.runtime),
@@ -461,9 +461,9 @@ github.showNames._fetchUsername = function (userId) {
             }
         );
     });
-};
+}
 
-github.showNames._hrefExceptionForReviewer = function (element) {
+function _hrefExceptionForReviewer(element) {
     // reviewer (approval / pending) don't have a link to the user -> therefore exception needs to be added
     if (
         element.classList.contains("text-emphasized") &&
@@ -473,31 +473,31 @@ github.showNames._hrefExceptionForReviewer = function (element) {
     ) {
         return true;
     }
-};
-github.showNames._hrefExceptionForCommentEditHistoryDialog = function (element) {
+}
+function _hrefExceptionForCommentEditHistoryDialog(element) {
     // dialog which displays comment edit history doesn't has a link to the user
     return element.matches(`details.details-overlay details-dialog div div div
         span.css-truncate-target.v-align-middle.text-bold.text-small`); // same query string as in github.showNames.query
-};
-github.showNames._hrefExceptionForResolvedConversation = function (element) {
+}
+function _hrefExceptionForResolvedConversation(element) {
     return (
         element.parentElement &&
         element.parentElement.tagName === "FORM" &&
         element.parentElement.classList.contains("js-resolvable-timeline-thread-form")
     );
-};
-github.showNames._hrefExceptionForResolvedConversationPrReview = function (element) {
+}
+function _hrefExceptionForResolvedConversationPrReview(element) {
     return element.matches(`div.js-resolvable-timeline-thread-container div.comment-holder.js-line-comments
         div.js-resolvable-thread-toggler-container strong`); // same query string as in github.showNames.query
-};
-github.showNames._hrefExceptionForRecentActivity = function (element) {
+}
+function _hrefExceptionForRecentActivity(element) {
     return (
         element.textContent.trim().endsWith(" commented") &&
         element.textContent.trim() !== "You commented" &&
         element.matches(`div.js-recent-activity-container div.Box ul li.Box-row
             div.dashboard-break-word.lh-condensed.text-gray span.text-gray`)
     ); // same query string as in github.showNames.query
-};
+}
 
 function getUnixTimestamp() {
     return Math.floor(new Date().getTime());
@@ -558,22 +558,22 @@ async function main() {
     ]);
 
     if (isEnabled(github.signIn.optionName)) {
-        github.signIn.signIn();
+        signIn();
     } else {
-        github.signIn.stopAutoSignIn();
+        stopAutoSignIn();
     }
-    github.signIn.listenForSignInOtherTab();
+    listenForSignInOtherTab();
 
     const insertOverlayToHideFlashNoticeEnabled = isEnabled(github.flashNotice.optionName);
-    github.flashNotice.hideDismissedNoticeBoxesAndInsertHideOverlayIfEnabled(insertOverlayToHideFlashNoticeEnabled);
+    hideDismissedNoticeBoxesAndInsertHideOverlayIfEnabled(insertOverlayToHideFlashNoticeEnabled);
     if (!insertOverlayToHideFlashNoticeEnabled) {
-        github.flashNotice.removeHideOverlay();
+        removeHideOverlayInNoticeBoxes();
     }
 
     if (isEnabled(github.showNames.optionName)) {
-        github.showNames.replaceIds();
+        replaceGitHubIdsWithUsername();
     } else {
-        github.showNames.showIdsAgain();
+        showGitHubIdsAgain();
     }
 }
 main();
@@ -582,6 +582,6 @@ browser.runtime.onConnect.addListener(() => {
 });
 browser.runtime.onMessage.addListener((message) => {
     if (message.message === "github-hide-notice-show-all-again") {
-        github.flashNotice.showAllAgain();
+        showAllNoticeBoxesAgain();
     }
 });

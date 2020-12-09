@@ -10,11 +10,11 @@ const portal = {
     },
 };
 
-portal.redirect.redirect = function () {
+function redirectToMainPage () {
     redirectToURL(portal.redirect.pathnameTo);
-};
+}
 
-portal.searchbar.focus = function () {
+function focusSearchbar () {
     const intervalId = setInterval(function () {
         const searchbar = document.getElementById(portal.searchbar.searchbarId);
         if (searchbar) {
@@ -34,7 +34,7 @@ portal.searchbar.focus = function () {
         }
         focus();
     });
-};
+}
 
 function redirectToURL(url) {
     window.location.replace(url);
@@ -46,10 +46,10 @@ async function main() {
     options = await loadFromStorage("options");
 
     if (isEnabled(portal.redirect.optionName) && portal.redirect.pathnamesFrom.includes(url.pathname)) {
-        portal.redirect.redirect();
+        redirectToMainPage();
     }
     if (isEnabled(portal.searchbar.optionName)) {
-        portal.searchbar.focus();
+        focusSearchbar();
     }
 }
 main();
