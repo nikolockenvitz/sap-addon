@@ -10,10 +10,6 @@ const fiorilaunchpad = {
     },
 };
 
-function isEnabled(optionName) {
-    return !options || options[optionName] !== false; // enabled per default
-}
-
 let options = {};
 let config = {};
 

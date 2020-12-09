@@ -66,6 +66,7 @@
     "scripts": [
       "utils/browser-setup.js",
       "utils/storage.js",
+      "utils/option-helper.js",
       "background_scripts/fiori-lunchmenu.js",
       "background_scripts/on-tab-change.js",
       "background_scripts/fetch-github-name.js"
