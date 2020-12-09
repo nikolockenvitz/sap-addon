@@ -346,26 +346,27 @@ async function _getNewTooltipText(originalTooltipText) {
         [userIds, textAfter] = (tempSplitResultAtTextBeforeUserIds || originalTooltipText).split(currentTooltipType.textAfterUserIds);
     }
 
-    const usernames = [];
+    const usernamePromises = [];
     if (userIds.includes(", and ")) {
         // more than two names
         const [firstUserIds, lastUserId] = userIds.split(", and ");
         for (const userId of firstUserIds.split(", ")) {
-            usernames.push(await _getUsername(userId));
+            usernamePromises.push(_getUsername(userId));
         }
         // lastUserId should not match something like "5 more" (e.g. in A, ..., B, and 5 more)
         if (!new RegExp(`\\d+ more`).exec(lastUserId)) {
-            usernames.push(await _getUsername(lastUserId));
+            usernamePromises.push(_getUsername(lastUserId));
         }
     } else if (userIds.includes(" and ")) {
         // two names
         for (const userId of userIds.split(" and ")) {
-            usernames.push(await _getUsername(userId));
+            usernamePromises.push(_getUsername(userId));
         }
     } else {
         // one name
-        usernames.push(await _getUsername(userIds));
+        usernamePromises.push(_getUsername(userIds));
     }
+    const usernames = (await Promise.allSettled(usernamePromises)).map((promiseResult) => promiseResult.value);
     return (
         textBefore +
         (currentTooltipType.textBeforeUserIds || "") +
