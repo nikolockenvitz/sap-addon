@@ -1,0 +1,12 @@
+---
+---
+
+$header-bg-color: #0faaff !default;
+$header-bg-color-secondary: #1d61bc !default;
+$section-headings-color: #434c4f !default;
+
+@import "{{ site.theme }}";
+.page-header {
+  background-color: #0faaff;
+  background-image: linear-gradient(#00b8f1, #1d61bc);
+}
