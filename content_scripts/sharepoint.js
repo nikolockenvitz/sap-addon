@@ -1,20 +1,4 @@
-let usePromisesForAsync = false;
-if (typeof browser !== "undefined") {
-    usePromisesForAsync = true;
-} else {
-    window.browser = chrome;
-}
-function execAsync (asyncFunction, args, callback) {
-    if (!Array.isArray(args)) args = [args];
-    if (usePromisesForAsync) {
-        asyncFunction(...args).then(callback);
-    } else {
-        asyncFunction(...args, callback);
-    }
-}
-let url = new URL(window.location.href);
-
-let sharepoint = {
+const sharepoint = {
     login: {
         optionName: "sharepoint-login",
         configNameEmailAddress: "config-email",
@@ -27,99 +11,69 @@ let sharepoint = {
     },
 };
 
-class DOMObserver {
-    constructor () {
-        this.observerCallbacks = {};
-        let that = this;
-        this.observer = new MutationObserver(function (mutation, _observer) {
-            for (let id in that.observerCallbacks) {
-                that.observerCallbacks[id](mutation, _observer);
-            }
-        });
-        this.observer.observe(document, {
-            childList: true,
-            characterData: true,
-            subtree: true
-        });
-    }
-
-    registerCallbackFunction (id, callback) {
-        if (!this.observerCallbacks[id]) {
-            this.observerCallbacks[id] = callback;
-        }
-    }
-
-    unregisterCallbackFunction (id) {
-        delete this.observerCallbacks[id];
-    }
-}
-const domObserver = new DOMObserver();
-
-sharepoint.login.executeLogin = function () {
-    function login () {
+function executeLogin() {
+    function login() {
         let emailInput, btn;
 
         // sap-my.sharepoint.com, only button "Next" to continue
         btn = document.querySelector(sharepoint.login.sharepointOnlyClickNextBtnQuery);
         if (btn) {
             // could also be used to obtain email address: document.querySelector("#SigninControls div.form-message #lblSignInDescription span b").textContent
-            sharepoint.login._clickButton(btn);
-            return sharepoint.login.stopAutoSignIn();
+            _clickButton(btn);
+            return stopAutoSignIn();
         }
 
         // login.microsoftonline.com, only to select first email address to continue
         btn = document.querySelector(sharepoint.login.microsoftonlineSelectAccount);
         if (btn) {
             // could also be used to obtain email address (btn.textContent)
-            sharepoint.login._clickButton(btn);
-            return sharepoint.login.stopAutoSignIn();
+            _clickButton(btn);
+            return stopAutoSignIn();
         }
 
         // sap-my.sharepoint.com, email input + button "Next" to continue
         emailInput = document.querySelector(sharepoint.login.sharepointEnterEmailAndClickNextInputQuery);
         btn = document.querySelector(sharepoint.login.sharepointEnterEmailAndClickNextBtnQuery);
         if (emailInput && btn) {
-            sharepoint.login._enterEmailAndClickNext(emailInput, btn);
-            return sharepoint.login.stopAutoSignIn();
+            _enterEmailAndClickNext(emailInput, btn);
+            return stopAutoSignIn();
         }
 
         // login.microsoftonline.com, email input + button "Next" to continue
         emailInput = document.querySelector(sharepoint.login.microsoftonlineEnterEmailAndClickNextInputQuery);
         btn = document.querySelector(sharepoint.login.microsoftonlineEnterEmailAndClickNextBtnQuery);
         if (emailInput && btn) {
-            sharepoint.login._enterEmailAndClickNext(emailInput, btn);
-            return sharepoint.login.stopAutoSignIn();
+            _enterEmailAndClickNext(emailInput, btn);
+            return stopAutoSignIn();
         }
-    };
+    }
 
     executeFunctionAfterPageLoaded(login);
-    domObserver.registerCallbackFunction(sharepoint.login.optionName,
-        function (mutations, _observer) {
-            login();
-        }
-    );
-};
-sharepoint.login._enterEmailAndClickNext = function (emailInput, btn) {
-    let configEmail = config[sharepoint.login.configNameEmailAddress];
+    domObserver.registerCallbackFunction(sharepoint.login.optionName, function (mutations, _observer) {
+        login();
+    });
+}
+function _enterEmailAndClickNext(emailInput, btn) {
+    const configEmail = config[sharepoint.login.configNameEmailAddress];
     if (emailInput.value === "") {
         if (configEmail) {
             emailInput.value = configEmail;
-            emailInput.dispatchEvent(new Event('change'));
-            emailInput.dispatchEvent(new Event('input'));
-            sharepoint.login._clickButton(btn);
-            sharepoint.login.stopAutoSignIn();
+            emailInput.dispatchEvent(new Event("change"));
+            emailInput.dispatchEvent(new Event("input"));
+            _clickButton(btn);
+            stopAutoSignIn();
             return true;
         }
         // TODO: insert/show notice to configure email in addon?
     } else if (emailInput.value === configEmail) {
-        sharepoint.login._clickButton(btn);
-        sharepoint.login.stopAutoSignIn();
+        _clickButton(btn);
+        stopAutoSignIn();
         return true;
     }
     return false;
-};
-sharepoint.login._clickButton = function (btn) {
-    function click () {
+}
+function _clickButton(btn) {
+    function click() {
         btn.click();
     }
     if (url.hostname === "login.microsoftonline.com") {
@@ -127,55 +81,22 @@ sharepoint.login._clickButton = function (btn) {
     } else {
         click();
     }
-};
+}
 
-sharepoint.login.stopAutoSignIn = function () {
+function stopAutoSignIn() {
     domObserver.unregisterCallbackFunction(sharepoint.login.optionName);
-};
-
-let executeFunctionAfterPageLoaded = function (func, args=[]) {
-    window.addEventListener("load", (e) => {
-        func(...args);
-    });
-    if (document.readyState === "complete") {
-        func(...args);
-    }
-};
+}
 
 let options = {};
-let loadOptionsFromStorage = async function () {
-    return new Promise(async function (resolve, reject) {
-        execAsync(browser.storage.local.get.bind(browser.storage.local), "options", (res) => {
-            options = res.options || {};
-            resolve();
-        });
-    });
-};
-
-let isEnabled = function (optionName) {
-    return !options || options[optionName] !== false; // enabled per default
-};
-
 let config = {};
-let loadConfigFromStorage = async function () {
-    return new Promise(async function (resolve, reject) {
-        execAsync(browser.storage.local.get.bind(browser.storage.local), "config", (res) => {
-            config = res.config || {};
-            resolve();
-        });
-    });
-};
 
-async function main () {
-    await Promise.all([
-        loadOptionsFromStorage(),
-        loadConfigFromStorage(),
-    ]);
+async function main() {
+    [options, config] = await Promise.all([loadFromStorage("options"), loadFromStorage("config")]);
 
     if (isEnabled(sharepoint.login.optionName)) {
-        sharepoint.login.executeLogin();
+        executeLogin();
     }
-};
+}
 main();
 browser.runtime.onConnect.addListener(() => {
     main();

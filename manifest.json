@@ -14,6 +14,10 @@
         "*://portal.wdf.sap.corp/*"
       ],
       "js": [
+        "utils/browser-setup.js",
+        "utils/storage.js",
+        "utils/option-helper.js",
+        "utils/dom-helper.js",
         "content_scripts/portal.js"
       ],
       "run_at": "document_start"
@@ -24,6 +28,11 @@
         "*://github.tools.sap/*"
       ],
       "js": [
+        "utils/browser-setup.js",
+        "utils/storage.js",
+        "utils/dom-observer.js",
+        "utils/option-helper.js",
+        "utils/dom-helper.js",
         "content_scripts/github.js"
       ],
       "run_at": "document_start"
@@ -34,6 +43,11 @@
         "*://login.microsoftonline.com/*"
       ],
       "js": [
+        "utils/browser-setup.js",
+        "utils/storage.js",
+        "utils/dom-observer.js",
+        "utils/option-helper.js",
+        "utils/dom-helper.js",
         "content_scripts/sharepoint.js"
       ],
       "run_at": "document_start"
@@ -50,6 +64,9 @@
   ],
   "background": {
     "scripts": [
+      "utils/browser-setup.js",
+      "utils/storage.js",
+      "utils/option-helper.js",
       "background_scripts/fiori-lunchmenu.js",
       "background_scripts/on-tab-change.js",
       "background_scripts/fetch-github-name.js"

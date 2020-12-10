@@ -1,62 +1,24 @@
-let usePromisesForAsync = false;
-let isChromium = false;
-if (typeof browser !== "undefined") {
-    usePromisesForAsync = true;
-} else {
-    window.browser = chrome;
-    isChromium = true;
-}
-function execAsync (asyncFunction, args, callback) {
-    if (!Array.isArray(args)) args = [args];
-    if (usePromisesForAsync) {
-        asyncFunction(...args).then(callback);
-    } else {
-        asyncFunction(...args, callback);
-    }
-}
-
-let fiorilaunchpad = {
+const fiorilaunchpad = {
     hostname: "fiorilaunchpad.sap.com",
     overrideLunchmenu: {
         optionName: "fiori-lunchmenu-german",
         configNameLanguage: "config-lunchmenu-language",
         urls: [
             "https://fiorilaunchpad.sap.com/sap/fiori/lunchmenu/webapp/api/client/tiles/*",
-            "https://fiorilaunchpad.sap.com/sap/fiori/lunchmenu/api/client/lunch*"
-        ]
-    }
+            "https://fiorilaunchpad.sap.com/sap/fiori/lunchmenu/api/client/lunch*",
+        ],
+    },
 };
 
 let options = {};
-let loadOptionsFromStorage = async function () {
-    return new Promise(async function (resolve, reject) {
-        execAsync(browser.storage.local.get.bind(browser.storage.local), "options", (res) => {
-            options = res.options;
-            resolve();
-        });
-    });
-};
-
-let isEnabled = function (optionName) {
-    return !options || options[optionName] !== false; // enabled per default
-};
-
 let config = {};
-let loadConfigFromStorage = async function () {
-    return new Promise(async function (resolve, reject) {
-        execAsync(browser.storage.local.get.bind(browser.storage.local), "config", (res) => {
-            config = res.config || {};
-            resolve();
-        });
-    });
-};
 
 /* Intercepting AJAX calls which are fetching lunch menu */
-fiorilaunchpad.overrideLunchmenu.rewriteLunchMenuHeader = function (requestDetails) {
+function rewriteLunchMenuHeader(requestDetails) {
     const language = config[fiorilaunchpad.overrideLunchmenu.configNameLanguage];
     if (!language) return;
     let rewroteHeader = false;
-    for (let header of requestDetails.requestHeaders) {
+    for (const header of requestDetails.requestHeaders) {
         if (header.name.toLowerCase() === "accept-language") {
             header.value = language;
             rewroteHeader = true;
@@ -66,30 +28,25 @@ fiorilaunchpad.overrideLunchmenu.rewriteLunchMenuHeader = function (requestDetai
     if (!rewroteHeader) {
         requestDetails.requestHeaders.push({
             name: "Accept-Language",
-            value: language
+            value: language,
         });
     }
-    return {requestHeaders: requestDetails.requestHeaders};
-};
+    return { requestHeaders: requestDetails.requestHeaders };
+}
 
-async function main () {
-    await Promise.all([
-        loadOptionsFromStorage(),
-        loadConfigFromStorage(),
-    ]);
+async function main() {
+    [options, config] = await Promise.all([loadFromStorage("options"), loadFromStorage("config")]);
 
     if (isEnabled(fiorilaunchpad.overrideLunchmenu.optionName)) {
         const opt_extraInfoSpec = ["blocking", "requestHeaders"];
         if (isChromium) opt_extraInfoSpec.push("extraHeaders");
         browser.webRequest.onBeforeSendHeaders.addListener(
-            fiorilaunchpad.overrideLunchmenu.rewriteLunchMenuHeader,
+            rewriteLunchMenuHeader,
             { urls: fiorilaunchpad.overrideLunchmenu.urls },
             opt_extraInfoSpec
         );
     } else {
-        browser.webRequest.onBeforeSendHeaders.removeListener(
-            fiorilaunchpad.overrideLunchmenu.rewriteLunchMenuHeader
-        );
+        browser.webRequest.onBeforeSendHeaders.removeListener(rewriteLunchMenuHeader);
     }
 }
 main();
