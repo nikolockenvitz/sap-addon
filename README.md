@@ -19,9 +19,9 @@ Install by clicking on the badge above.
 Updates are handled automatically.
 
 ## current features
-<!-- TODO: update screenshots -->
-![Screenshot of Popup](docs/screenshot-1.13-popup.png)
-![Screenshot of Configuration in Popup](docs/screenshot-1.13-popup-config.png)
+
+![Screenshot of Popup](docs/screenshot-1.14-popup.png)
+![Screenshot of Configuration in Popup](docs/screenshot-1.14-popup-config.png)
 
 * `portal.wdf.sap.corp`
   * redirect from login page (`/home`) to main page (`/irj/portal`)
@@ -31,7 +31,7 @@ Updates are handled automatically.
   * hide yellow notice box messages
     * dismiss a specific messasge
     * always see new messages
-  * show name instead of user id (inspired by https://github.com/cgrail/github-chrome-fullname)
+  * show name instead of user id (inspired by [https://github.com/cgrail/github-chrome-fullname](https://github.com/cgrail/github-chrome-fullname))
   * get name from `people.wdf.sap.corp` (use GitHub only as a fallback)
     * names are cached in local storage
     * also some metadata is stored to be able to clean the cache based on usage later
@@ -51,6 +51,7 @@ After installation, just click on the icon and go to configuration.
 There you can customize the addon to your needs.
 
 ## feedback, contribute, ...
+
 Feel free to send feedback, share any ideas of what you think should be improved or can be added.
 
 Please also report if you encounter bugs or things that are not working as you expect.
