@@ -13,6 +13,7 @@ const github = {
         query: `.user-mention,
             [data-hovercard-type=user],
             a.text-emphasized.link-gray-dark,
+            a.link-gray-dark.no-underline.flex-self-center strong,
             .merge-status-item.review-item.bg-white.js-details-container.Details strong.text-emphasized,
             small a.text-gray-dark,
             div.js-recent-activity-container div.Box ul li.Box-row div.dashboard-break-word.lh-condensed.text-gray span.text-gray,
