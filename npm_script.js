@@ -9,6 +9,7 @@ const ZIP_CONTENT = {
         "content_scripts",
         "icons",
         "popup",
+        "utils",
     ],
     files: [
         "manifest.json",
