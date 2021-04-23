@@ -46,9 +46,14 @@ function runMainFunctionOfContentAndBackgroundScripts() {
             browser.tabs.connect(tab.id).disconnect();
         }
     });
-    execAsync(browser.runtime.getBackgroundPage, undefined, (backgroundWindow) => {
-        backgroundWindow.main();
-    });
+    // send message to background scripts to re-run main function
+    execAsync(
+        browser.runtime.sendMessage.bind(browser.runtime),
+        {
+            rerunMainFunctionOfBackgroundPage: true,
+        },
+        () => {}
+    );
 }
 
 function toggleInputOnSectionTextClick(inputId) {

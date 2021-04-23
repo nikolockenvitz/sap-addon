@@ -37,6 +37,9 @@ function rewriteLunchMenuHeader(requestDetails) {
 async function main() {
     [options, config] = await Promise.all([loadFromStorage("options"), loadFromStorage("config")]);
 
+    // remove potential previous listeners
+    browser.webRequest.onBeforeSendHeaders.removeListener(rewriteLunchMenuHeader);
+
     if (isEnabled(fiorilaunchpad.overrideLunchmenu.optionName)) {
         const opt_extraInfoSpec = ["blocking", "requestHeaders"];
         if (isChromium) opt_extraInfoSpec.push("extraHeaders");
@@ -45,8 +48,12 @@ async function main() {
             { urls: fiorilaunchpad.overrideLunchmenu.urls },
             opt_extraInfoSpec
         );
-    } else {
-        browser.webRequest.onBeforeSendHeaders.removeListener(rewriteLunchMenuHeader);
     }
 }
 main();
+
+browser.runtime.onMessage.addListener(function (request) {
+    if (request.rerunMainFunctionOfBackgroundPage) {
+        main();
+    }
+});
