@@ -3,6 +3,7 @@ const github = {
         optionName: "github-sign-in",
         query: "a[href^='/login?']",
         signInOtherTabQuery: ".js-stale-session-flash-signed-in a",
+        urlPath: "/login",
     },
     flashNotice: {
         optionName: "github-hide-notice-overlay",
@@ -37,6 +38,7 @@ const github = {
 };
 
 function signIn() {
+    if (url.pathname !== github.signIn.urlPath) return;
     executeFunctionAfterPageLoaded(function () {
         getSignInButtonAndClick();
     });
@@ -47,11 +49,13 @@ function signIn() {
         }
     });
 }
+let alreadyFoundSignInButton = false;
 function getSignInButtonAndClick(element) {
     element = element || document;
     try {
         const signInBtn = element.querySelector(github.signIn.query);
-        if (signInBtn && signInBtn.click) {
+        if (signInBtn && signInBtn.click && !alreadyFoundSignInButton) {
+            alreadyFoundSignInButton = true;
             setTimeout(function () {
                 signInBtn.click();
             }, 100); // when click is executed directly, github.tools.sap crashes in chrome
@@ -163,6 +167,7 @@ function hideDismissedNoticeBoxesAndInsertHideOverlayIfEnabled(insertOverlayEnab
 
     domObserver.registerCallbackFunction(github.flashNotice.optionName, function (mutations, _observer) {
         for (const { target } of mutations) {
+            if (!target.querySelectorAll) continue;
             for (const match of target.querySelectorAll(github.flashNotice.query)) {
                 hideIfMessageIsSetToHidden(match);
                 insertOverlay(match);
