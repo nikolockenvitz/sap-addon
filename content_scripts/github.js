@@ -24,7 +24,9 @@ const github = {
             details.details-overlay details-dialog div div div span.css-truncate-target.v-align-middle.text-bold.text-small,
             div.text-gray span.css-truncate.tooltipped span.css-truncate-target.text-bold,
             form.js-resolvable-timeline-thread-form strong,
-            div.js-resolvable-timeline-thread-container div.comment-holder.js-line-comments div.js-resolvable-thread-toggler-container strong
+            div.js-resolvable-timeline-thread-container div.comment-holder.js-line-comments div.js-resolvable-thread-toggler-container strong,
+            div.user-status-container a.link-gray-dark.text-bold.no-underline[data-hovercard-type="user"],
+            details#blob_contributors_box details-dialog ul li a.link-gray-dark.no-underline
         `,
         queryTooltips: `div.comment-reactions-options button.btn-link.reaction-summary-item.tooltipped[type=submit],
             div.AvatarStack div.AvatarStack-body.tooltipped`,
@@ -548,6 +550,20 @@ function isElementALink(element) {
 function getDirectParentOfText(baseElement, text) {
     if (baseElement.childNodes.length === 1 && baseElement.firstChild.nodeName === "#text" && baseElement.textContent.trim() === text) {
         return baseElement;
+    } else if (
+        baseElement.childNodes.length === 3 &&
+        baseElement.childNodes[0].nodeName === "#text" &&
+        baseElement.childNodes[1].nodeName === "IMG" &&
+        baseElement.childNodes[2].nodeName === "#text" &&
+        baseElement.childNodes[2].textContent.trim() === text
+    ) {
+        // sometimes text is directly after the user icon w/o separate html tag
+        // however, a real element is needed (not only a text node; a data-attribute will be set on the element later)
+        const textNode = baseElement.childNodes[2];
+        const newElement = document.createElement("span");
+        newElement.textContent = textNode.textContent.trim();
+        baseElement.replaceChild(newElement, textNode);
+        return newElement;
     } else {
         for (const child of baseElement.childNodes) {
             if (child.childNodes.length > 0) {
