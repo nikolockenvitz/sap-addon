@@ -22,6 +22,7 @@ const github = {
             span.js-comment-edit-history details details-menu.dropdown-menu.js-comment-edit-history-menu
                 ul li button.btn-link span.css-truncate-target.v-align-middle.text-bold,
             details.details-overlay details-dialog div div div span.css-truncate-target.v-align-middle.text-bold.text-small,
+            div.text-gray span.css-truncate.tooltipped span.css-truncate-target.text-bold,
             form.js-resolvable-timeline-thread-form strong,
             div.js-resolvable-timeline-thread-container div.comment-holder.js-line-comments div.js-resolvable-thread-toggler-container strong
         `,
@@ -306,7 +307,8 @@ function _hrefException(element) {
         _hrefExceptionForCommentEditHistoryDialog(element) ||
         _hrefExceptionForResolvedConversation(element) ||
         _hrefExceptionForResolvedConversationPrReview(element) ||
-        _hrefExceptionForRecentActivity(element)
+        _hrefExceptionForRecentActivity(element) ||
+        _hrefExceptionForYourTeams(element)
     );
 }
 
@@ -339,10 +341,13 @@ async function _getNewTooltipText(originalTooltipText) {
             break;
         }
     }
-    if (!currentTooltipType) return;
+    if (!currentTooltipType) {
+        // maybe only a list of userIds -> continue and see result
+        currentTooltipType = {};
+    }
 
     // split tooltip text which has following structure: "<textBefore><textBeforeUserIds><userIds><textAfterUserIds><textAfter>"
-    let userIds;
+    let userIds = originalTooltipText;
     let textBefore = (textAfter = tempSplitResultAtTextBeforeUserIds = "");
     if (currentTooltipType.textBeforeUserIds) {
         [textBefore, tempSplitResultAtTextBeforeUserIds] = originalTooltipText.split(currentTooltipType.textBeforeUserIds);
@@ -373,6 +378,10 @@ async function _getNewTooltipText(originalTooltipText) {
         usernamePromises.push(_getUsername(userIds));
     }
     const usernames = (await Promise.allSettled(usernamePromises)).map((promiseResult) => promiseResult.value);
+    if (usernames.includes(null)) {
+        // probably not a tooltip with usernames -> return original text
+        return originalTooltipText;
+    }
     return (
         textBefore +
         (currentTooltipType.textBeforeUserIds || "") +
@@ -412,7 +421,7 @@ and there's no username in the cache yet.
 const userIdRequestQueue = {};
 
 async function _getUsername(userId) {
-    if (github.showNames.userIdFalsePositives.includes(userId)) return null;
+    if (!userId || github.showNames.userIdFalsePositives.includes(userId)) return null;
     const user = usernameCache[userId];
     if (user && user.username) {
         usernameCache[userId].usedAt = getUnixTimestamp();
@@ -504,6 +513,10 @@ function _hrefExceptionForRecentActivity(element) {
         element.matches(`div.js-recent-activity-container div.Box ul li.Box-row
             div.dashboard-break-word.lh-condensed.text-gray span.text-gray`)
     ); // same query string as in github.showNames.query
+}
+function _hrefExceptionForYourTeams(element) {
+    // same query string as in github.showNames.query
+    return element.matches(`div.text-gray span.css-truncate.tooltipped span.css-truncate-target.text-bold`);
 }
 
 function getUnixTimestamp() {
