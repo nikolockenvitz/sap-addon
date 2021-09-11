@@ -28,6 +28,7 @@ function fetchUsername(
                     await fetch(fetchURL, {
                         method: "GET",
                         cache: "force-cache",
+                        mode: "no-cors",
                     })
                 ).text();
                 const searchRegex = new RegExp(regexNameOnProfilePagePeople);
