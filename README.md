@@ -3,15 +3,15 @@
 <a href="https://nikolockenvitz.github.io/sap-addon/">
 <img src="https://nikolockenvitz.github.io/sap-addon/icons/icon48.png" height="20px" /></a>
 <!-- SHIELD IO BADGES INSTALL START -->
-<a href="https://nikolockenvitz.github.io/sap-addon/xpi/sap_addon-1.14.7-fx.xpi">
-<img src="https://img.shields.io/badge/firefox-v1.14.7-FF7139?logo=firefox-browser" alt="Install for Firefox" /></a>
+<a href="https://nikolockenvitz.github.io/sap-addon/xpi/sap_addon-1.14.8-fx.xpi">
+<img src="https://img.shields.io/badge/firefox-v1.14.8-FF7139?logo=firefox-browser" alt="Install for Firefox" /></a>
 <!-- SHIELD IO BADGES INSTALL END -->
 <a href="https://chrome.google.com/webstore/detail/sap-addon/ccjpkhcdklddbfpcboffbeihonalpjkc">
-<img src="https://img.shields.io/badge/chrome-v1.14.7-4285F4?logo=google-chrome" alt="Install for Chrome" /></a>
+<img src="https://img.shields.io/badge/chrome-v1.14.8-4285F4?logo=google-chrome" alt="Install for Chrome" /></a>
 <a href="https://chrome.google.com/webstore/detail/sap-addon/ccjpkhcdklddbfpcboffbeihonalpjkc">
-<img src="https://img.shields.io/badge/brave-v1.14.7-FB542B?logo=brave" alt="Install for Brave" /></a>
+<img src="https://img.shields.io/badge/brave-v1.14.8-FB542B?logo=brave" alt="Install for Brave" /></a>
 <a href="https://chrome.google.com/webstore/detail/sap-addon/ccjpkhcdklddbfpcboffbeihonalpjkc">
-<img src="https://img.shields.io/badge/edge-v1.14.7-0078D7?logo=microsoft-edge" alt="Install for Edge" /></a>
+<img src="https://img.shields.io/badge/edge-v1.14.8-0078D7?logo=microsoft-edge" alt="Install for Edge" /></a>
 <a href="https://www.mozilla.org/en-US/firefox/new/">
 <img src="https://img.shields.io/badge/safari-not_available-000000?logo=safari" alt="Not available for Safari" /></a>
 
