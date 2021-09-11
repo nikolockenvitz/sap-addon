@@ -26,7 +26,8 @@ const github = {
             form.js-resolvable-timeline-thread-form strong,
             div.js-resolvable-timeline-thread-container div.comment-holder.js-line-comments div.js-resolvable-thread-toggler-container strong,
             div.user-status-container a.link-gray-dark.text-bold.no-underline[data-hovercard-type="user"],
-            details#blob_contributors_box details-dialog ul li a.link-gray-dark.no-underline
+            details#blob_contributors_box details-dialog ul li a.link-gray-dark.no-underline,
+            #files_bucket div.pr-toolbar div.diffbar a.select-menu-item div.select-menu-item-text span.description
         `,
         queryTooltips: `div.comment-reactions-options button.btn-link.reaction-summary-item.tooltipped[type=submit],
             div.AvatarStack div.AvatarStack-body.tooltipped`,
@@ -279,6 +280,9 @@ function _getUserIdIfElementIsUserId(element) {
         }
     }
     if (userId) {
+        userId = _exceptionForCommitListPRFilesChanged(element, userId);
+    }
+    if (userId) {
         for (const possiblePrefixOrSuffix of [
             {
                 prefix: "@",
@@ -314,6 +318,25 @@ function _hrefException(element) {
         _hrefExceptionForRecentActivity(element) ||
         _hrefExceptionForYourTeams(element)
     );
+}
+function _exceptionForCommitListPRFilesChanged(element, userId) {
+    if (element.matches(`a.select-menu-item div.select-menu-item-text span.description`)) {
+        if (
+            element.childNodes.length === 3 &&
+            element.childNodes[1].nodeName === "RELATIVE-TIME" &&
+            element.childNodes[2].nodeName === "#text"
+        ) {
+            if (element.childNodes[0].nodeName !== "#text") {
+                // already replaced
+                return null;
+            }
+            if (element.childNodes[0].textContent.endsWith(" commits")) return null;
+            return replaceTextNodeWithDomElementForUsername(element, 0).textContent;
+        } else if (element.childNodes.length === 1) {
+            return null;
+        }
+    }
+    return userId;
 }
 
 async function _replaceElementsTooltip(element) {
@@ -561,11 +584,7 @@ function getDirectParentOfText(baseElement, text) {
     ) {
         // sometimes text is directly after the user icon w/o separate html tag
         // however, a real element is needed (not only a text node; a data-attribute will be set on the element later)
-        const textNode = baseElement.childNodes[2];
-        const newElement = document.createElement("span");
-        newElement.textContent = textNode.textContent.trim();
-        baseElement.replaceChild(newElement, textNode);
-        return newElement;
+        return replaceTextNodeWithDomElementForUsername(baseElement, 2);
     } else {
         for (const child of baseElement.childNodes) {
             if (child.childNodes.length > 0) {
@@ -576,6 +595,15 @@ function getDirectParentOfText(baseElement, text) {
             }
         }
     }
+}
+
+function replaceTextNodeWithDomElementForUsername(baseElement, indexUserId) {
+    const textNode = baseElement.childNodes[indexUserId];
+    const newElement = document.createElement("span");
+    newElement.textContent = textNode.textContent.trim();
+    baseElement.replaceChild(newElement, textNode);
+    newElement.insertAdjacentHTML("afterend", " ");
+    return newElement;
 }
 
 let options;
