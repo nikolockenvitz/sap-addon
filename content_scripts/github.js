@@ -19,7 +19,7 @@ const github = {
             small a.text-gray-dark,
             div.js-recent-activity-container div.Box ul li.Box-row div.dashboard-break-word.lh-condensed.text-gray span.text-gray,
             span.js-comment-edit-history details summary div span,
-            span.js-comment-edit-history details details-menu.dropdown-menu.js-comment-edit-history-menu
+            details details-menu.dropdown-menu.js-comment-edit-history-menu
                 ul li button.btn-link span.css-truncate-target.v-align-middle.text-bold,
             details.details-overlay details-dialog div div div span.css-truncate-target.v-align-middle.text-bold.text-small,
             div.text-gray span.css-truncate.tooltipped span.css-truncate-target.text-bold,
