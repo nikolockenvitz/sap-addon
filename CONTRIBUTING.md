@@ -16,8 +16,10 @@ Click button `Load Temporary Add-on...` in top right corner.
 Select `manifest.json` of this repository.
 
 This makes the add-on available until you close/restart Firefox.
+Don't forget to click on the `Reload` button for the temporary extension when you want to test your changes.
 
 ### Chrome
 Open `chrome://extensions/` and enable `Developer mode` in the top right corner.
 Click button `Load unpacked` in top left corner.
 Select this folder.
+(You need to remove/rename the top-level file `_config.yml` when uploading to Chrome since Chrome complains about the underscore at the beginning of the filename. You may rename it to `config.yml` and run `git update-index --skip-worktree _config.yml` to let git ignore the change locally.)
