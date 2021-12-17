@@ -1,6 +1,4 @@
 const inputIds = [
-    "portal-redirect",
-    "portal-focus-searchbar",
     "github-sign-in",
     "github-hide-notice-overlay",
     "github-show-names",

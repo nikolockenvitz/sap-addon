@@ -2,26 +2,13 @@
   "manifest_version": 2,
   "name": "SAP Addon",
   "version": "1.14.8",
-  "description": "Extension for SAP related webpages: Portal, GitHub, Fiori Launchpad, Sharepoint",
+  "description": "Extension for SAP related webpages: GitHub, Fiori Launchpad, Sharepoint",
   "icons": {
     "48": "icons/icon48.png",
     "96": "icons/icon96.png",
     "128": "icons/icon128-96.png"
   },
   "content_scripts": [
-    {
-      "matches": [
-        "*://portal.wdf.sap.corp/*"
-      ],
-      "js": [
-        "utils/browser-setup.js",
-        "utils/storage.js",
-        "utils/option-helper.js",
-        "utils/dom-helper.js",
-        "content_scripts/portal.js"
-      ],
-      "run_at": "document_start"
-    },
     {
       "matches": [
         "*://github.wdf.sap.corp/*",
