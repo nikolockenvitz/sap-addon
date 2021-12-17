@@ -27,7 +27,8 @@ const github = {
             div.js-resolvable-timeline-thread-container div.comment-holder.js-line-comments div.js-resolvable-thread-toggler-container strong,
             div.user-status-container a.link-gray-dark.text-bold.no-underline[data-hovercard-type="user"],
             details#blob_contributors_box details-dialog ul li a.link-gray-dark.no-underline,
-            #files_bucket div.pr-toolbar div.diffbar a.select-menu-item div.select-menu-item-text span.description
+            #files_bucket div.pr-toolbar div.diffbar a.select-menu-item div.select-menu-item-text span.description,
+            body > div.svg-tip.n strong ~ strong
         `,
         queryTooltips: `div.comment-reactions-options button.btn-link.reaction-summary-item.tooltipped[type=submit],
             div.AvatarStack div.AvatarStack-body.tooltipped`,
@@ -257,6 +258,10 @@ async function _replaceElementIfUserId(element) {
     if (userId) {
         if (element.hasAttribute("data-sap-addon-already-getting-username")) return;
         element.setAttribute("data-sap-addon-already-getting-username", "true");
+        let previousWidthInsightPulseTooltip = null;
+        if (_isInsightsPulseTooltip(element)) {
+            previousWidthInsightPulseTooltip = element.parentElement.getBoundingClientRect().width;
+        }
 
         const username = await _getUsername(userId);
         if (username) {
@@ -264,6 +269,12 @@ async function _replaceElementIfUserId(element) {
             if (el) {
                 el.textContent = prefix + username + suffix;
                 el.setAttribute("data-sap-addon-user-id", prefix + userId + suffix);
+
+                if (previousWidthInsightPulseTooltip) {
+                    const currentWidth = element.parentElement.getBoundingClientRect().width;
+                    const offsetLeft = parseFloat(element.parentElement.style.left);
+                    element.parentElement.style.left = `${offsetLeft + (previousWidthInsightPulseTooltip - currentWidth) / 2}px`;
+                }
             }
         }
         element.removeAttribute("data-sap-addon-already-getting-username");
@@ -316,7 +327,8 @@ function _hrefException(element) {
         _hrefExceptionForResolvedConversation(element) ||
         _hrefExceptionForResolvedConversationPrReview(element) ||
         _hrefExceptionForRecentActivity(element) ||
-        _hrefExceptionForYourTeams(element)
+        _hrefExceptionForYourTeams(element) ||
+        _isInsightsPulseTooltip(element)
     );
 }
 function _exceptionForCommitListPRFilesChanged(element, userId) {
@@ -544,6 +556,14 @@ function _hrefExceptionForRecentActivity(element) {
 function _hrefExceptionForYourTeams(element) {
     // same query string as in github.showNames.query
     return element.matches(`div.text-gray span.css-truncate.tooltipped span.css-truncate-target.text-bold`);
+}
+const regexPulseTooltipTextContentBefore = new RegExp(`^ commit(|s) authored by $`);
+function _isInsightsPulseTooltip(element) {
+    // same query string as in github.showNames.query + additionally check for text before
+    return (
+        element.matches(`body > div.svg-tip.n strong ~ strong`) &&
+        regexPulseTooltipTextContentBefore.test(element.parentElement.childNodes[1].textContent)
+    );
 }
 
 function getUnixTimestamp() {
