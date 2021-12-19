@@ -1,4 +1,4 @@
-# sap-addon
+# SAP Addon
 
 <a href="https://nikolockenvitz.github.io/sap-addon/">
 <img src="https://nikolockenvitz.github.io/sap-addon/icons/icon48.png" height="20px" /></a>
@@ -18,15 +18,12 @@
 Install by clicking on the badge above.
 Updates are handled automatically.
 
-## current features
+## Features
 
-![Screenshot of Popup](docs/screenshot-1.14-popup.png)
-![Screenshot of Configuration in Popup](docs/screenshot-1.14-popup-config.png)
+![Screenshot of Popup](docs/screenshot-1.15-popup.png)
+![Screenshot of Configuration in Popup](docs/screenshot-1.15-popup-config.png)
 
-* `portal.wdf.sap.corp`
-  * redirect from login page (`/home`) to main page (`/irj/portal`)
-  * focus the search bar automatically when loading page
-* `github.wdf.sap.corp` / `github.tools.sap`
+* **GitHub** (`github.wdf.sap.corp` / `github.tools.sap`)
   * sign in automatically
   * hide yellow notice box messages
     * dismiss a specific messasge
@@ -35,12 +32,12 @@ Updates are handled automatically.
   * get name from `people.wdf.sap.corp` (use GitHub only as a fallback)
     * names are cached in local storage
     * also some metadata is stored to be able to clean the cache based on usage later
-* `fiorilaunchpad.sap.com` <!-- it's the Fiori Lunchpad ;) name created by Erik Jansky -->
+* **Fiori Launchpad** (`fiorilaunchpad.sap.com`) <!-- it's the Fiori Lunchpad ;) name created by Erik Jansky -->
   * override language of lunchmenu so that you will see it e.g. in German even if language in the Fiori Launchpad settings is set to English
     * language can be configured
     * currently supports `de` and `en`
     * other values will work too but you will see a warning (just contact me if you have other valid values and I will add them as well)
-* `sap-my.sharepoint.com` / `login.microsoftonline.com`
+* **Sharepoint** (`sap-my.sharepoint.com` / `login.microsoftonline.com`)
   * log in automatically
   * sometimes e-mail address is needed to log in, you can specify it in configuration
 
@@ -50,7 +47,7 @@ You may want to configure everything before starting.
 After installation, just click on the icon and go to configuration.
 There you can customize the addon to your needs.
 
-## feedback, contribute, ...
+## Feedback, Contribute, ...
 
 Feel free to send feedback, share any ideas of what you think should be improved or can be added.
 
