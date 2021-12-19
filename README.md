@@ -20,8 +20,7 @@ Updates are handled automatically.
 
 ## Features
 
-![Screenshot of Popup](docs/screenshot-1.15-popup.png)
-![Screenshot of Configuration in Popup](docs/screenshot-1.15-popup-config.png)
+<img src="docs/screenshot-1.15-popup.png" width="320" alt="Screenshot of Popup" title="Screenshot of Popup" /> <img src="docs/screenshot-1.15-popup-config.png" width="320" alt="Screenshot of Configuration in Popup" title="Screenshot of Configuration in Popup" />
 
 * **GitHub** (`github.wdf.sap.corp` / `github.tools.sap`)
   * sign in automatically
