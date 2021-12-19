@@ -84,13 +84,15 @@ function getSignInRedirectLink(element) {
 function stopAutoSignIn() {
     domObserver.unregisterCallbackFunction(github.signIn.optionName);
 }
+let signInOtherTabInterval = null;
 function listenForSignInOtherTab() {
     /* when also non-active tabs are notified that settings changed and user
      * should get signed in, these tabs will be redirected to
      * github.wdf.sap.corp/saml/consume which throws a 404
      * -> only regularly checking works, maybe can be combined with mutation observer
      */
-    setInterval(async function () {
+    if (signInOtherTabInterval) return;
+    signInOtherTabInterval = setInterval(async function () {
         options = await loadFromStorage("options");
         if (isEnabled(github.signIn.optionName)) {
             const signInBtn = document.querySelector(github.signIn.signInOtherTabQuery);
