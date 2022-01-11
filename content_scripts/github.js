@@ -17,6 +17,7 @@ const github = {
             a.link-gray-dark.no-underline.flex-self-center strong,
             .merge-status-item.review-item.bg-white.js-details-container.Details strong.text-emphasized,
             small a.text-gray-dark,
+            #wiki-wrapper #version-form div > a.muted-link span.text-bold,
             div.js-recent-activity-container div.Box ul li.Box-row div.dashboard-break-word.lh-condensed.text-gray span.text-gray,
             span.js-comment-edit-history details summary div span,
             details details-menu.dropdown-menu.js-comment-edit-history-menu
