@@ -1,7 +1,7 @@
 const github = {
     signIn: {
         optionName: "github-sign-in",
-        query: "a[href^='/login?']",
+        query: "div.auth-form-body > a.btn-primary[href^='/login?'], header a.HeaderMenu-link[href^='/login?']",
         signInOtherTabQuery: ".js-stale-session-flash-signed-in a",
         urlPath: "/login",
     },
