@@ -20,7 +20,11 @@
         "utils/dom-observer.js",
         "utils/option-helper.js",
         "utils/dom-helper.js",
-        "content_scripts/github.js"
+        "content_scripts/github/config.js",
+        "content_scripts/github/sign-in.js",
+        "content_scripts/github/hide-notice-box.js",
+        "content_scripts/github/username.js",
+        "content_scripts/github/main.js"
       ],
       "run_at": "document_start"
     },

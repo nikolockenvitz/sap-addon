@@ -1,221 +1,35 @@
-const github = {
-    signIn: {
-        optionName: "github-sign-in",
-        query: "div.auth-form-body > a.btn-primary[href^='/login?'], header a.HeaderMenu-link[href^='/login?']",
-        signInOtherTabQuery: ".js-stale-session-flash-signed-in a",
-        urlPath: "/login",
-    },
-    flashNotice: {
-        optionName: "github-hide-notice-overlay",
-        query: ".flash.flash-full.js-notice.flash-warn.flash-length-limited",
-    },
-    showNames: {
-        optionName: "github-show-names",
-        query: `.user-mention,
-            [data-hovercard-type=user],
-            a.text-emphasized.link-gray-dark,
-            a.link-gray-dark.no-underline.flex-self-center strong,
-            .merge-status-item.review-item.bg-white.js-details-container.Details strong.text-emphasized,
-            small a.text-gray-dark,
-            #wiki-wrapper #version-form div > a.muted-link span.text-bold,
-            div.js-recent-activity-container div.Box ul li.Box-row div.dashboard-break-word.lh-condensed.text-gray span.text-gray,
-            span.js-comment-edit-history details summary div span,
-            details details-menu.dropdown-menu.js-comment-edit-history-menu
-                ul li button.btn-link span.css-truncate-target.v-align-middle.text-bold,
-            details.details-overlay details-dialog div div div span.css-truncate-target.v-align-middle.text-bold.text-small,
-            div.text-gray span.css-truncate.tooltipped span.css-truncate-target.text-bold,
-            form.js-resolvable-timeline-thread-form strong,
-            div.js-resolvable-timeline-thread-container div.comment-holder.js-line-comments div.js-resolvable-thread-toggler-container strong,
-            div.user-status-container a.link-gray-dark.text-bold.no-underline[data-hovercard-type="user"],
-            details#blob_contributors_box details-dialog ul li a.link-gray-dark.no-underline,
-            #files_bucket div.pr-toolbar div.diffbar a.select-menu-item div.select-menu-item-text span.description,
-            body > div.svg-tip.n strong ~ strong
-        `,
-        queryTooltips: `div.comment-reactions-options button.btn-link.reaction-summary-item.tooltipped[type=submit],
-            div.AvatarStack div.AvatarStack-body.tooltipped`,
-        regexNameOnProfilePage: `<span class="p-name vcard-fullname d-block overflow-hidden" itemprop="name">([^<]*)</span>`,
-        userIdFalsePositives: ["edited"],
-    },
-    getNamesFromPeople: {
-        optionName: "github-get-names-from-people",
-        hostname: "people.wdf.sap.corp",
-        regexNameOnProfilePage: `<span class='salutation'>[^<]*</span>([^<]*)<`,
-    },
+github.showNames = {
+    optionName: "github-show-names",
+    query: `.user-mention,
+        [data-hovercard-type=user],
+        a.text-emphasized.link-gray-dark,
+        a.link-gray-dark.no-underline.flex-self-center strong,
+        .merge-status-item.review-item.bg-white.js-details-container.Details strong.text-emphasized,
+        small a.text-gray-dark,
+        #wiki-wrapper #version-form div > a.muted-link span.text-bold,
+        div.js-recent-activity-container div.Box ul li.Box-row div.dashboard-break-word.lh-condensed.text-gray span.text-gray,
+        span.js-comment-edit-history details summary div span,
+        details details-menu.dropdown-menu.js-comment-edit-history-menu
+            ul li button.btn-link span.css-truncate-target.v-align-middle.text-bold,
+        details.details-overlay details-dialog div div div span.css-truncate-target.v-align-middle.text-bold.text-small,
+        div.text-gray span.css-truncate.tooltipped span.css-truncate-target.text-bold,
+        form.js-resolvable-timeline-thread-form strong,
+        div.js-resolvable-timeline-thread-container div.comment-holder.js-line-comments div.js-resolvable-thread-toggler-container strong,
+        div.user-status-container a.link-gray-dark.text-bold.no-underline[data-hovercard-type="user"],
+        details#blob_contributors_box details-dialog ul li a.link-gray-dark.no-underline,
+        #files_bucket div.pr-toolbar div.diffbar a.select-menu-item div.select-menu-item-text span.description,
+        body > div.svg-tip.n strong ~ strong
+    `,
+    queryTooltips: `div.comment-reactions-options button.btn-link.reaction-summary-item.tooltipped[type=submit],
+        div.AvatarStack div.AvatarStack-body.tooltipped`,
+    regexNameOnProfilePage: `<span class="p-name vcard-fullname d-block overflow-hidden" itemprop="name">([^<]*)</span>`,
+    userIdFalsePositives: ["edited"],
 };
-
-function signIn() {
-    if (url.pathname === github.signIn.urlPath) {
-        executeFunctionAfterPageLoaded(function () {
-            getSignInButtonAndClick();
-        });
-    }
-
-    domObserver.registerCallbackFunction(github.signIn.optionName, function (mutations, _observer) {
-        for (const { target } of mutations) {
-            getSignInButtonAndClick(target);
-        }
-    });
-}
-// the handler to click on the button will be invoked a lot (>30) -> setting a flag after the first click prevents this
-// but this needs to be time-bound, otherwise there will be no sign in after automatic logout
-let alreadyClickedSignButtonAt = 0;
-const DELAY_BEFORE_CLICKING_SIGNIN_BUTTON_AGAIN = 15 * 1000;
-function getSignInButtonAndClick(element) {
-    element = element && element.querySelector ? element : document;
-    try {
-        const signInBtn = element.querySelector(github.signIn.query);
-        if (signInBtn && signInBtn.click && Date.now() - alreadyClickedSignButtonAt > DELAY_BEFORE_CLICKING_SIGNIN_BUTTON_AGAIN) {
-            alreadyClickedSignButtonAt = Date.now();
-            setTimeout(function () {
-                signInBtn.click();
-            }, 100); // when click is executed directly, github.tools.sap crashes in chrome
-        }
-
-        // there's a redirect during login; in case redirects are blocked by the browser: click link
-        const redirectLink = getSignInRedirectLink(element);
-        if (redirectLink && redirectLink.click) {
-            redirectLink.click();
-        }
-    } catch {}
-}
-function getSignInRedirectLink(element) {
-    const redirectLink = element.querySelector("a#redirect[href^='https://accounts.sap.com/']");
-    return redirectLink && url.pathname === "/login" ? redirectLink : null;
-}
-function stopAutoSignIn() {
-    domObserver.unregisterCallbackFunction(github.signIn.optionName);
-}
-let signInOtherTabInterval = null;
-function listenForSignInOtherTab() {
-    /* when also non-active tabs are notified that settings changed and user
-     * should get signed in, these tabs will be redirected to
-     * github.wdf.sap.corp/saml/consume which throws a 404
-     * -> only regularly checking works, maybe can be combined with mutation observer
-     */
-    if (signInOtherTabInterval) return;
-    signInOtherTabInterval = setInterval(async function () {
-        options = await loadFromStorage("options");
-        if (isEnabled(github.signIn.optionName)) {
-            const signInBtn = document.querySelector(github.signIn.signInOtherTabQuery);
-            if (signInBtn) {
-                const r = signInBtn.getBoundingClientRect();
-                if (r.width !== 0 && r.height !== 0) {
-                    signInBtn.click();
-                }
-            }
-        }
-    }, 2500);
-}
-
-function hideDismissedNoticeBoxesAndInsertHideOverlayIfEnabled(insertOverlayEnabled = false) {
-    function getTextOfNoticeBox(noticeBox) {
-        let text = `${url.host} `;
-        for (const containers of noticeBox.children) {
-            for (const el of containers.children) {
-                if (!el.classList.contains("sap-addon-hide-notice-box-overlay")) {
-                    text += el.textContent;
-                }
-            }
-        }
-        return text;
-    }
-    function hideIfMessageIsSetToHidden(noticeBox) {
-        if (getTextOfNoticeBox(noticeBox) in noticeBoxMessagesToHide) {
-            noticeBox.style.display = "none";
-        }
-    }
-    function clearOldNoticeBoxMessages() {
-        const _90_DAYS_IN_MS = 90 * 24 * 60 * 60 * 1000;
-        const now = getUnixTimestamp();
-        for (const message in noticeBoxMessagesToHide) {
-            const { dismissedAt } = noticeBoxMessagesToHide[message];
-            if (now - dismissedAt > _90_DAYS_IN_MS) {
-                delete noticeBoxMessagesToHide[message];
-            }
-        }
-    }
-    function insertOverlay(noticeBox) {
-        if (!insertOverlayEnabled) return;
-        if (noticeBox.hasAttribute("data-sap-addon-notice-box-inserted-overlay")) return;
-        noticeBox.setAttribute("data-sap-addon-notice-box-inserted-overlay", "true");
-        const container = noticeBox.children[noticeBox.children.length - 1];
-        const overlay = document.createElement("p");
-        overlay.classList.add("sap-addon-hide-notice-box-overlay");
-        overlay.style = "text-align: right; font-size: 90%;";
-        overlay.innerHTML = `SAP Addon:
-        <a tabindex="0" style="cursor: pointer" data-sap-addon-link="hide-message">Don't show this message again</a> |
-        <a tabindex="0" style="cursor: pointer" data-sap-addon-link="hide-once">Hide once</a>
-        `;
-        for (const link of overlay.querySelectorAll("a[data-sap-addon-link]")) {
-            function listener(event) {
-                const action = link.getAttribute("data-sap-addon-link");
-                if (action === "hide-once") {
-                    noticeBox.style.display = "none";
-                } else if (action === "hide-message") {
-                    noticeBoxMessagesToHide[getTextOfNoticeBox(noticeBox)] = {
-                        dismissedAt: getUnixTimestamp(),
-                    };
-                    clearOldNoticeBoxMessages();
-                    saveNoticeBoxMessagesToHideToStorage();
-                    noticeBox.style.display = "none";
-                }
-            }
-            link.addEventListener("click", listener);
-            link.addEventListener("keyup", (event) => (event.keyCode === 13 ? listener(event) : null));
-        }
-        container.appendChild(overlay);
-    }
-
-    executeFunctionAfterPageLoaded(function () {
-        for (const match of document.querySelectorAll(github.flashNotice.query)) {
-            hideIfMessageIsSetToHidden(match);
-            insertOverlay(match);
-        }
-    });
-
-    _showElementsByQuery(`[data-sap-addon-notice-box-inserted-overlay] .sap-addon-hide-notice-box-overlay`);
-
-    domObserver.registerCallbackFunction(github.flashNotice.optionName, function (mutations, _observer) {
-        for (const { target } of mutations) {
-            if (!target.querySelectorAll) continue;
-            for (const match of target.querySelectorAll(github.flashNotice.query)) {
-                hideIfMessageIsSetToHidden(match);
-                insertOverlay(match);
-            }
-        }
-    });
-}
-function removeHideOverlayInNoticeBoxes() {
-    _hideElementsByQuery(`[data-sap-addon-notice-box-inserted-overlay] .sap-addon-hide-notice-box-overlay`);
-}
-function showAllNoticeBoxesAgain() {
-    for (const message in noticeBoxMessagesToHide) {
-        delete noticeBoxMessagesToHide[message];
-    }
-    saveNoticeBoxMessagesToHideToStorage();
-
-    domObserver.unregisterCallbackFunction(github.flashNotice.optionName);
-    executeFunctionAfterPageLoaded(function () {
-        _showElementsByQuery(github.flashNotice.query);
-    });
-}
-
-function _hideElementsByQuery(query, baseElement) {
-    _setDisplayAttributeForElementsByQuery(query, baseElement, "none");
-}
-
-function _showElementsByQuery(query, baseElement) {
-    _setDisplayAttributeForElementsByQuery(query, baseElement, "");
-}
-
-function _setDisplayAttributeForElementsByQuery(query, baseElement, displayValue) {
-    baseElement = baseElement || document;
-    try {
-        for (const element of baseElement.querySelectorAll(query)) {
-            element.style.display = displayValue;
-        }
-    } catch {}
-}
+github.getNamesFromPeople = {
+    optionName: "github-get-names-from-people",
+    hostname: "people.wdf.sap.corp",
+    regexNameOnProfilePage: `<span class='salutation'>[^<]*</span>([^<]*)<`,
+};
 
 function replaceGitHubIdsWithUsername() {
     executeFunctionAfterPageLoaded(function () {
@@ -629,48 +443,7 @@ function replaceTextNodeWithDomElementForUsername(baseElement, indexUserId) {
     return newElement;
 }
 
-let options;
 let usernameCache;
 function saveUsernameCacheToStorage() {
     return saveToStorage("usernameCache", usernameCache);
 }
-let noticeBoxMessagesToHide = {};
-function saveNoticeBoxMessagesToHideToStorage() {
-    return saveToStorage("githubNoticeBoxMessagesToHide", noticeBoxMessagesToHide);
-}
-
-async function main() {
-    [usernameCache, options, noticeBoxMessagesToHide] = await Promise.all([
-        loadFromStorage("usernameCache"),
-        loadFromStorage("options"),
-        loadFromStorage("githubNoticeBoxMessagesToHide"),
-    ]);
-
-    if (isEnabled(github.signIn.optionName)) {
-        signIn();
-    } else {
-        stopAutoSignIn();
-    }
-    listenForSignInOtherTab();
-
-    const insertOverlayToHideFlashNoticeEnabled = isEnabled(github.flashNotice.optionName);
-    hideDismissedNoticeBoxesAndInsertHideOverlayIfEnabled(insertOverlayToHideFlashNoticeEnabled);
-    if (!insertOverlayToHideFlashNoticeEnabled) {
-        removeHideOverlayInNoticeBoxes();
-    }
-
-    if (isEnabled(github.showNames.optionName)) {
-        replaceGitHubIdsWithUsername();
-    } else {
-        showGitHubIdsAgain();
-    }
-}
-main();
-browser.runtime.onConnect.addListener(() => {
-    main();
-});
-browser.runtime.onMessage.addListener((message) => {
-    if (message.message === "github-hide-notice-show-all-again") {
-        showAllNoticeBoxesAgain();
-    }
-});
