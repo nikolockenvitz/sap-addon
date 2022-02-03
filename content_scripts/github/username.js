@@ -1,25 +1,8 @@
 github.showNames = {
     optionName: "github-show-names",
-    query: `.user-mention,
-        [data-hovercard-type=user],
-        a.text-emphasized.link-gray-dark,
-        a.link-gray-dark.no-underline.flex-self-center strong,
-        .merge-status-item.review-item.bg-white.js-details-container.Details strong.text-emphasized,
-        small a.text-gray-dark,
-        #wiki-wrapper #version-form div > a.muted-link span.text-bold,
-        div.js-recent-activity-container div.Box ul li.Box-row div.dashboard-break-word.lh-condensed.text-gray span.text-gray,
-        span.js-comment-edit-history details summary div span,
-        details details-menu.dropdown-menu.js-comment-edit-history-menu
-            ul li button.btn-link span.css-truncate-target.v-align-middle.text-bold,
-        details.details-overlay details-dialog div div div span.css-truncate-target.v-align-middle.text-bold.text-small,
-        div.text-gray span.css-truncate.tooltipped span.css-truncate-target.text-bold,
-        form.js-resolvable-timeline-thread-form strong,
-        div.js-resolvable-timeline-thread-container div.comment-holder.js-line-comments div.js-resolvable-thread-toggler-container strong,
-        div.user-status-container a.link-gray-dark.text-bold.no-underline[data-hovercard-type="user"],
-        details#blob_contributors_box details-dialog ul li a.link-gray-dark.no-underline,
-        #files_bucket div.pr-toolbar div.diffbar a.select-menu-item div.select-menu-item-text span.description,
-        body > div.svg-tip.n strong ~ strong
-    `,
+    // query and href exceptions will be filled with values below
+    query: ``,
+    hrefExceptions: [],
     queryTooltips: `div.comment-reactions-options button.btn-link.reaction-summary-item.tooltipped[type=submit],
         div.AvatarStack div.AvatarStack-body.tooltipped`,
     regexNameOnProfilePage: `<span class="p-name vcard-fullname d-block overflow-hidden" itemprop="name">([^<]*)</span>`,
@@ -30,6 +13,84 @@ github.getNamesFromPeople = {
     hostname: "people.wdf.sap.corp",
     regexNameOnProfilePage: `<span class='salutation'>[^<]*</span>([^<]*)<`,
 };
+
+function initializeGitHubIdQueries() {
+    // commit author, direct mentions
+    _addQuery(`.user-mention`);
+    // several places where username can be found (hovering opens card with profile info)
+    _addQuery(`[data-hovercard-type=user]`);
+    // ???
+    _addQuery(`a.text-emphasized.link-gray-dark`);
+    // contributor list of a repo
+    _addQuery(`a.link-gray-dark.no-underline.flex-self-center strong`);
+    // pending reviewers in PR
+    _addQuery(`.merge-status-item.review-item.bg-white.js-details-container.Details strong.text-emphasized`, (element) => {
+        return element?.parentElement?.parentElement?.querySelector("[data-hovercard-type=user]");
+    });
+    // projects: card/issue creator
+    _addQuery(`small a.text-gray-dark`);
+    // wiki revisions history
+    _addQuery(`#wiki-wrapper #version-form div > a.muted-link span.text-bold`);
+    // recent activity in dashboard (user commented)
+    _addQuery(
+        `div.js-recent-activity-container div.Box ul li.Box-row div.dashboard-break-word.lh-condensed.text-gray span.text-gray`,
+        (element) => {
+            return element.textContent.trim().endsWith(" commented") && element.textContent.trim() !== "You commented";
+        }
+    );
+    // comment edit history
+    _addQuery(`span.js-comment-edit-history details summary div span`);
+    _addQuery(
+        `details details-menu.dropdown-menu.js-comment-edit-history-menu ul li button.btn-link span.css-truncate-target.v-align-middle.text-bold`
+    );
+    // dialog with comment edit history
+    _addQuery(`details.details-overlay details-dialog div div div span.css-truncate-target.v-align-middle.text-bold.text-small`, true);
+    // team members in hovercard of a team in dashboard > your teams
+    _addQuery(`div.text-gray span.css-truncate.tooltipped span.css-truncate-target.text-bold`, true);
+    // comment resolver in PR reviews (Conversation)
+    _addQuery(`form.js-resolvable-timeline-thread-form strong`, true);
+    // comment resolver in PR (Files Changed)
+    _addQuery(
+        `div.js-resolvable-timeline-thread-container div.comment-holder.js-line-comments div.js-resolvable-thread-toggler-container strong`
+    );
+    // member statuses on team's overview page (directly next to icon)
+    _addQuery(`div.user-status-container a.link-gray-dark.text-bold.no-underline[data-hovercard-type="user"]`);
+    // list of users who contributed to a file (directly next to icon)
+    _addQuery(`details#blob_contributors_box details-dialog ul li a.link-gray-dark.no-underline`);
+    // commit list (Files Changed view of PR)
+    _addQuery(`#files_bucket div.pr-toolbar div.diffbar a.select-menu-item div.select-menu-item-text span.description`);
+    // chart tooltip (insights > pulse)
+    _addQuery(`body > div.svg-tip.n strong ~ strong`);
+}
+function _addQuery(query, hrefException) {
+    github.showNames.query += (github.showNames.query === "" ? "" : ",\n") + query;
+
+    if (hrefException) {
+        switch (typeof hrefException) {
+            case "boolean":
+                github.showNames.hrefExceptions.push((element) => {
+                    return element.matches(query);
+                });
+                break;
+
+            case "function":
+                github.showNames.hrefExceptions.push((element) => {
+                    if (!element.matches(query)) return false;
+                    return hrefException(element);
+                });
+                break;
+
+            default:
+                console.error("Unexpected hrefException", hrefException);
+                break;
+        }
+    }
+}
+function initializeFurtherHrefExceptions() {
+    github.showNames.hrefExceptions.push(_isInsightsPulseTooltip);
+}
+initializeGitHubIdQueries();
+initializeFurtherHrefExceptions();
 
 function replaceGitHubIdsWithUsername() {
     executeFunctionAfterPageLoaded(function () {
@@ -138,15 +199,12 @@ function _getUserIdIfElementIsUserId(element) {
     return { prefix: "", userId, suffix: "" };
 }
 function _hrefException(element) {
-    return (
-        _hrefExceptionForReviewer(element) ||
-        _hrefExceptionForCommentEditHistoryDialog(element) ||
-        _hrefExceptionForResolvedConversation(element) ||
-        _hrefExceptionForResolvedConversationPrReview(element) ||
-        _hrefExceptionForRecentActivity(element) ||
-        _hrefExceptionForYourTeams(element) ||
-        _isInsightsPulseTooltip(element)
-    );
+    for (const hrefException of github.showNames.hrefExceptions) {
+        if (hrefException(element)) {
+            return true;
+        }
+    }
+    return false;
 }
 function _exceptionForCommitListPRFilesChanged(element, userId) {
     if (element.matches(`a.select-menu-item div.select-menu-item-text span.description`)) {
@@ -335,45 +393,6 @@ function _fetchUsername(userId) {
     });
 }
 
-function _hrefExceptionForReviewer(element) {
-    // reviewer (approval / pending) don't have a link to the user -> therefore exception needs to be added
-    if (
-        element.classList.contains("text-emphasized") &&
-        element.parentElement &&
-        element.parentElement.parentElement &&
-        element.parentElement.parentElement.querySelector("[data-hovercard-type=user]")
-    ) {
-        return true;
-    }
-}
-function _hrefExceptionForCommentEditHistoryDialog(element) {
-    // dialog which displays comment edit history doesn't has a link to the user
-    return element.matches(`details.details-overlay details-dialog div div div
-        span.css-truncate-target.v-align-middle.text-bold.text-small`); // same query string as in github.showNames.query
-}
-function _hrefExceptionForResolvedConversation(element) {
-    return (
-        element.parentElement &&
-        element.parentElement.tagName === "FORM" &&
-        element.parentElement.classList.contains("js-resolvable-timeline-thread-form")
-    );
-}
-function _hrefExceptionForResolvedConversationPrReview(element) {
-    return element.matches(`div.js-resolvable-timeline-thread-container div.comment-holder.js-line-comments
-        div.js-resolvable-thread-toggler-container strong`); // same query string as in github.showNames.query
-}
-function _hrefExceptionForRecentActivity(element) {
-    return (
-        element.textContent.trim().endsWith(" commented") &&
-        element.textContent.trim() !== "You commented" &&
-        element.matches(`div.js-recent-activity-container div.Box ul li.Box-row
-            div.dashboard-break-word.lh-condensed.text-gray span.text-gray`)
-    ); // same query string as in github.showNames.query
-}
-function _hrefExceptionForYourTeams(element) {
-    // same query string as in github.showNames.query
-    return element.matches(`div.text-gray span.css-truncate.tooltipped span.css-truncate-target.text-bold`);
-}
 const regexPulseTooltipTextContentBefore = new RegExp(`^ commit(|s) authored by $`);
 function _isInsightsPulseTooltip(element) {
     // same query string as in github.showNames.query + additionally check for text before
