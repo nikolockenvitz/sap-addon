@@ -1,6 +1,6 @@
 github.flashNotice = {
     optionName: "github-hide-notice-overlay",
-    query: ".flash.flash-full.js-notice.flash-warn.flash-length-limited",
+    query: ".flash.flash-full.js-notice.flash-warn",
 };
 
 function hideDismissedNoticeBoxesAndInsertHideOverlayIfEnabled(insertOverlayEnabled = false) {
