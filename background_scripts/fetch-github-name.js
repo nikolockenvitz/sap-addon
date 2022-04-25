@@ -55,7 +55,7 @@ function fetchUsername(
                 })
             ).text();
             const searchRegex = new RegExp(regexNameOnProfilePageGithub);
-            const match = searchRegex.exec(html)[1];
+            const match = (searchRegex.exec(html)[1] || "").trim();
             resolve(match);
         } catch (error) {
             logFetchError(userId, fetchURL, error);

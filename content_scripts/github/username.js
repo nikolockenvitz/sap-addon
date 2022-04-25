@@ -340,7 +340,7 @@ async function _getUsername(userId) {
     if (user && user.username) {
         usernameCache[userId].usedAt = getUnixTimestamp();
         usernameCache[userId].used += 1;
-        return user.username;
+        return (user.username || "").trim();
     } else if (userId in userIdRequestQueue) {
         return new Promise((resolve) => {
             userIdRequestQueue[userId].push(function (username) {
