@@ -27,6 +27,8 @@ function initializeGitHubIdQueries() {
     _addQuery(`.merge-status-item.review-item.bg-white.js-details-container.Details strong.text-emphasized`, (element) => {
         return element?.parentElement?.parentElement?.querySelector("[data-hovercard-type=user]");
     });
+    // PR: "xyz requested your review" box
+    _addQuery(`div#repo-content-pjax-container div.flash.flash-warn div a.text-emphasized.Link--primary`);
     // projects: card/issue creator
     _addQuery(`small a.text-gray-dark`);
     // wiki revisions history
