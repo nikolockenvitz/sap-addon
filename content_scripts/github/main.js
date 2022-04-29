@@ -22,8 +22,10 @@ async function main() {
 
     if (isEnabled(github.showNames.optionName)) {
         replaceGitHubIdsWithUsername();
+        replaceGitHubIdsWithUsernameInDocumentTitle();
     } else {
         showGitHubIdsAgain();
+        showGitHubIdsAgainInDocumentTitle();
     }
 }
 main();

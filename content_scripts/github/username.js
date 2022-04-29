@@ -7,6 +7,16 @@ github.showNames = {
         div.AvatarStack div.AvatarStack-body.tooltipped`,
     regexNameOnProfilePage: `<span class="p-name vcard-fullname d-block overflow-hidden" itemprop="name">([^<]*)</span>`,
     userIdFalsePositives: ["edited"],
+    documentTitle: {
+        optionName: "github-replace-names-in-document-title",
+        userIdRegex: "[dDiI]\\d{6}|[cC]\\d{7}",
+        rules: [
+            { prefix: ` by `, suffix: ` · Pull Request` },
+            { prefix: ` · `, suffix: `/` },
+            { prefix: "^", prefixReplace: "", suffix: "/" },
+            { prefix: "^", prefixReplace: "", suffix: "'s access for" },
+        ],
+    },
 };
 github.getNamesFromPeople = {
     optionName: "github-get-names-from-people",
@@ -462,6 +472,64 @@ function replaceTextNodeWithDomElementForUsername(baseElement, indexUserId) {
     baseElement.replaceChild(newElement, textNode);
     newElement.insertAdjacentHTML("afterend", " ");
     return newElement;
+}
+
+let documentTitleUserIdState = {
+    observerRegistered: false,
+    oldTitle: null,
+    newTitle: null,
+};
+function replaceGitHubIdsWithUsernameInDocumentTitle() {
+    executeFunctionAfterPageLoaded(function () {
+        _checkDocumentTitleAndReplaceUserId();
+    });
+
+    if (!documentTitleUserIdState.observerRegistered) {
+        documentTitleUserIdState.observerRegistered = true;
+        new DOMObserver(document.querySelector("title")).registerCallbackFunction(
+            github.showNames.documentTitle.optionName,
+            function (_mutations, _observer) {
+                _checkDocumentTitleAndReplaceUserId();
+            }
+        );
+    }
+}
+async function _checkDocumentTitleAndReplaceUserId() {
+    const title = document.title;
+    if (title === documentTitleUserIdState.newTitle) {
+        // document.title matches with what we set the last time (event on our change)
+        return;
+    }
+    // GitHub changed the title -> save it so that we can restore it when feature is disabled
+    documentTitleUserIdState.oldTitle = title;
+    // check that feature is enabled + loop through all possible replacement rules
+    if (!isEnabled(github.showNames.optionName)) return;
+    if (github.showNames.documentTitle.rules.length > 1 && !new RegExp(github.showNames.documentTitle.userIdRegex).exec(title)) {
+        // if there is more than 1 rule -> check if there could be a username in the title at all so that we do not run too many regexes
+        return;
+    }
+    for (const rule of github.showNames.documentTitle.rules) {
+        const regex = new RegExp(`${rule.prefix}(?<userId>${github.showNames.documentTitle.userIdRegex})${rule.suffix}`);
+        const regexResult = regex.exec(title);
+        if (regexResult) {
+            const username = await _getUsername(regexResult.groups.userId);
+            if (document.title === title) {
+                // make sure title has not changed in the meantime
+                const newTitle = title.replace(
+                    regex,
+                    `${rule.prefixReplace === undefined ? rule.prefix : rule.prefixReplace}${username}${
+                        rule.suffixReplace === undefined ? rule.suffix : rule.suffixReplace
+                    }`
+                );
+                document.title = newTitle;
+                documentTitleUserIdState.newTitle = newTitle;
+                break;
+            }
+        }
+    }
+}
+function showGitHubIdsAgainInDocumentTitle() {
+    if (documentTitleUserIdState.oldTitle) document.title = documentTitleUserIdState.oldTitle;
 }
 
 let usernameCache;

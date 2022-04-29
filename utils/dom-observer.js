@@ -1,5 +1,5 @@
 class DOMObserver {
-    constructor() {
+    constructor(target) {
         this.observerCallbacks = {};
         const that = this;
         this.observer = new MutationObserver(function (mutation, _observer) {
@@ -7,7 +7,7 @@ class DOMObserver {
                 that.observerCallbacks[id](mutation, _observer);
             }
         });
-        this.observer.observe(document, {
+        this.observer.observe(target || document, {
             childList: true,
             characterData: true,
             subtree: true,

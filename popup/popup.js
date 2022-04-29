@@ -38,12 +38,19 @@ async function onChangeInput(inputId) {
 }
 
 function runMainFunctionOfContentAndBackgroundScripts() {
-    execAsync(browser.tabs.query, { currentWindow: true, active: true }, (tabs) => {
-        for (const tab of tabs) {
-            // connect will trigger main function of content scripts
-            browser.tabs.connect(tab.id).disconnect();
+    execAsync(
+        browser.tabs.query,
+        {
+            // currentWindow: true,
+            // active: true,
+        },
+        (tabs) => {
+            for (const tab of tabs) {
+                // connect will trigger main function of content scripts
+                browser.tabs.connect(tab.id).disconnect();
+            }
         }
-    });
+    );
     // send message to background scripts to re-run main function
     execAsync(
         browser.runtime.sendMessage.bind(browser.runtime),
