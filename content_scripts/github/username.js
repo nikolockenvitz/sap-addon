@@ -73,6 +73,9 @@ function initializeGitHubIdQueries() {
     _addQuery(`#files_bucket div.pr-toolbar div.diffbar a.select-menu-item div.select-menu-item-text span.description`);
     // chart tooltip (insights > pulse)
     _addQuery(`body > div.svg-tip.n strong ~ strong`);
+    // user details in organization's admin view (people > specific user)
+    _addQuery(`div.table-list-header > span.table-list-heading > strong`, true); // xyz has access to n repos
+    _addQuery(`p.org-user-notice-content > strong:first-child`, true); // as an owner, xyz has ...
 }
 function _addQuery(query, hrefException) {
     github.showNames.query += (github.showNames.query === "" ? "" : ",\n") + query;
