@@ -34,9 +34,12 @@ function initializeGitHubIdQueries() {
     // contributor list of a repo
     _addQuery(`a.link-gray-dark.no-underline.flex-self-center strong`);
     // pending reviewers in PR
-    _addQuery(`.merge-status-item.review-item.bg-white.js-details-container.Details strong.text-emphasized`, (element) => {
-        return element?.parentElement?.parentElement?.querySelector("[data-hovercard-type=user]");
-    });
+    _addQuery(
+        `details.js-merge-review-section div.merge-status-item.review-item.js-details-container.Details div.review-status-item strong.text-emphasized`,
+        (element) => {
+            return element?.parentElement?.parentElement?.querySelector("[data-hovercard-type=user]");
+        }
+    );
     // PR: "xyz requested your review" box
     _addQuery(`div#repo-content-pjax-container div.flash.flash-warn div a.text-emphasized.Link--primary`);
     // projects: card/issue creator
