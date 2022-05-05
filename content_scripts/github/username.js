@@ -55,6 +55,7 @@ function initializeGitHubIdQueries() {
     );
     // comment edit history
     _addQuery(`span.js-comment-edit-history details summary div span`);
+    _addQuery(`div.js-suggested-changes-contents span details.dropdown summary.btn-link div span`);
     _addQuery(
         `details details-menu.dropdown-menu.js-comment-edit-history-menu ul li button.btn-link span.css-truncate-target.v-align-middle.text-bold`
     );
