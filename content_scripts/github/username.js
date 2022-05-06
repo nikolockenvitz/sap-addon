@@ -67,7 +67,8 @@ function initializeGitHubIdQueries() {
     _addQuery(`form.js-resolvable-timeline-thread-form strong`, true);
     // comment resolver in PR (Files Changed)
     _addQuery(
-        `div.js-resolvable-timeline-thread-container div.comment-holder.js-line-comments div.js-resolvable-thread-toggler-container strong`
+        `div.js-resolvable-timeline-thread-container div.comment-holder.js-line-comments div.js-resolvable-thread-toggler-container strong`,
+        true
     );
     // member statuses on team's overview page (directly next to icon)
     _addQuery(`div.user-status-container a.link-gray-dark.text-bold.no-underline[data-hovercard-type="user"]`);
