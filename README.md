@@ -25,13 +25,12 @@ Updates are handled automatically.
 * **GitHub** (`github.wdf.sap.corp` / `github.tools.sap`)
   * sign in automatically
   * hide yellow notice box messages
-    * dismiss a specific messasge
+    * dismiss a specific message
     * always see new messages
   * show name instead of user id (inspired by [https://github.com/cgrail/github-chrome-fullname](https://github.com/cgrail/github-chrome-fullname))
-  * get name from `people.wdf.sap.corp` (use GitHub only as a fallback)
-    * names are cached in local storage
-    * also some metadata is stored to be able to clean the cache based on usage later
-* **Fiori Launchpad** (`fiorilaunchpad.sap.com`) <!-- it's the Fiori Lunchpad ;) name created by Erik Jansky -->
+  * names are cached in local storage
+  * also, some metadata is stored to be able to clean the cache based on usage later
+* **Fiori Launchpad** (`fiorilaunchpad.sap.com`)
   * override language of lunchmenu so that you will see it e.g. in German even if language in the Fiori Launchpad settings is set to English
     * language can be configured
     * currently supports `de` and `en`
