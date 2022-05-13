@@ -3,6 +3,7 @@ github.showNames = {
     // query and href exceptions will be filled with values below
     query: ``,
     hrefExceptions: [],
+    userMentions: [],
     queryTooltips: `div.comment-reactions-options button.btn-link.reaction-summary-item.tooltipped[type=submit],
         div.AvatarStack div.AvatarStack-body.tooltipped`,
     regexNameOnProfilePage: `<span class="p-name vcard-fullname d-block overflow-hidden" itemprop="name">([^<]*)</span>`,
@@ -26,31 +27,37 @@ github.getNamesFromPeople = {
 
 function initializeGitHubIdQueries() {
     // commit author, direct mentions
-    _addQuery(`.user-mention`);
+    _addQuery(`.user-mention`, { userMention: true });
     // several places where username can be found (hovering opens card with profile info)
     _addQuery(`[data-hovercard-type=user]`);
     // ???
-    _addQuery(`a.text-emphasized.link-gray-dark`);
+    _addQuery(`a.text-emphasized.Link--primary`);
     // contributor list of a repo
-    _addQuery(`a.link-gray-dark.no-underline.flex-self-center strong`);
+    //_addQuery(`a.Link--primary.no-underline.flex-self-center strong`);
     // pending reviewers in PR
     _addQuery(
         `details.js-merge-review-section div.merge-status-item.review-item.js-details-container.Details div.review-status-item strong.text-emphasized`,
-        (element) => {
-            return element?.parentElement?.parentElement?.querySelector("[data-hovercard-type=user]");
+        {
+            hrefException: (element) => {
+                return element?.parentElement?.parentElement?.querySelector("[data-hovercard-type=user]");
+            },
         }
     );
     // PR: "xyz requested your review" box
     _addQuery(`div#repo-content-pjax-container div.flash.flash-warn div a.text-emphasized.Link--primary`);
     // projects: card/issue creator
-    _addQuery(`small a.text-gray-dark`);
+    _addQuery(`small a.color-text-primary`);
+    // projects: activity pane
+    _addQuery(`div.js-project-activity-pane.Details ul.js-project-activity-container li p a.text-bold`, { userMention: true });
     // wiki revisions history
     _addQuery(`#wiki-wrapper #version-form div > a.muted-link span.text-bold`);
     // recent activity in dashboard (user commented)
     _addQuery(
-        `div.js-recent-activity-container div.Box ul li.Box-row div.dashboard-break-word.lh-condensed.text-gray span.text-gray`,
-        (element) => {
-            return element.textContent.trim().endsWith(" commented") && element.textContent.trim() !== "You commented";
+        `div.js-recent-activity-container div.Box ul li.Box-row div.dashboard-break-word.lh-condensed.color-text-secondary span.color-text-secondary`,
+        {
+            hrefException: (element) => {
+                return element.textContent.trim().endsWith(" commented") && element.textContent.trim() !== "You commented";
+            },
         }
     );
     // comment edit history
@@ -60,33 +67,37 @@ function initializeGitHubIdQueries() {
         `details details-menu.dropdown-menu.js-comment-edit-history-menu ul li button.btn-link span.css-truncate-target.v-align-middle.text-bold`
     );
     // dialog with comment edit history
-    _addQuery(`details.details-overlay details-dialog div div div span.css-truncate-target.v-align-middle.text-bold.text-small`, true);
+    _addQuery(`details.details-overlay details-dialog div div div span.css-truncate-target.v-align-middle.text-bold.text-small`, {
+        hrefException: true,
+    });
     // team members in hovercard of a team in dashboard > your teams
-    _addQuery(`div.text-gray span.css-truncate.tooltipped span.css-truncate-target.text-bold`, true);
+    _addQuery(`div.color-text-secondary span.css-truncate.tooltipped span.css-truncate-target.text-bold`, { hrefException: true });
     // comment resolver in PR reviews (Conversation)
-    _addQuery(`form.js-resolvable-timeline-thread-form strong`, true);
+    _addQuery(`form.js-resolvable-timeline-thread-form strong`, { hrefException: true });
     // comment resolver in PR (Files Changed)
     _addQuery(
         `div.js-resolvable-timeline-thread-container div.comment-holder.js-line-comments div.js-resolvable-thread-toggler-container strong`,
-        true
+        { hrefException: true }
     );
     // member statuses on team's overview page (directly next to icon)
-    _addQuery(`div.user-status-container a.link-gray-dark.text-bold.no-underline[data-hovercard-type="user"]`);
+    _addQuery(`div.user-status-container a.Link--primary.text-bold.no-underline[data-hovercard-type="user"]`);
     // list of users who contributed to a file (directly next to icon)
-    _addQuery(`details#blob_contributors_box details-dialog ul li a.link-gray-dark.no-underline`);
+    _addQuery(`details#blob_contributors_box details-dialog ul li a.Link--primary.no-underline`);
     // commit list (Files Changed view of PR)
     _addQuery(`#files_bucket div.pr-toolbar div.diffbar a.select-menu-item div.select-menu-item-text span.description`);
     // chart tooltip (insights > pulse)
     _addQuery(`body > div.svg-tip.n strong ~ strong`);
     // user details in organization's admin view (people > specific user)
-    _addQuery(`div.table-list-header > span.table-list-heading > strong`, true); // xyz has access to n repos
-    _addQuery(`p.org-user-notice-content > strong:first-child`, true); // as an owner, xyz has ...
+    _addQuery(`div.table-list-header > span.table-list-heading > strong`, { hrefException: true }); // xyz has access to n repos
+    _addQuery(`p.org-user-notice-content > strong:first-child`, { hrefException: true }); // as an owner, xyz has ...
+    // search: issues (xyz opened on ...) and commits (xyz committed ...)
+    _addQuery(`div.issue-list-item div.text-small a.text-bold:not([data-hovercard-type="repository"])`);
 }
-function _addQuery(query, hrefException) {
+function _addQuery(query, options = {}) {
     github.showNames.query += (github.showNames.query === "" ? "" : ",\n") + query;
 
-    if (hrefException) {
-        switch (typeof hrefException) {
+    if (options?.hrefException) {
+        switch (typeof options.hrefException) {
             case "boolean":
                 github.showNames.hrefExceptions.push((element) => {
                     return element.matches(query);
@@ -101,9 +112,13 @@ function _addQuery(query, hrefException) {
                 break;
 
             default:
-                console.error("Unexpected hrefException", hrefException);
+                console.error("Unexpected hrefException", options.hrefException);
                 break;
         }
+    }
+
+    if (options?.userMention) {
+        github.showNames.userMentions.push(query);
     }
 }
 function initializeFurtherHrefExceptions() {
@@ -195,7 +210,9 @@ function _getUserIdIfElementIsUserId(element) {
         for (const possiblePrefixOrSuffix of [
             {
                 prefix: "@",
-                furtherChecks: element.classList.contains("user-mention"),
+                furtherChecks: () => {
+                    return github.showNames.userMentions.findIndex((q) => element.matches(q)) !== -1;
+                },
             },
             { prefix: "edited by " },
             { suffix: " commented" },
@@ -203,7 +220,7 @@ function _getUserIdIfElementIsUserId(element) {
             if (
                 ((possiblePrefixOrSuffix.prefix && userId.startsWith(possiblePrefixOrSuffix.prefix)) ||
                     (possiblePrefixOrSuffix.suffix && userId.endsWith(possiblePrefixOrSuffix.suffix))) &&
-                (!("furtherChecks" in possiblePrefixOrSuffix) || possiblePrefixOrSuffix.furtherChecks)
+                (!("furtherChecks" in possiblePrefixOrSuffix) || possiblePrefixOrSuffix.furtherChecks())
             ) {
                 return {
                     prefix: possiblePrefixOrSuffix.prefix || "",
