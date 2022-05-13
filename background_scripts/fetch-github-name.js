@@ -11,47 +11,13 @@ browser.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     }
 });
 
-function fetchUsername(
-    userId,
-    isGetNamesFromPeopleEnabled,
-    hostnamePeople,
-    regexNameOnProfilePagePeople,
-    hostnameGithub,
-    regexNameOnProfilePageGithub
-) {
+function fetchUsername(userId, hostnameGithub, regexNameOnProfilePageGithub) {
     return new Promise(async function (resolve) {
-        let fetchURL;
-        if (isGetNamesFromPeopleEnabled) {
-            fetchURL = "https://" + hostnamePeople + "/profiles/" + userId;
-            try {
-                const html = await (
-                    await fetch(fetchURL, {
-                        method: "GET",
-                        cache: "force-cache",
-                        mode: "no-cors",
-                    })
-                ).text();
-                const searchRegex = new RegExp(regexNameOnProfilePagePeople);
-                let match = searchRegex.exec(html)[1];
-                /* currently the salutation is not in the span which is named
-                 * salutation but direclty in front of the name -> we need
-                 * to split that away
-                 * e.g.: <span class='salutation'></span>Mr. Firstname Lastname
-                 */
-                match = match.split(". ").pop().trim();
-                return resolve(match);
-            } catch (error) {
-                logFetchError(userId, fetchURL, error);
-            }
-        }
-
-        // use github as fallback or if people is disabled
-        fetchURL = "https://" + hostnameGithub + "/" + userId;
+        const fetchURL = "https://" + hostnameGithub + "/" + userId;
         try {
             const html = await (
                 await fetch(fetchURL, {
                     method: "GET",
-                    cache: "force-cache",
                 })
             ).text();
             const searchRegex = new RegExp(regexNameOnProfilePageGithub);

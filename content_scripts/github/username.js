@@ -414,14 +414,7 @@ function _fetchUsername(userId) {
             browser.runtime.sendMessage.bind(browser.runtime),
             {
                 contentScriptQuery: "githubFetchUsername",
-                args: [
-                    userId,
-                    isEnabled(github.getNamesFromPeople.optionName),
-                    github.getNamesFromPeople.hostname,
-                    github.getNamesFromPeople.regexNameOnProfilePage,
-                    url.hostname,
-                    github.showNames.regexNameOnProfilePage,
-                ],
+                args: [userId, url.hostname, github.showNames.regexNameOnProfilePage],
             },
             (username) => {
                 resolve(username);

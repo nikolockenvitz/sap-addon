@@ -2,7 +2,6 @@ const inputIds = [
     "github-sign-in",
     "github-hide-notice-overlay",
     "github-show-names",
-    "github-get-names-from-people",
     "fiori-lunchmenu-german",
     "sharepoint-login",
 ];
@@ -32,7 +31,6 @@ window.onload = async function () {
 
 async function onChangeInput(inputId) {
     options[inputId] = document.getElementById(inputId).checked;
-    updateDependingInputs(inputId);
     await saveOptionsToStorage();
     runMainFunctionOfContentAndBackgroundScripts();
 }
@@ -80,34 +78,6 @@ function toggleInputOnSectionTextClick(inputId) {
     }
 }
 
-function updateDependingInputs(inputId) {
-    /* some inputs depend on others
-     * -> disable them if the input they depend on is unchecked
-     * -> enable them if the input they depend on is checked
-     *
-     * the attribute 'data-depending-inputs' contains the ids
-     * of all depending inputs (separated with a space)
-     */
-    const input = document.getElementById(inputId);
-    if (input.hasAttribute("data-depending-inputs")) {
-        for (const depId of input.getAttribute("data-depending-inputs").split(" ")) {
-            const dependingInput = document.getElementById(depId);
-            const sectionText = getSectionTextParent(dependingInput);
-            if (input.checked) {
-                dependingInput.disabled = false;
-                if (sectionText) {
-                    sectionText.classList.remove("disabled");
-                }
-            } else {
-                dependingInput.disabled = true;
-                if (sectionText) {
-                    sectionText.classList.add("disabled");
-                }
-            }
-        }
-    }
-}
-
 function getSectionTextParent(element) {
     while (element) {
         if (element.classList.contains("section-text")) {
@@ -147,7 +117,6 @@ function saveConfigToStorage() {
 function initInputs() {
     for (const inputId of inputIds) {
         document.getElementById(inputId).checked = !options || options[inputId] !== false;
-        updateDependingInputs(inputId);
     }
 }
 
