@@ -22,7 +22,7 @@ Updates are handled automatically.
 
 <img src="docs/screenshot-1.15-popup.png" width="320" alt="Screenshot of Popup" title="Screenshot of Popup" /> <img src="docs/screenshot-1.15-popup-config.png" width="320" alt="Screenshot of Configuration in Popup" title="Screenshot of Configuration in Popup" />
 
-* **GitHub** (`github.wdf.sap.corp` / `github.tools.sap`)
+* **GitHub** (`github.wdf.sap.corp` / `github.tools.sap` / `github.concur.com`)
   * sign in automatically
   * hide yellow notice box messages
     * dismiss a specific message
