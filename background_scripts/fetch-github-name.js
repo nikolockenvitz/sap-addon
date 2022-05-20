@@ -22,7 +22,8 @@ function fetchUsername(userId, hostnameGithub, regexNameOnProfilePageGithub) {
             ).text();
             const searchRegex = new RegExp(regexNameOnProfilePageGithub);
             const match = (searchRegex.exec(html)[1] || "").trim();
-            resolve(match);
+            const name = decodeHtml(match);
+            resolve(name);
         } catch (error) {
             logFetchError(userId, fetchURL, error);
             resolve(null);
@@ -36,4 +37,11 @@ function logFetchError(userId, url, error) {
         // either d/D/i/I + 6 numbers or c/C + 7 numbers
         console.log("SAP Addon - Error when fetching", url, error);
     }
+}
+
+function decodeHtml(html) {
+    // https://stackoverflow.com/a/7394787
+    const txt = document.createElement("textarea");
+    txt.innerHTML = html;
+    return txt.value;
 }
