@@ -4,6 +4,7 @@
   "description": "",
   "scripts": {
     "help": "node npm_script.js help",
+    "dev": "node npm_script.js dev",
     "build": "node npm_script.js build",
     "deploy": "node npm_script.js deploy"
   },

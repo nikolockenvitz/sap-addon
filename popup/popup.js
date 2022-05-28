@@ -1,10 +1,4 @@
-const inputIds = [
-    "github-sign-in",
-    "github-hide-notice-overlay",
-    "github-show-names",
-    "fiori-lunchmenu-german",
-    "sharepoint-login",
-];
+const inputIds = ["github-sign-in", "github-hide-notice-overlay", "github-show-names", "fiori-lunchmenu-german", "sharepoint-login"];
 const buttonInputIds = ["github-hide-notice-show-all-again"];
 const configInputIds = ["config-email", "config-lunchmenu-language"];
 
@@ -54,6 +48,8 @@ function runMainFunctionOfContentAndBackgroundScripts() {
         browser.runtime.sendMessage.bind(browser.runtime),
         {
             rerunMainFunctionOfBackgroundPage: true,
+            options,
+            config,
         },
         () => {}
     );

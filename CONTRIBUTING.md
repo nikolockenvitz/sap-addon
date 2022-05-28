@@ -12,6 +12,8 @@ You may need to disable the current installation of the addon.
 
 ### Firefox
 
+Rename/copy `manifest-fx.json` to `manifest.json`.
+
 Open `about:debugging` and switch to `This Firefox` ([about:debugging#/runtime/this-firefox](about:debugging#/runtime/this-firefox)).
 Click button `Load Temporary Add-on...` in top right corner.
 Select `manifest.json` of this repository.
@@ -20,6 +22,8 @@ This makes the add-on available until you close/restart Firefox.
 Don't forget to click on the `Reload` button for the temporary extension when you want to test your changes.
 
 ### Chrome
+
+Rename/copy `manifest-chrome.json` to `manifest.json`.
 
 Open `chrome://extensions/` and enable `Developer mode` in the top right corner.
 Click button `Load unpacked` in top left corner.

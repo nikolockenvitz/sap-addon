@@ -19,11 +19,6 @@ github.showNames = {
         ],
     },
 };
-github.getNamesFromPeople = {
-    optionName: "github-get-names-from-people",
-    hostname: "people.wdf.sap.corp",
-    regexNameOnProfilePage: `<span class='salutation'>[^<]*</span>([^<]*)<`,
-};
 
 function initializeGitHubIdQueries() {
     // commit author, direct mentions
@@ -419,10 +414,18 @@ function _fetchUsername(userId) {
                 args: [userId, url.hostname, github.showNames.regexNameOnProfilePage],
             },
             (username) => {
-                resolve(username);
+                const name = decodeHtml(username);
+                resolve(name);
             }
         );
     });
+}
+
+function decodeHtml(html) {
+    // https://stackoverflow.com/a/7394787
+    const txt = document.createElement("textarea");
+    txt.innerHTML = html;
+    return txt.value;
 }
 
 const regexPulseTooltipTextContentBefore = new RegExp(`^ commit(|s) authored by $`);

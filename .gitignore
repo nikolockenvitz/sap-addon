@@ -1,3 +1,8 @@
 *.zip
 config.yml
 node_modules/
+
+*.ignore.*
+
+# manifest needs to be created by moving/copying manifest-fx.json or manifest-chrome.json
+manifest.json

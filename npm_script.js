@@ -26,5 +26,7 @@ browserExtensionHelper.init({
     readmeBadgeText: README_BADGE_TEXT,
     zipFoldername: "zip",
     zipFilenameIncludeVersion: true,
+    filepathManifestFirefox: "manifest-fx.json",
+    filepathManifestChrome: "manifest-chrome.json",
 });
 browserExtensionHelper.main(process.argv);
