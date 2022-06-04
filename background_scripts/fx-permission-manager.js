@@ -13,7 +13,9 @@ async function registerAllDynamicContentScripts() {
         } else {
             const registration = registeredContentScripts[dynamicContentScript.name];
             if (typeof registration?.unregister === "function") {
-                registration.unregister();
+                // if the unregister() function is not invoked, Firefox will run the content script
+                // (even if optional permission has been removed)
+                //registration.unregister();
             }
             delete registeredContentScripts[dynamicContentScript.name];
         }
