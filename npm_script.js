@@ -9,6 +9,7 @@ const ZIP_CONTENT = {
         "content_scripts",
         "icons",
         "popup",
+        "shared",
         "utils",
     ],
     files: [
