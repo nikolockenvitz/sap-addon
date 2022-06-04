@@ -365,14 +365,32 @@ longer needed; it's only for the first time when _getUsername is called simultan
 and there's no username in the cache yet.
 */
 const userIdRequestQueue = {};
+const userIdUpdateQueue = {};
 
 const USERNAME_CACHE_NAME = 0;
 const USERNAME_CACHE_UPDATED_AT = 1;
 
+const USERNAME_CACHE_MAX_TIME_IN_S = 2_592_000; // 30 days: 30 * 24 * 60 * 60 = 2_592_000
+
 async function _getUsername(userId) {
     if (!userId || github.showNames.userIdFalsePositives.includes(userId)) return null;
     const user = usernameCache[userId];
+    const now = getUnixTimestamp(); // seconds/milliseconds don't matter so it's sufficient to get it only once
     if (user && user[USERNAME_CACHE_NAME]) {
+        // check if value is older than threshold
+        if (now - user[USERNAME_CACHE_UPDATED_AT] > USERNAME_CACHE_MAX_TIME_IN_S && !(userId in userIdUpdateQueue)) {
+            // refetch in background; prevent multiple refetches
+            // still return old value directly for best performance -> will only be updated when cache is requested the next time
+            userIdUpdateQueue[userId] = true;
+            (async () => {
+                const username = await _fetchUsername(userId);
+                if (username) {
+                    usernameCache[userId] = [username, now];
+                    saveUsernameCacheToStorage();
+                }
+                delete userIdUpdateQueue[userId];
+            })();
+        }
         return user[USERNAME_CACHE_NAME];
     } else if (userId in userIdRequestQueue) {
         return new Promise((resolve) => {
@@ -384,7 +402,7 @@ async function _getUsername(userId) {
         userIdRequestQueue[userId] = [];
         const username = await _fetchUsername(userId);
         if (username) {
-            usernameCache[userId] = [username, getUnixTimestamp()];
+            usernameCache[userId] = [username, now];
             saveUsernameCacheToStorage();
         }
         const observers = userIdRequestQueue[userId];
@@ -429,7 +447,7 @@ function _isInsightsPulseTooltip(element) {
 }
 
 function getUnixTimestamp() {
-    return Math.floor(new Date().getTime());
+    return Math.floor(Date.now() / 1000);
 }
 
 function isElementALink(element) {
