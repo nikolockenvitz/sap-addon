@@ -55,9 +55,7 @@
     "*://github.tools.sap/*"
   ],
   "optional_host_permissions": [
-    "*://github.concur.com/*",
-    "*://nikolockenvitz.de/*",
-    "*://example.org/*"
+    "*://github.concur.com/*"
   ],
   "background": {
     "service_worker": "background_scripts/chrome-background.js"

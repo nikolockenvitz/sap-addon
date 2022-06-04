@@ -53,9 +53,7 @@
     "*://github.tools.sap/*"
   ],
   "optional_permissions": [
-    "*://github.concur.com/*",
-    "*://nikolockenvitz.de/*",
-    "*://example.org/*"
+    "*://github.concur.com/*"
   ],
   "background": {
     "scripts": [

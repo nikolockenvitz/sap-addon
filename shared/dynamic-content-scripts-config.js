@@ -18,20 +18,4 @@ const dynamicContentScripts = [
             runAt: "document_start",
         },
     },
-    {
-        name: "nikolockenvitz.de",
-        cs: {
-            js: ["/content_scripts/hello-world.js"],
-            matches: ["*://nikolockenvitz.de/*"],
-            runAt: "document_start",
-        },
-    },
-    {
-        name: "example.org",
-        cs: {
-            js: ["/content_scripts/hello-world.js"],
-            matches: ["*://example.org/*"],
-            runAt: "document_start",
-        },
-    },
 ];
