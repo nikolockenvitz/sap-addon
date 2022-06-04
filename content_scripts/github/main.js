@@ -1,8 +1,9 @@
 let options;
 
 async function main() {
+    deleteLegacyUsernameCache();
     [usernameCache, options, noticeBoxMessagesToHide] = await Promise.all([
-        loadFromStorage("usernameCache"),
+        loadFromStorage(usernameCacheName),
         loadFromStorage("options"),
         loadFromStorage("githubNoticeBoxMessagesToHide"),
     ]);

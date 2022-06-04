@@ -130,14 +130,12 @@ function replaceGitHubIdsWithUsername() {
          * elements are changed/created (e.g. gets enabled in options)
          */
         _replaceAllChildsWhichAreUserId(document.body);
-        saveUsernameCacheToStorage();
     });
 
     domObserver.registerCallbackFunction(github.showNames.optionName, function (mutations, _observer) {
         for (const { target } of mutations) {
             _replaceAllChildsWhichAreUserId(target);
         }
-        saveUsernameCacheToStorage();
     });
 }
 function showGitHubIdsAgain() {
@@ -368,20 +366,17 @@ and there's no username in the cache yet.
 */
 const userIdRequestQueue = {};
 
+const USERNAME_CACHE_NAME = 0;
+const USERNAME_CACHE_UPDATED_AT = 1;
+
 async function _getUsername(userId) {
     if (!userId || github.showNames.userIdFalsePositives.includes(userId)) return null;
     const user = usernameCache[userId];
-    if (user && user.username) {
-        usernameCache[userId].usedAt = getUnixTimestamp();
-        usernameCache[userId].used += 1;
-        return (user.username || "").trim();
+    if (user && user[USERNAME_CACHE_NAME]) {
+        return user[USERNAME_CACHE_NAME];
     } else if (userId in userIdRequestQueue) {
         return new Promise((resolve) => {
             userIdRequestQueue[userId].push(function (username) {
-                if (username) {
-                    usernameCache[userId].usedAt = getUnixTimestamp();
-                    usernameCache[userId].used += 1;
-                }
                 resolve(username);
             });
         });
@@ -389,12 +384,8 @@ async function _getUsername(userId) {
         userIdRequestQueue[userId] = [];
         const username = await _fetchUsername(userId);
         if (username) {
-            usernameCache[userId] = {
-                username: username,
-                updatedAt: getUnixTimestamp(),
-                usedAt: getUnixTimestamp(),
-                used: 1,
-            };
+            usernameCache[userId] = [username, getUnixTimestamp()];
+            saveUsernameCacheToStorage();
         }
         const observers = userIdRequestQueue[userId];
         delete userIdRequestQueue[userId];
@@ -411,7 +402,7 @@ function _fetchUsername(userId) {
             browser.runtime.sendMessage.bind(browser.runtime),
             {
                 contentScriptQuery: "githubFetchUsername",
-                args: [userId, url.hostname, github.showNames.regexNameOnProfilePage],
+                args: [userId, url.host, github.showNames.regexNameOnProfilePage],
             },
             (username) => {
                 const name = decodeHtml(username);
@@ -425,7 +416,7 @@ function decodeHtml(html) {
     // https://stackoverflow.com/a/7394787
     const txt = document.createElement("textarea");
     txt.innerHTML = html;
-    return txt.value;
+    return txt.value.trim();
 }
 
 const regexPulseTooltipTextContentBefore = new RegExp(`^ commit(|s) authored by $`);
@@ -555,7 +546,21 @@ function showGitHubIdsAgainInDocumentTitle() {
     if (documentTitleUserIdState.oldTitle) document.title = documentTitleUserIdState.oldTitle;
 }
 
+const usernameCacheName = `gh-usernameCache-${url.host}`;
 let usernameCache;
+let timeoutIdSavingUsernameCache = null;
 function saveUsernameCacheToStorage() {
-    return saveToStorage("usernameCache", usernameCache);
+    if (!timeoutIdSavingUsernameCache) {
+        timeoutIdSavingUsernameCache = setTimeout(() => {
+            timeoutIdSavingUsernameCache = null;
+            saveToStorage(usernameCacheName, usernameCache);
+        }, 1000);
+    }
+}
+function deleteLegacyUsernameCache() {
+    return new Promise(function (resolve) {
+        execAsync(browser.storage.local.remove.bind(browser.storage.local), "usernameCache", () => {
+            resolve();
+        });
+    });
 }
