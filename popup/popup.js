@@ -1,10 +1,4 @@
-const inputIds = [
-    "github-sign-in",
-    "github-hide-notice-overlay",
-    "github-show-names",
-    "fiori-lunchmenu-german",
-    "sharepoint-login",
-];
+const inputIds = ["github-sign-in", "github-hide-notice-overlay", "github-show-names", "fiori-lunchmenu-german", "sharepoint-login"];
 const buttonInputIds = ["github-hide-notice-show-all-again"];
 const configInputIds = ["config-email", "config-lunchmenu-language"];
 
@@ -54,13 +48,15 @@ function runMainFunctionOfContentAndBackgroundScripts() {
         browser.runtime.sendMessage.bind(browser.runtime),
         {
             rerunMainFunctionOfBackgroundPage: true,
+            options,
+            config,
         },
         () => {}
     );
 }
 
-function toggleInputOnSectionTextClick(inputId) {
-    const inputEl = document.getElementById(inputId);
+function toggleInputOnSectionTextClick(inputIdOrEl, callback = undefined) {
+    const inputEl = typeof inputIdOrEl === "string" ? document.getElementById(inputIdOrEl) : inputIdOrEl;
     const sectionText = getSectionTextParent(inputEl);
     if (sectionText) {
         sectionText.addEventListener("click", function (event) {
@@ -71,7 +67,11 @@ function toggleInputOnSectionTextClick(inputId) {
                      * can ignore the click on the slider and just use the
                      * click on the input
                      */
-                    onChangeInput(inputId);
+                    if (callback) {
+                        callback();
+                    } else if (typeof inputIdOrEl === "string") {
+                        onChangeInput(inputIdOrEl);
+                    }
                 }
             }
         });
@@ -121,17 +121,20 @@ function initInputs() {
 }
 
 function initModals() {
-    const configurationModal = document.getElementById("modal-configuration");
-    document.getElementById("btn-show-configuration").addEventListener("click", function () {
-        configurationModal.style.display = "block";
-    });
-    document.getElementById("btn-hide-configuration").addEventListener("click", function () {
-        configurationModal.classList.add("hide");
-        setTimeout(function () {
-            configurationModal.style.display = "none";
-            configurationModal.classList.remove("hide");
-        }, 400); // needs to be equal to what is specified in css animation
-    });
+    for (const name of ["configuration", "permissions"]) {
+        const modal = document.getElementById(`modal-${name}`);
+        document.getElementById(`btn-show-${name}`).addEventListener("click", function () {
+            modal.style.display = "block";
+        });
+        document.getElementById(`btn-hide-${name}`).addEventListener("click", function () {
+            modal.classList.add("hide");
+            setTimeout(function () {
+                modal.style.display = "none";
+                modal.classList.remove("hide");
+            }, 400); // needs to be equal to what is specified in css animation
+        });
+    }
+    initPermissionsModal();
 }
 
 function initConfigInput(inputId) {

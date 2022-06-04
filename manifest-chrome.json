@@ -1,5 +1,5 @@
 {
-  "manifest_version": 2,
+  "manifest_version": 3,
   "name": "SAP Addon",
   "version": "1.16.5",
   "description": "Extension for SAP related webpages: GitHub, Fiori Launchpad, Sharepoint",
@@ -12,8 +12,7 @@
     {
       "matches": [
         "*://github.wdf.sap.corp/*",
-        "*://github.tools.sap/*",
-        "*://github.concur.com/*"
+        "*://github.tools.sap/*"
       ],
       "js": [
         "utils/browser-setup.js",
@@ -47,32 +46,23 @@
   ],
   "permissions": [
     "storage",
-    "webRequest",
-    "webRequestBlocking",
+    "declarativeNetRequestWithHostAccess",
+    "scripting"
+  ],
+  "host_permissions": [
     "*://fiorilaunchpad.sap.com/sap/fiori/lunchmenu/*",
-    "*://people.wdf.sap.corp/*",
     "*://github.wdf.sap.corp/*",
-    "*://github.tools.sap/*",
+    "*://github.tools.sap/*"
+  ],
+  "optional_host_permissions": [
     "*://github.concur.com/*"
   ],
   "background": {
-    "scripts": [
-      "utils/browser-setup.js",
-      "utils/storage.js",
-      "utils/option-helper.js",
-      "background_scripts/fiori-lunchmenu.js",
-      "background_scripts/on-tab-change.js",
-      "background_scripts/fetch-github-name.js"
-    ]
+    "service_worker": "background_scripts/chrome-background.js"
   },
-  "browser_action": {
+  "action": {
     "default_icon": "icons/icon48.png",
     "default_title": "SAP Addon",
     "default_popup": "popup/popup.html"
-  },
-  "browser_specific_settings": {
-    "gecko": {
-      "update_url": "https://nikolockenvitz.github.io/sap-addon/updates.json"
-    }
   }
 }

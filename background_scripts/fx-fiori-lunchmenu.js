@@ -51,9 +51,3 @@ async function main() {
     }
 }
 main();
-
-browser.runtime.onMessage.addListener(function (request) {
-    if (request.rerunMainFunctionOfBackgroundPage) {
-        main();
-    }
-});

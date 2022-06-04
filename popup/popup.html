@@ -6,13 +6,15 @@
         <link rel="stylesheet" href="./popup.css">
         <script src="../utils/browser-setup.js" type="text/javascript" defer></script>
         <script src="../utils/storage.js" type="text/javascript" defer></script>
+        <script src="../shared/dynamic-content-scripts-config.js" type="text/javascript" defer></script>
+        <script src="./permissions.js" type="text/javascript" defer></script>
         <script src="./popup.js" type="text/javascript" defer></script>
     </head>
 
     <body class="noselect">
         <div id="popup-content">
             <div class="section">
-                <p class="section-heading" title="github.wdf.sap.corp, github.tools.sap">GitHub</p>
+                <p class="section-heading" title="github.wdf.sap.corp, github.tools.sap; Optional: github.concur.com">GitHub</p>
                 <div class="section-text">
                     <p>Sign In Automatically</p>
                     <p><label class="switch">
@@ -60,9 +62,9 @@
                 </div>
             </div>
             <div class="section">
-                <p class="section-heading" title="sap-my.sharepoint.com, login.microsoftonline.com">Sharepoint</p>
+                <p class="section-heading">Auto Login</p>
                 <div class="section-text">
-                    <p>Log In Automatically</p>
+                    <p title="sap-my.sharepoint.com, login.microsoftonline.com">Sharepoint</p>
                     <p><label class="switch">
                         <input type="checkbox" id="sharepoint-login" checked>
                         <span class="slider round"></span>
@@ -74,6 +76,11 @@
                 <p class="section-heading">More</p>
                 <div class="section-text" id="btn-show-configuration">
                     <p>Configuration</p>
+                    <p><span class="arrow right"></span></p>
+                    <p></p>
+                </div>
+                <div class="section-text" id="btn-show-permissions">
+                    <p>Optional Permissions</p>
                     <p><span class="arrow right"></span></p>
                     <p></p>
                 </div>
@@ -111,6 +118,39 @@
                         All data is stored locally in your browser cache and not shared with anyone.
                         You are not required to provide any data, this is completely voluntary.
                     </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal" id="modal-permissions">
+            <div class="modal-content">
+                <div class="section modal-header">
+                    <span id="btn-hide-permissions"><span class="arrow arrow-white arrow-larger left"></span></span>
+                    <span>Optional Permissions</span>
+                    <span><span class="arrow arrow-white arrow-larger right"></span></span>
+                </div>
+                <div class="section">
+                    <div class="section-button">
+                        <button id="btn-permissions-save-changes" class="disabled">Save Changes</button>
+                    </div>
+                    <div style="text-align: center; font-size: 0.8em;">
+                        <span id="btn-permissions-select-all" style="cursor:pointer">Select All</span>
+                        ·
+                        <span id="btn-permissions-deselect-all" style="cursor:pointer">Deselect All</span>
+                    </div>
+                    <p class="section-heading">Domains</p>
+                    <div id="permissions-domains-container">
+                        <template>
+                            <div class="section-text">
+                                <p data-template-id="domain"></p>
+                                <p><label class="switch">
+                                    <input type="checkbox" data-template-id="checkbox" checked>
+                                    <span class="slider round"></span>
+                                </label></p>
+                                <p></p>
+                            </div>
+                        </template>
+                    </div>
                 </div>
             </div>
         </div>

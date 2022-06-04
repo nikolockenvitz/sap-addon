@@ -7,7 +7,7 @@ github.showNames = {
     queryTooltips: `div.comment-reactions-options button.btn-link.reaction-summary-item.tooltipped[type=submit],
         div.AvatarStack div.AvatarStack-body.tooltipped`,
     regexNameOnProfilePage: `<span class="p-name vcard-fullname d-block overflow-hidden" itemprop="name">([^<]*)</span>`,
-    userIdFalsePositives: ["edited"],
+    userIdFalsePositives: ["edited", "github-actions"],
     documentTitle: {
         optionName: "github-replace-names-in-document-title",
         userIdRegex: "[dDiI]\\d{6}|[cC]\\d{7}",
@@ -18,11 +18,6 @@ github.showNames = {
             { prefix: "^", prefixReplace: "", suffix: "'s access for" },
         ],
     },
-};
-github.getNamesFromPeople = {
-    optionName: "github-get-names-from-people",
-    hostname: "people.wdf.sap.corp",
-    regexNameOnProfilePage: `<span class='salutation'>[^<]*</span>([^<]*)<`,
 };
 
 function initializeGitHubIdQueries() {
@@ -419,10 +414,18 @@ function _fetchUsername(userId) {
                 args: [userId, url.hostname, github.showNames.regexNameOnProfilePage],
             },
             (username) => {
-                resolve(username);
+                const name = decodeHtml(username);
+                resolve(name);
             }
         );
     });
+}
+
+function decodeHtml(html) {
+    // https://stackoverflow.com/a/7394787
+    const txt = document.createElement("textarea");
+    txt.innerHTML = html;
+    return txt.value;
 }
 
 const regexPulseTooltipTextContentBefore = new RegExp(`^ commit(|s) authored by $`);

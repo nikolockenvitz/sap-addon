@@ -36,7 +36,8 @@ span.div, a.div {
     -webkit-transition: .4s;
     transition: .4s;
 }
-.section-text.disabled {
+.section-text.disabled,
+.section-button button.disabled {
     cursor: unset;
     opacity: 0.4;
     -webkit-transition: .4s;
@@ -61,6 +62,25 @@ span.div, a.div {
 
 .section-text.button-active > *:nth-child(1) {
     transform: translate(1px, 1px);
+}
+
+.section-button {
+    padding: 6px 8px;
+}
+.section-button button {
+    cursor: pointer;
+    width: 100%;
+    padding: 6px;
+    border: 0;
+    border-radius: 6px;
+    background-color: #2196F3;
+    color: #fff;
+}
+.section-button button:hover:not(.disabled) {
+    filter: brightness(110%);
+}
+.section-button button:active:not(.disabled) {
+    filter: brightness(115%);
 }
 
 /* The switch - the box around the slider */
@@ -225,7 +245,7 @@ span.arrow.arrow-larger {
     display: table-cell;
     width: 100%;
     text-align: center;
-    font-weight: 520;
+    font-weight: bold;
 }
 .modal-header > *:nth-child(3) { 
     /* clone of back button to have correct centering of heading */
