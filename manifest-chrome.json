@@ -46,8 +46,7 @@
   ],
   "permissions": [
     "storage",
-    "declarativeNetRequestWithHostAccess",
-    "scripting"
+    "declarativeNetRequestWithHostAccess"
   ],
   "host_permissions": [
     "*://fiorilaunchpad.sap.com/sap/fiori/lunchmenu/*",
