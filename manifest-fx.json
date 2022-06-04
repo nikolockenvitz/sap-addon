@@ -12,7 +12,8 @@
     {
       "matches": [
         "*://github.wdf.sap.corp/*",
-        "*://github.tools.sap/*"
+        "*://github.tools.sap/*",
+        "*://github.concur.com/*"
       ],
       "js": [
         "utils/browser-setup.js",
@@ -50,7 +51,8 @@
     "webRequestBlocking",
     "*://fiorilaunchpad.sap.com/sap/fiori/lunchmenu/*",
     "*://github.wdf.sap.corp/*",
-    "*://github.tools.sap/*"
+    "*://github.tools.sap/*",
+    "*://github.concur.com/*"
   ],
   "background": {
     "scripts": [
