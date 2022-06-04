@@ -46,12 +46,18 @@
   ],
   "permissions": [
     "storage",
-    "declarativeNetRequestWithHostAccess"
+    "declarativeNetRequestWithHostAccess",
+    "scripting"
   ],
   "host_permissions": [
     "*://fiorilaunchpad.sap.com/sap/fiori/lunchmenu/*",
     "*://github.wdf.sap.corp/*",
     "*://github.tools.sap/*"
+  ],
+  "optional_host_permissions": [
+    "*://github.concur.com/*",
+    "*://nikolockenvitz.de/*",
+    "*://example.org/*"
   ],
   "background": {
     "service_worker": "background_scripts/chrome-background.js"

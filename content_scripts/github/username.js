@@ -7,7 +7,7 @@ github.showNames = {
     queryTooltips: `div.comment-reactions-options button.btn-link.reaction-summary-item.tooltipped[type=submit],
         div.AvatarStack div.AvatarStack-body.tooltipped`,
     regexNameOnProfilePage: `<span class="p-name vcard-fullname d-block overflow-hidden" itemprop="name">([^<]*)</span>`,
-    userIdFalsePositives: ["edited"],
+    userIdFalsePositives: ["edited", "github-actions"],
     documentTitle: {
         optionName: "github-replace-names-in-document-title",
         userIdRegex: "[dDiI]\\d{6}|[cC]\\d{7}",

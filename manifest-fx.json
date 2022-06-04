@@ -12,8 +12,7 @@
     {
       "matches": [
         "*://github.wdf.sap.corp/*",
-        "*://github.tools.sap/*",
-        "*://github.concur.com/*"
+        "*://github.tools.sap/*"
       ],
       "js": [
         "utils/browser-setup.js",
@@ -51,8 +50,12 @@
     "webRequestBlocking",
     "*://fiorilaunchpad.sap.com/sap/fiori/lunchmenu/*",
     "*://github.wdf.sap.corp/*",
-    "*://github.tools.sap/*",
-    "*://github.concur.com/*"
+    "*://github.tools.sap/*"
+  ],
+  "optional_permissions": [
+    "*://github.concur.com/*",
+    "*://nikolockenvitz.de/*",
+    "*://example.org/*"
   ],
   "background": {
     "scripts": [
@@ -62,7 +65,9 @@
       "background_scripts/fx-fiori-lunchmenu.js",
       "background_scripts/fx-on-tab-change.js",
       "background_scripts/fetch-github-name.js",
-      "background_scripts/fx-message-listener.js"
+      "background_scripts/fx-message-listener.js",
+      "shared/dynamic-content-scripts-config.js",
+      "background_scripts/fx-permission-manager.js"
     ]
   },
   "browser_action": {

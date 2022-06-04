@@ -1,7 +1,10 @@
-// import { fetchUsername } from "./fetch-github-name.js";
-// import { test } from "./declarative-net-request.js";
 try {
-    importScripts("./fetch-github-name.js", "./chrome-fiori-lunchmenu.js");
+    importScripts(
+        "./fetch-github-name.js",
+        "./chrome-fiori-lunchmenu.js",
+        "../shared/dynamic-content-scripts-config.js",
+        "./chrome-permission-manager.js"
+    );
 } catch (e) {
     console.error(e);
 }
