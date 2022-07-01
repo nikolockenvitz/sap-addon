@@ -1,4 +1,11 @@
-const inputIds = ["github-sign-in", "github-hide-notice-overlay", "github-show-names", "fiori-lunchmenu-german", "sharepoint-login"];
+const inputIds = [
+    "github-sign-in",
+    "github-hide-notice-overlay",
+    "github-show-names",
+    "fiori-lunchmenu-german",
+    "sharepoint-login",
+    "stackenterprise-login",
+];
 const buttonInputIds = ["github-hide-notice-show-all-again"];
 const configInputIds = ["config-email", "config-lunchmenu-language"];
 

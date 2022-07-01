@@ -53,6 +53,7 @@
     "*://github.tools.sap/*"
   ],
   "optional_permissions": [
+    "*://sap.stackenterprise.co/*",
     "*://github.concur.com/*"
   ],
   "background": {

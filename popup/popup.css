@@ -110,6 +110,9 @@ span.div, a.div {
     -webkit-transition: .4s;
     transition: .4s;
 }
+.section-text.disabled .slider {
+    cursor: unset;
+}
 
 .slider:before {
     position: absolute;

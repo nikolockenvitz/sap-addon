@@ -18,4 +18,19 @@ const dynamicContentScripts = [
             runAt: "document_start",
         },
     },
+    {
+        name: "sap.stackenterprise.co",
+        cs: {
+            js: [
+                "/utils/browser-setup.js",
+                "/utils/storage.js",
+                "/utils/dom-observer.js",
+                "/utils/option-helper.js",
+                "/utils/dom-helper.js",
+                "/content_scripts/stackenterprise.js",
+            ],
+            matches: ["*://sap.stackenterprise.co/*"],
+            runAt: "document_start",
+        },
+    },
 ];

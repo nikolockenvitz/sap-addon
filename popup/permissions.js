@@ -24,6 +24,7 @@ function initPermissionsModal() {
                 contentScriptOriginalSelectionStatus[dynamicContentScript.name] = hasPermission;
                 contentScriptCurrentSelectionStatus[dynamicContentScript.name] = hasPermission;
                 if (sectionText) sectionText.classList.remove("disabled");
+                updateInputsForOptionalPermissions(dynamicContentScript.name, hasPermission);
             }
         );
         toggleInputOnSectionTextClick(checkbox, () => {
@@ -71,6 +72,7 @@ function initPermissionsModal() {
         // addon's pup will stay opened -> original values need to be resetted and save-button disabled
         for (const name in contentScriptCurrentSelectionStatus) {
             contentScriptOriginalSelectionStatus[name] = contentScriptCurrentSelectionStatus[name];
+            updateInputsForOptionalPermissions(name, contentScriptOriginalSelectionStatus[name]);
         }
         updateButtonSaveChanges();
     });
@@ -99,4 +101,19 @@ function initPermissionsModal() {
         setSelectionStatusForAllContentScripts(false);
         updateButtonSaveChanges();
     });
+}
+
+function updateInputsForOptionalPermissions(dynamicContentScriptName, hasPermission) {
+    const sectionTexts = document.querySelectorAll(`.section-text[data-dynamic-content-script-name='${dynamicContentScriptName}']`);
+    for (const sectionText of sectionTexts) {
+        sectionText.classList[hasPermission ? "remove" : "add"]("disabled");
+        sectionText.querySelectorAll("input").forEach((input) => {
+            input.disabled = !hasPermission;
+            if (!hasPermission) {
+                input.checked = false;
+            } else {
+                input.checked = !options || options[input?.id] !== false;
+            }
+        });
+    }
 }

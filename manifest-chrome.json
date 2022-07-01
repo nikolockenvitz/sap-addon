@@ -55,6 +55,7 @@
     "*://github.tools.sap/*"
   ],
   "optional_host_permissions": [
+    "*://sap.stackenterprise.co/*",
     "*://github.concur.com/*"
   ],
   "background": {
