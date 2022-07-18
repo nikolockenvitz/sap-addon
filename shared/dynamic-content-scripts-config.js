@@ -33,4 +33,19 @@ const dynamicContentScripts = [
             runAt: "document_start",
         },
     },
+    {
+        name: "app.mural.co",
+        cs: {
+            js: [
+                "/utils/browser-setup.js",
+                "/utils/storage.js",
+                "/utils/dom-observer.js",
+                "/utils/option-helper.js",
+                "/utils/dom-helper.js",
+                "/content_scripts/mural.js",
+            ],
+            matches: ["*://app.mural.co/*"],
+            runAt: "document_start",
+        },
+    },
 ];

@@ -54,6 +54,7 @@
   ],
   "optional_permissions": [
     "*://sap.stackenterprise.co/*",
+    "*://app.mural.co/*",
     "*://github.concur.com/*"
   ],
   "background": {

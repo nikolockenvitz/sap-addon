@@ -5,6 +5,7 @@ const inputIds = [
     "fiori-lunchmenu-german",
     "sharepoint-login",
     "stackenterprise-login",
+    "mural-login",
 ];
 const buttonInputIds = ["github-hide-notice-show-all-again"];
 const configInputIds = ["config-email", "config-lunchmenu-language"];
