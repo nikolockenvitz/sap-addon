@@ -76,6 +76,10 @@ function initializeGitHubIdQueries() {
         `div.js-resolvable-timeline-thread-container div.comment-holder.js-line-comments div.js-resolvable-thread-toggler-container strong`,
         { hrefException: true }
     );
+    _addQuery(
+        `div.comment-holder details.review-thread-component.js-comment-container summary.js-toggle-outdated-comments strong`,
+        { hrefException: true }
+    );
     // member statuses on team's overview page (directly next to icon)
     _addQuery(`div.user-status-container a.Link--primary.text-bold.no-underline[data-hovercard-type="user"]`);
     // list of users who contributed to a file (directly next to icon)
