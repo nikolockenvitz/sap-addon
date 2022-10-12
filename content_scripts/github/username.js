@@ -29,7 +29,7 @@ function initializeGitHubIdQueries() {
     _addQuery(`a.text-emphasized.Link--primary`);
     // contributor list of a repo
     //_addQuery(`a.Link--primary.no-underline.flex-self-center strong`);
-    // pending reviewers in PR
+    // (pending) reviewers in PR ("xyz was requested for review" / "xyz approved these changes")
     _addQuery(
         `details.js-merge-review-section div.merge-status-item.review-item.js-details-container.Details div.review-status-item strong.text-emphasized`,
         {
@@ -108,7 +108,7 @@ function _addQuery(query, options = {}) {
             case "function":
                 github.showNames.hrefExceptions.push((element) => {
                     if (!element.matches(query)) return false;
-                    return hrefException(element);
+                    return options?.hrefException(element);
                 });
                 break;
 
