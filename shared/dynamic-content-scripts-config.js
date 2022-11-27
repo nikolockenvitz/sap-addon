@@ -48,4 +48,19 @@ const dynamicContentScripts = [
             runAt: "document_start",
         },
     },
+    {
+        name: "jira.tools.sap",
+        cs: {
+            js: [
+                "/utils/browser-setup.js",
+                "/utils/storage.js",
+                "/utils/dom-observer.js",
+                "/utils/option-helper.js",
+                "/utils/dom-helper.js",
+                "/content_scripts/jira.js"
+            ],
+            matches: ["*://jira.tools.sap/*"],
+            runAt: "document_start"
+        }
+    }
 ];

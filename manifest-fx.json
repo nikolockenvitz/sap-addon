@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "SAP Addon",
   "version": "1.19.2",
-  "description": "Extension for SAP related webpages: GitHub, Fiori Launchpad, Sharepoint",
+  "description": "Extension for SAP related webpages: GitHub, Fiori Launchpad, Sharepoint, Jira",
   "icons": {
     "48": "icons/icon48.png",
     "96": "icons/icon96.png",
@@ -55,7 +55,8 @@
   "optional_permissions": [
     "*://sap.stackenterprise.co/*",
     "*://app.mural.co/*",
-    "*://github.concur.com/*"
+    "*://github.concur.com/*",
+    "*://jira.tools.sap/*"
   ],
   "background": {
     "scripts": [
