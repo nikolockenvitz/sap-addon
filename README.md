@@ -38,7 +38,7 @@ Updates are handled automatically.
   * log in automatically
   * sometimes e-mail address is needed to log in, you can specify it in configuration
 * **Jira** (`jira.tools.sap`)
-  * show the ticket priority count and the unassigned count on the pagination <img src="/docs/screenshot-1.20-jira-count-tips.png" />
+  * show the ticket priority count and the unassigned count on the pagination <img src="docs/screenshot-1.20-jira-count-tips.png" />
 
 
 All features are enabled by default but can be disabled in the settings popup.
