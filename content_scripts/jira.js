@@ -40,7 +40,7 @@ function fetchCountTips() {
 
     const unassignedTickets = tickets.filter((ticket) => ticket.querySelector("td.assignee").textContent.includes("Unassigned"));
     unassignedTickets.forEach((ticket) => {
-        ticket.querySelector("td.assignee").querySelector("em").classList.add("aui-lozenge", "aui-lozenge-moved", "aui-lozenge-subtle");
+        ticket.querySelector("td.assignee em").classList.add("aui-lozenge", "aui-lozenge-moved", "aui-lozenge-subtle");
     });
 
     const countEndElem = document.querySelector("span.results-count-end");
