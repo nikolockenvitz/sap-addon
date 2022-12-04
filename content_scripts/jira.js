@@ -1,13 +1,15 @@
 const jira = {
     countTips: {
         optionName: "jira-count-tips",
+        containerName: "issue-table-container",
         pathname: "/issues/",
+        className: "count-tips",
+        lengthData: "data-length",
+        unassignedBadge: "unassigned-badge",
     },
 };
 
-
-
-function getBadgeElem(priority) {
+function _getBadgeElem(priority) {
     const filename = { "Very High": "highest" }[priority] || priority.toLowerCase();
     const title = `${priority} - ${priority}`;
     const imageElem = document.createElement("img");
@@ -20,7 +22,7 @@ function getBadgeElem(priority) {
     return imageElem;
 }
 
-function fetchCountTips() {
+function _fetchCountTips() {
     const orderedPriorities = {
         "Very High": 0,
         High: 0,
@@ -40,56 +42,93 @@ function fetchCountTips() {
 
     const unassignedTickets = tickets.filter((ticket) => ticket.querySelector("td.assignee").textContent.includes("Unassigned"));
     unassignedTickets.forEach((ticket) => {
-        ticket.querySelector("td.assignee").querySelector("em").classList.add("aui-lozenge", "aui-lozenge-moved", "aui-lozenge-subtle");
+        ticket
+            .querySelector("td.assignee")
+            .querySelector("em")
+            .classList.add(jira.countTips.unassignedBadge, "aui-lozenge", "aui-lozenge-moved", "aui-lozenge-subtle");
     });
 
     const countEndElem = document.querySelector("span.results-count-end");
-    countEndElem.innerHTML = "";
+    countEndElem.replaceChildren();
 
-    const ticketCountElem = document.createElement("span");
-    ticketCountElem.textContent = `${tickets.length} (`;
-    countEndElem.appendChild(ticketCountElem);
-
+    countEndElem.append(`${tickets.length} (`);
     Object.keys(countByPriority).forEach((priority) => {
-        countEndElem.appendChild(getBadgeElem(priority));
-        const span = document.createElement("span");
-        span.textContent = ` ${countByPriority[priority]} `;
-        countEndElem.appendChild(span);
+        countEndElem.appendChild(_getBadgeElem(priority));
+        countEndElem.append(` ${countByPriority[priority]} `);
     });
 
     const unassignedEmElem = document.createElement("em");
     unassignedEmElem.classList.add("aui-lozenge", "aui-lozenge-moved", "aui-lozenge-subtle");
-    unassignedEmElem.textContent = "unassigned"
+    unassignedEmElem.textContent = "Unassigned";
     countEndElem.appendChild(unassignedEmElem);
-
-    const unassignedCountElem = document.createElement("span");
-    unassignedCountElem.textContent = ` ${unassignedTickets.length})`;
-    countEndElem.appendChild(unassignedCountElem);
+    countEndElem.append(` ${unassignedTickets.length})`);
+    countEndElem.classList.add(jira.countTips.className);
+    countEndElem.setAttribute(jira.countTips.lengthData, tickets.length);
 }
 
-function showCountTips() {
-    if (location.pathname != jira.countTips.pathname) return;
-    executeFunctionAfterPageLoaded(() => {
-        fetchCountTips();
-        const issueTable = document.querySelector(".issue-table-container");
-        if (issueTable) {
-            const issueTableObserver = new DOMObserver(issueTable);
-            issueTableObserver.registerCallbackFunction(jira.countTips.optionName, fetchCountTips);
-        }
+let updated = false
+let issueTableObserver;
+function showCountTips(force = false) {
+    if (force) {
+        executeFunctionAfterPageLoaded(() => {
+            const issueTable = document.querySelector(`.${jira.countTips.containerName}`);
+            if (issueTable) {
+                _fetchCountTips();
+            }
+        });
+    }
+
+    domObserver.registerCallbackFunction(jira.countTips.optionName, () => {
+        executeFunctionAfterPageLoaded(() => {
+            const issueTable = document.querySelector(`.${jira.countTips.containerName}`);
+            if (issueTable) {
+                if (!updated) {
+                    updated = true;
+                    _fetchCountTips();
+
+                    // the issue table will be replaced and not observed after updating
+                    issueTableObserver = new DOMObserver(issueTable);
+                    issueTableObserver.registerCallbackFunction(jira.countTips.containerName, () => {
+                        updated = false;
+                        issueTableObserver.disconnect();
+                    })
+                }
+            } else {
+                updated = false;
+            }
+        })
     });
+}
+
+function removeCountTips() {
+    domObserver.unregisterCallbackFunction(jira.countTips.optionName);
+    updated = false;
+
+    const countTips = document.querySelector(`.${jira.countTips.className}`);
+    if (countTips) {
+        countTips.replaceChildren();
+        countTips.append(countTips.getAttribute(jira.countTips.lengthData));
+        countTips.classList.remove(jira.countTips.className);
+        countTips.removeAttribute(jira.countTips.lengthData);
+        document.querySelectorAll(`.${jira.countTips.unassignedBadge}`).forEach((badge) => {
+            badge.removeAttribute("class");
+        });
+    }
 }
 
 let options = {};
 let config = {};
 
-async function main() {
+async function main(force = false) {
     [options, config] = await Promise.all([loadFromStorage("options"), loadFromStorage("config")]);
     if (isEnabled(jira.countTips.optionName)) {
-        showCountTips();
+        showCountTips(force);
+    } else {
+        removeCountTips();
     }
 }
 
 main();
-browser.runtime.onConnect.addListener(() => {
-    main();
+browser.runtime.onConnect.addListener(async () => {
+    await main(true);
 });
