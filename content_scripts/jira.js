@@ -43,8 +43,7 @@ function _fetchCountTips() {
     const unassignedTickets = tickets.filter((ticket) => ticket.querySelector("td.assignee").textContent.includes("Unassigned"));
     unassignedTickets.forEach((ticket) => {
         ticket
-            .querySelector("td.assignee")
-            .querySelector("em")
+            .querySelector("td.assignee em")
             .classList.add(jira.countTips.unassignedBadge, "aui-lozenge", "aui-lozenge-moved", "aui-lozenge-subtle");
     });
 
@@ -66,7 +65,7 @@ function _fetchCountTips() {
     countEndElem.setAttribute(jira.countTips.lengthData, tickets.length);
 }
 
-let updated = false
+let updated = false;
 let issueTableObserver;
 function showCountTips(force = false) {
     if (force) {
@@ -91,12 +90,12 @@ function showCountTips(force = false) {
                     issueTableObserver.registerCallbackFunction(jira.countTips.containerName, () => {
                         updated = false;
                         issueTableObserver.disconnect();
-                    })
+                    });
                 }
             } else {
                 updated = false;
             }
-        })
+        });
     });
 }
 
