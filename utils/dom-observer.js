@@ -14,6 +14,10 @@ class DOMObserver {
         });
     }
 
+    disconnect() {
+        this.observer.disconnect();
+    }
+
     registerCallbackFunction(id, callback) {
         if (!this.observerCallbacks[id]) {
             this.observerCallbacks[id] = callback;
