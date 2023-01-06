@@ -1,11 +1,10 @@
 github.showNames = {
     optionName: "github-show-names",
-    // query and href exceptions will be filled with values below
+    // query, href exceptions, and queryTooltips will be filled with values below
     query: ``,
     hrefExceptions: [],
     userMentions: [],
-    queryTooltips: `div.comment-reactions-options button.btn-link.reaction-summary-item.tooltipped[type=submit],
-        div.AvatarStack div.AvatarStack-body.tooltipped`,
+    queryTooltips: ``,
     regexNameOnProfilePage: `<span class="p-name vcard-fullname d-block overflow-hidden" itemprop="name">([^<]*)</span>`,
     userIdFalsePositives: ["edited", "github-actions"],
     documentTitle: {
@@ -41,11 +40,11 @@ function initializeGitHubIdQueries() {
     // PR: "xyz requested your review" box
     _addQuery(`div#repo-content-pjax-container div.flash.flash-warn div a.text-emphasized.Link--primary`);
     // projects: card/issue creator
-    _addQuery(`small a.color-text-primary`);
+    _addQuery(`div.project-column div.d-flex small.color-fg-muted a.color-fg-default`);
     // projects: activity pane
     _addQuery(`div.js-project-activity-pane.Details ul.js-project-activity-container li p a.text-bold`, { userMention: true });
     // wiki revisions history
-    _addQuery(`#wiki-wrapper #version-form div > a.muted-link span.text-bold`);
+    _addQuery(`#wiki-wrapper #version-form div > a.Link--muted span.text-bold`);
     // recent activity in dashboard (user commented)
     _addQuery(
         `div.js-recent-activity-container div.Box ul li.Box-row div.dashboard-break-word.lh-condensed.color-text-secondary span.color-text-secondary`,
@@ -68,7 +67,7 @@ function initializeGitHubIdQueries() {
     // dashboard: PR comments (white box: xyz commented ... ago)
     _addQuery(`div.issues_comment div.message a.Link--secondary > span.Link--primary.text-bold`);
     // team members in hovercard of a team in dashboard > your teams
-    _addQuery(`div.color-text-secondary span.css-truncate.tooltipped span.css-truncate-target.text-bold`, { hrefException: true });
+    _addQuery(`div.Popover-message div.d-flex > div.color-fg-muted > span.css-truncate.tooltipped span.css-truncate-target.text-bold`, { hrefException: true });
     // comment resolver in PR reviews (Conversation)
     _addQuery(`form.js-resolvable-timeline-thread-form strong`, { hrefException: true });
     // comment resolver in PR (Files Changed)
@@ -93,6 +92,11 @@ function initializeGitHubIdQueries() {
     _addQuery(`p.org-user-notice-content > strong:first-child`, { hrefException: true }); // as an owner, xyz has ...
     // search: issues (xyz opened on ...) and commits (xyz committed ...)
     _addQuery(`div.issue-list-item div.text-small a.text-bold:not([data-hovercard-type="repository"])`);
+
+    // tooltips (reactions)
+    _addTooltipQuery(`tool-tip[for^=reactions--reaction_button_component-]`);
+    // tooltips: dashboard -> your teams -> popup (team member profile pictures)
+    _addTooltipQuery(`div.AvatarStack div.AvatarStack-body.tooltipped`);
 }
 function _addQuery(query, options = {}) {
     github.showNames.query += (github.showNames.query === "" ? "" : ",\n") + query;
@@ -122,6 +126,9 @@ function _addQuery(query, options = {}) {
         github.showNames.userMentions.push(query);
     }
 }
+function _addTooltipQuery(query) {
+    github.showNames.queryTooltips += (github.showNames.queryTooltips === "" ? "" : ",\n") + query;
+}
 function initializeFurtherHrefExceptions() {
     github.showNames.hrefExceptions.push(_isInsightsPulseTooltip);
 }
@@ -148,9 +155,13 @@ function showGitHubIdsAgain() {
         element.textContent = element.getAttribute("data-sap-addon-user-id");
         element.removeAttribute("data-sap-addon-user-id");
     }
-    for (const element of document.querySelectorAll("[data-sap-addon-tooltip-original-content]")) {
-        element.setAttribute("aria-label", element.getAttribute("data-sap-addon-tooltip-original-content"));
-        element.removeAttribute("data-sap-addon-tooltip-original-content");
+    for (const element of document.querySelectorAll("[data-sap-addon-tooltip-original-content-aria-label]")) {
+        element.setAttribute("aria-label", element.getAttribute("data-sap-addon-tooltip-original-content-aria-label"));
+        element.removeAttribute("data-sap-addon-tooltip-original-content-aria-label");
+    }
+    for (const element of document.querySelectorAll("[data-sap-addon-tooltip-original-content-text-content]")) {
+        element.textContent = element.getAttribute("data-sap-addon-tooltip-original-content-text-content");
+        element.removeAttribute("data-sap-addon-tooltip-original-content-text-content");
     }
 }
 function _replaceAllChildsWhichAreUserId(element) {
@@ -264,17 +275,26 @@ function _exceptionForCommitListPRFilesChanged(element, userId) {
 
 async function _replaceElementsTooltip(element) {
     if (
-        element.hasAttribute("data-sap-addon-tooltip-original-content") ||
+        element.hasAttribute("data-sap-addon-tooltip-original-content-aria-label") ||
+        element.hasAttribute("data-sap-addon-tooltip-original-content-text-content") ||
         element.hasAttribute("data-sap-addon-already-replacing-tooltip")
     ) {
         return; // already replaced
     }
     element.setAttribute("data-sap-addon-already-replacing-tooltip", "true");
-    const originalTooltipText = element.getAttribute("aria-label");
+    
+    // old tooltips use aria-label, new ones use custom html element tool-tip with textContent
+    const isToolTipElement = element.nodeName === "TOOL-TIP";
+    const originalTooltipText = isToolTipElement ? element.textContent.trim() : element.getAttribute("aria-label");
     const replacedTooltipText = await _getNewTooltipText(originalTooltipText);
-    element.setAttribute("data-sap-addon-tooltip-original-content", originalTooltipText);
+    if (isToolTipElement) {
+        element.setAttribute("data-sap-addon-tooltip-original-content-text-content", originalTooltipText);
+        element.textContent = replacedTooltipText;
+    } else {
+        element.setAttribute("data-sap-addon-tooltip-original-content-aria-label", originalTooltipText);
+        element.setAttribute("aria-label", replacedTooltipText);
+    }
     element.removeAttribute("data-sap-addon-already-replacing-tooltip");
-    element.setAttribute("aria-label", replacedTooltipText);
 }
 async function _getNewTooltipText(originalTooltipText) {
     // currently supports: emoji reactions, project issues cards
