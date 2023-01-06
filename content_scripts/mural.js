@@ -3,8 +3,8 @@ const mural = {
         urlPath: "/signin",
         configNameEmailAddress: "config-email",
         optionName: "mural-login",
-        queryEmailInput: "#registration-signin input[type=email]",
-        querySignInButton: "button#registration-signin-submit",
+        queryEmailInput: "mrl-text-input > div > input#work-email-signin-hana[type=text][name=email]",
+        querySignInButton: "mrl-button#button-signin-hana button[type=submit]",
     },
 };
 
