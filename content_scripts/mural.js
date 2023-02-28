@@ -1,22 +1,35 @@
 const mural = {
     login: {
-        urlPath: "/signin",
+        urlPathSignIn: "/signin",
         configNameEmailAddress: "config-email",
         optionName: "mural-login",
-        queryEmailInput: "mrl-text-input > div > input#work-email-signin-hana[type=text][name=email]",
-        querySignInButton: "mrl-button#button-signin-hana button[type=submit]",
+        queryEmailInput: "mrl-text-input > div > input#work-email-signin[type=text][name=email]",
+        querySignInButton: "mrl-button#button-signin button[type=submit]",
+
+        urlPathNotFound: "/not-found",
+        notFoundPageQuerySignInButton: "div.ui-error-page-box-content a.ui-button",
+        notFoundPageSignInButtonTextContent: "Sign in",
     },
 };
 
 function executeLogin() {
     function login() {
-        if (new URL(window.location.href).pathname !== mural.login.urlPath) return;
-
-        const emailInput = document.querySelector(mural.login.queryEmailInput);
-        const btn = document.querySelector(mural.login.querySignInButton);
-        if (emailInput && btn) {
-            _enterEmailAndClickNext(emailInput, btn);
-            return stopAutoSignIn();
+        const url = new URL(window.location.href);
+        if (url.pathname === mural.login.urlPathNotFound) {
+            // not found page "Uh-oh, we can't find that page"
+            // -> click on "Sign in" button to get to next screen
+            const btn = document.querySelector(mural.login.notFoundPageQuerySignInButton);
+            if (btn?.textContent === mural.login.notFoundPageSignInButtonTextContent) {
+                _clickButton(btn);
+            }
+        } else if (url.pathname == mural.login.urlPathSignIn) {
+            // sign in page -> enter email and click on button
+            const emailInput = document.querySelector(mural.login.queryEmailInput);
+            const btn = document.querySelector(mural.login.querySignInButton);
+            if (emailInput && btn) {
+                _enterEmailAndClickNext(emailInput, btn);
+                return stopAutoSignIn();
+            }
         }
     }
 
