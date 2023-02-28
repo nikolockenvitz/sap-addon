@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "SAP Addon",
-  "version": "1.20.1",
+  "version": "1.20.2",
   "description": "Extension for SAP related webpages: GitHub, Fiori Launchpad, Sharepoint, Jira",
   "icons": {
     "48": "icons/icon48.png",
