@@ -1,5 +1,30 @@
-# SAP Addon
+<div align="center">
 
+  <picture >
+    <source media="(prefers-color-scheme: dark)" srcset="./assets/sap-addon-2-dark-mode.png">
+    <source media="(prefers-color-scheme: light)" srcset="./assets/sap-addon-2-light-mode.png">
+    <img alt="SAP Addon Logo" src="./assets/sap-addon-2-light-mode.png" style="max-width: min(80%, 400px)">
+  </picture>
+
+
+  <h3 align="center">SAP Addon</h3>
+
+  <p align="center">
+    Firefox/Chrome Extension for SAP related webpages
+    <br />
+    <a href="#installation">Installation</a>
+    ·
+    <a href="#features">Features</a>
+    ·
+    <a href="#contribute">Contribute</a>
+    
+  </p>
+</div>
+
+<br />
+<h2 align="center">Installation</h3>
+
+<p align="center">
 <a href="https://nikolockenvitz.github.io/sap-addon/">
 <img src="https://nikolockenvitz.github.io/sap-addon/icons/icon48.png" height="20px" /></a>
 <!-- SHIELD IO BADGES INSTALL START -->
@@ -14,44 +39,42 @@
 <img src="https://img.shields.io/badge/edge-v1.20.2-0078D7?logo=microsoft-edge" alt="Install for Edge" /></a>
 <a href="https://www.mozilla.org/en-US/firefox/new/">
 <img src="https://img.shields.io/badge/safari-not_available-000000?logo=safari" alt="Not available for Safari" /></a>
+</p>
 
-Install by clicking on the badge above.
+<p align="center">
+Install by clicking on the respective badge.
 Updates are handled automatically.
+</p>
 
-## Features
+<br />
+<h2 align="center">Features</h3>
 
-<img src="docs/screenshot-1.15-popup.png" width="320" alt="Screenshot of Popup" title="Screenshot of Popup" /> <img src="docs/screenshot-1.15-popup-config.png" width="320" alt="Screenshot of Configuration in Popup" title="Screenshot of Configuration in Popup" />
+<div style="text-align: center">
+  <ul style="display: inline-block; text-align: left">
+    <li><b>Auto Login</b> on GitHub, Sharepoint, Stack Overflow, and Mural</li>
+    <li>Showing peoples' <b>full names on GitHub</b> instead of user IDs</li>
+    <li>Find a full list of features with detailed descriptions <a href="./docs/README.md#features">here</a></li>
+  </ul>
+</div>
 
-* **GitHub** (`github.wdf.sap.corp` / `github.tools.sap` / `github.concur.com`)
-  * sign in automatically
-  * hide yellow notice box messages
-    * dismiss a specific message
-    * always see new messages
-  * show name instead of user id (inspired by [https://github.com/cgrail/github-chrome-fullname](https://github.com/cgrail/github-chrome-fullname))
-  * names are cached in local storage
-* **Fiori Launchpad** (`fiorilaunchpad.sap.com`)
-  * override language of lunchmenu so that you will see it e.g. in German even if language in the Fiori Launchpad settings is set to English
-    * language can be configured
-    * currently supports `de` and `en`
-    * other values will work too but you will see a warning (just contact me if you have other valid values and I will add them as well)
-* **Sharepoint** (`sap-my.sharepoint.com` / `login.microsoftonline.com`)
-  * log in automatically
-  * sometimes e-mail address is needed to log in, you can specify it in configuration
-* **Jira** (`jira.tools.sap`)
-  * show the ticket priority count and the unassigned count on the pagination <img src="docs/screenshot-1.20-jira-count-tips.png" />
-
-
+<br />
+<p align="center">
 All features are enabled by default but can be disabled in the settings popup.
+Click on the addon's icon in your browser's toolbar to open the popup (see screenshots below).
+After successful installation, you may want to configure everything and grant the optional permissions.
+Learn more about this <a href="./docs/README.md#optional-permissions">here</a>.
+</p>
 
-You may want to configure everything before starting.
-After installation, just click on the icon and go to configuration.
-There you can customize the addon to your needs.
+<br />
+<div style="text-align: center">
+<img src="docs/screenshot-1.21-settings-popup.png" width="320" alt="Screenshot of Settings Popup" title="Screenshot of Settings Popup" /> <img src="docs/screenshot-1.21-settings-popup-configuration.png" width="320" alt="Screenshot of Configuration in Popup" title="Screenshot of Configuration in Popup" />
+</div>
 
-## Feedback, Contribute, ...
+<br />
+<h2 align="center">Contribute</h3>
 
-Feel free to send feedback, share any ideas of what you think should be improved or can be added.
-
-Please also report if you encounter bugs or things that are not working as you expect.
-
+<p align="center">
+Contributions of any kind are highly appreciated - code, improvement ideas, bug reports, or feature requests.
 If you want to help, just contact me or open a pull request.
-Check out [CONTRIBUTING.md](https://github.com/nikolockenvitz/sap-addon/blob/master/CONTRIBUTING.md#readme) for more details and local setup instructions.
+Check out <a href="https://github.com/nikolockenvitz/sap-addon/blob/master/CONTRIBUTING.md#readme">CONTRIBUTING.md</a> for more details and local setup instructions.
+</p>
