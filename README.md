@@ -1,12 +1,12 @@
 <div align="center">
 
-  <div id="banner-image-container" style="max-width: min(80%, 400px)">
+  <div id="banner-image-container" >
   <picture >
     <source media="(prefers-color-scheme: dark)" srcset="./assets/sap-addon-2-dark-mode.png">
     <source media="(prefers-color-scheme: light)" srcset="./assets/sap-addon-2-light-mode.png">
-    <img alt="SAP Addon Logo" src="./assets/sap-addon-2-light-mode.png">
+    <img alt="SAP Addon Logo" src="./assets/sap-addon-2-light-mode.png" width="400">
   </picture>
-  <img id="banner-image-light-mode-fallback-gh-pages" alt="SAP Addon Logo" src="./assets/sap-addon-2-light-mode.png" style="display: none;">
+  <img id="banner-image-light-mode-fallback-gh-pages" alt="SAP Addon Logo" src="./assets/sap-addon-2-light-mode.png" width="0">
   </div>
 
 
@@ -15,16 +15,14 @@
   <p align="center">
     Firefox/Chrome Extension for SAP related webpages
     <br />
-    <a href="#installation">Installation</a>
-    ·
     <a href="#features">Features</a>
     ·
     <a href="#contribute">Contribute</a>
-    
+    ·
+    <a href="https://github.com/nikolockenvitz/sap-addon/tree/master/docs#readme">Documentation</a>
   </p>
 </div>
 
-<br />
 <h3 align="center">Installation</h3>
 
 <p align="center">
@@ -42,9 +40,7 @@
 <img src="https://img.shields.io/badge/edge-v1.20.2-0078D7?logo=microsoft-edge" alt="Install for Edge" /></a>
 <a href="https://www.mozilla.org/en-US/firefox/new/">
 <img src="https://img.shields.io/badge/safari-not_available-000000?logo=safari" alt="Not available for Safari" /></a>
-</p>
-
-<p align="center">
+<br />
 Install by clicking on the respective badge.
 Updates are handled automatically.
 </p>
@@ -55,17 +51,14 @@ Updates are handled automatically.
 
 * **Auto Login** on GitHub, Sharepoint, Stack Overflow, and Mural
 * Showing peoples' **full names on GitHub** instead of user IDs
-* Find a full list of features with detailed descriptions <a href="./docs/README.md#features">here</a>
+* Find a full list of features with detailed descriptions <a href="https://github.com/nikolockenvitz/sap-addon/tree/master/docs#features">here</a>
 
 All features are enabled by default but can be disabled in the settings popup.
 Click on the addon's icon in your browser's toolbar to open the popup (see screenshots below).
 After successful installation, you may want to configure everything and grant the optional permissions.
-Learn more about this <a href="./docs/README.md#optional-permissions">here</a>.
-</p>
+Learn more about this <a href="https://github.com/nikolockenvitz/sap-addon/tree/master/docs#optional-permissions">here</a>.
 
 <img src="docs/screenshot-1.21-settings-popup.png" width="320" alt="Screenshot of Settings Popup" title="Screenshot of Settings Popup" /> <img src="docs/screenshot-1.21-settings-popup-configuration.png" width="320" alt="Screenshot of Configuration in Popup" title="Screenshot of Configuration in Popup" />
-
-<br />
 
 ## Contribute
 
