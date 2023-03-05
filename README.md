@@ -1,13 +1,16 @@
 <div align="center">
 
+  <div id="banner-image-container" style="max-width: min(80%, 400px)">
   <picture >
     <source media="(prefers-color-scheme: dark)" srcset="./assets/sap-addon-2-dark-mode.png">
     <source media="(prefers-color-scheme: light)" srcset="./assets/sap-addon-2-light-mode.png">
-    <img alt="SAP Addon Logo" src="./assets/sap-addon-2-light-mode.png" style="max-width: min(80%, 400px)">
+    <img alt="SAP Addon Logo" src="./assets/sap-addon-2-light-mode.png">
   </picture>
+  <img id="banner-image-light-mode-fallback-gh-pages" alt="SAP Addon Logo" src="./assets/sap-addon-2-light-mode.png" style="display: none;">
+  </div>
 
 
-  <h3 align="center">SAP Addon</h3>
+  <h3 align="center" style="margin-top: 0;">SAP Addon</h3>
 
   <p align="center">
     Firefox/Chrome Extension for SAP related webpages
@@ -22,7 +25,7 @@
 </div>
 
 <br />
-<h2 align="center">Installation</h3>
+<h3 align="center">Installation</h3>
 
 <p align="center">
 <a href="https://nikolockenvitz.github.io/sap-addon/">
@@ -47,34 +50,25 @@ Updates are handled automatically.
 </p>
 
 <br />
-<h2 align="center">Features</h3>
 
-<div style="text-align: center">
-  <ul style="display: inline-block; text-align: left">
-    <li><b>Auto Login</b> on GitHub, Sharepoint, Stack Overflow, and Mural</li>
-    <li>Showing peoples' <b>full names on GitHub</b> instead of user IDs</li>
-    <li>Find a full list of features with detailed descriptions <a href="./docs/README.md#features">here</a></li>
-  </ul>
-</div>
+## Features
 
-<br />
-<p align="center">
+* **Auto Login** on GitHub, Sharepoint, Stack Overflow, and Mural
+* Showing peoples' **full names on GitHub** instead of user IDs
+* Find a full list of features with detailed descriptions <a href="./docs/README.md#features">here</a>
+
 All features are enabled by default but can be disabled in the settings popup.
 Click on the addon's icon in your browser's toolbar to open the popup (see screenshots below).
 After successful installation, you may want to configure everything and grant the optional permissions.
 Learn more about this <a href="./docs/README.md#optional-permissions">here</a>.
 </p>
 
-<br />
-<div style="text-align: center">
 <img src="docs/screenshot-1.21-settings-popup.png" width="320" alt="Screenshot of Settings Popup" title="Screenshot of Settings Popup" /> <img src="docs/screenshot-1.21-settings-popup-configuration.png" width="320" alt="Screenshot of Configuration in Popup" title="Screenshot of Configuration in Popup" />
-</div>
 
 <br />
-<h2 align="center">Contribute</h3>
 
-<p align="center">
+## Contribute
+
 Contributions of any kind are highly appreciated - code, improvement ideas, bug reports, or feature requests.
 If you want to help, just contact me or open a pull request.
 Check out <a href="https://github.com/nikolockenvitz/sap-addon/blob/master/CONTRIBUTING.md#readme">CONTRIBUTING.md</a> for more details and local setup instructions.
-</p>

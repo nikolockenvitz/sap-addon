@@ -10,3 +10,10 @@ $section-headings-color: #434c4f !default;
   background-color: #0faaff;
   background-image: linear-gradient(#00b8f1, #1d61bc);
 }
+
+#banner-image-container picture {
+  display: none;
+}
+#banner-image-light-mode-fallback-gh-pages {
+  display: initial;
+}
