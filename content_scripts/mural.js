@@ -1,13 +1,13 @@
 const mural = {
     login: {
-        urlPathSignIn: "/signin",
+        urlPathsSignIn: ["/signin", "/signin-join-mural"],
         configNameEmailAddress: "config-email",
         optionName: "mural-login",
         queryEmailInput: "mrl-text-input > div > input#work-email-signin[type=text][name=email]",
         querySignInButton: "mrl-button#button-signin button[type=submit]",
 
         urlPathNotFound: "/not-found",
-        notFoundPageQuerySignInButton: "div.ui-error-page-box-content a.ui-button",
+        notFoundPageQuerySignInButton: "div.ui-error-page-box-content a",
         notFoundPageSignInButtonTextContent: "Sign in",
     },
 };
@@ -16,13 +16,13 @@ function executeLogin() {
     function login() {
         const url = new URL(window.location.href);
         if (url.pathname === mural.login.urlPathNotFound) {
-            // not found page "Uh-oh, we can't find that page"
+            // not found page "Uh-oh, we can't find that page" / "Page not found"
             // -> click on "Sign in" button to get to next screen
-            const btn = document.querySelector(mural.login.notFoundPageQuerySignInButton);
-            if (btn?.textContent === mural.login.notFoundPageSignInButtonTextContent) {
+            const btn = findSignInButtonOnNotFoundPage();
+            if (btn) {
                 _clickButton(btn);
             }
-        } else if (url.pathname == mural.login.urlPathSignIn) {
+        } else if (mural.login.urlPathsSignIn.includes(url.pathname)) {
             // sign in page -> enter email and click on button
             const emailInput = document.querySelector(mural.login.queryEmailInput);
             const btn = document.querySelector(mural.login.querySignInButton);
@@ -38,6 +38,17 @@ function executeLogin() {
         login();
     });
 }
+
+function findSignInButtonOnNotFoundPage() {
+    const btns = document.querySelectorAll(mural.login.notFoundPageQuerySignInButton);
+    for (const btn of btns) {
+        if (btn.textContent === mural.login.notFoundPageSignInButtonTextContent) {
+            return btn;
+        }
+    }
+    return null;
+}
+
 function _enterEmailAndClickNext(emailInput, btn) {
     const configEmail = config[mural.login.configNameEmailAddress];
     if (emailInput.value === "") {
