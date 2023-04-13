@@ -41,8 +41,10 @@ function getSignInButtonAndClick(element) {
     } catch {}
 }
 function getSignInRedirectLink(element) {
-    const redirectLink = element.querySelector("a#redirect[href^='https://accounts.sap.com/']");
-    return redirectLink && url.pathname === "/login" ? redirectLink : null;
+    const redirectLink = element.getElementById("redirect");
+    return redirectLink && redirectLink.tagName === "A" && redirectLink.textContent === "click here" && url.pathname === "/login"
+        ? redirectLink
+        : null;
 }
 function stopAutoSignIn() {
     domObserver.unregisterCallbackFunction(github.signIn.optionName);
