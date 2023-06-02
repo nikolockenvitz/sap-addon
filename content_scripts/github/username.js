@@ -22,6 +22,8 @@ github.showNames = {
 function initializeGitHubIdQueries() {
     // commit author, direct mentions
     _addQuery(`.user-mention`, { userMention: true });
+    _addQuery(`.commit-author.user-mention`, { hrefException: true });
+    _addQuery(`.author[data-test-selector="pr-timeline-events-commit-actor-name"]`, { hrefException: true });
     // several places where username can be found (hovering opens card with profile info)
     _addQuery(`[data-hovercard-type=user]`);
     // ???
