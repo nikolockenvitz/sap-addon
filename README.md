@@ -13,7 +13,7 @@
   <h3 align="center" style="margin-top: 0;">SAP Addon</h3>
 
   <p align="center">
-    Firefox/Chrome Extension for SAP related webpages
+    Firefox/Chrome Extension for SAP internal webpages
     <br />
     <a href="#features">Features</a>
     ·
