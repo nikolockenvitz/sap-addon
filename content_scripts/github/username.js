@@ -512,8 +512,7 @@ function getDirectParentOfText(baseElement, text) {
         baseElement.childNodes[1].textContent.trim() === text
     ) {
         return replaceTextNodeWithDomElementForUsername(baseElement, 1);
-    }
-    else if (
+    } else if (
         baseElement.childNodes.length === 3 &&
         baseElement.childNodes[0].nodeName === "#text" &&
         baseElement.childNodes[1].nodeName === "IMG" &&
