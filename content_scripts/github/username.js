@@ -504,14 +504,21 @@ function getDirectParentOfText(baseElement, text) {
     if (baseElement.childNodes.length === 1 && baseElement.firstChild.nodeName === "#text" && baseElement.textContent.trim() === text) {
         return baseElement;
     } else if (
+        // sometimes text is directly after the user icon w/o separate html tag
+        // however, a real element is needed (not only a text node; a data-attribute will be set on the element later)
+        baseElement.childNodes.length === 2 &&
+        baseElement.childNodes[0].nodeName === "IMG" &&
+        baseElement.childNodes[1].nodeName === "#text" &&
+        baseElement.childNodes[1].textContent.trim() === text
+    ) {
+        return replaceTextNodeWithDomElementForUsername(baseElement, 1);
+    } else if (
         baseElement.childNodes.length === 3 &&
         baseElement.childNodes[0].nodeName === "#text" &&
         baseElement.childNodes[1].nodeName === "IMG" &&
         baseElement.childNodes[2].nodeName === "#text" &&
         baseElement.childNodes[2].textContent.trim() === text
     ) {
-        // sometimes text is directly after the user icon w/o separate html tag
-        // however, a real element is needed (not only a text node; a data-attribute will be set on the element later)
         return replaceTextNodeWithDomElementForUsername(baseElement, 2);
     } else {
         for (const child of baseElement.childNodes) {
