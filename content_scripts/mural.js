@@ -3,8 +3,8 @@ const mural = {
         urlPathsSignIn: ["/signin", "/signin-join-mural"],
         configNameEmailAddress: "config-email",
         optionName: "mural-login",
-        queryEmailInput: "mrl-text-input > div > input#work-email-signin[type=text][name=email]",
-        querySignInButton: "mrl-button#button-signin button[type=submit]",
+        queryEmailInput: "input#work-email-signin[type=text][name=email]",
+        querySignInButton: "#button-signin[type=submit]",
 
         urlPathNotFound: "/not-found",
         notFoundPageQuerySignInButton: "div.ui-error-page-box-content a",
