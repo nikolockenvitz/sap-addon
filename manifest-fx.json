@@ -42,6 +42,19 @@
         "content_scripts/sharepoint.js"
       ],
       "run_at": "document_start"
+    },
+    {
+      "matches": [
+        "*://app.pluralsight.com/*"
+      ],
+      "js": [
+        "utils/browser-setup.js",
+        "utils/storage.js",
+        "utils/option-helper.js",
+        "utils/dom-helper.js",
+        "content_scripts/pluralsight.js"
+      ],
+      "run_at": "document_start"
     }
   ],
   "permissions": [

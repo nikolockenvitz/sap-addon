@@ -4,6 +4,7 @@ const inputIds = [
     "github-show-names",
     "fiori-lunchmenu-german",
     "sharepoint-login",
+    "pluralsight-login",
     "stackenterprise-login",
     "mural-login",
     "jira-count-tips",
