@@ -19,6 +19,7 @@
 * works on following sites:
   * GitHub
   * Sharepoint
+  * Pluralsight
   * Stack Overflow (Stack@SAP)
   * Mural
 * addon just clicks the login button to trigger the SSO process
