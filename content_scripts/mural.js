@@ -3,7 +3,7 @@ const mural = {
         urlPathsSignIn: ["/signin", "/signin-join-mural"],
         configNameEmailAddress: "config-email",
         optionName: "mural-login",
-        queryEmailInput: "input#work-email-signin[type=text][name=email]",
+        queryEmailInput: "input#work-email-input",
         querySignInButton: "#button-signin[type=submit]",
 
         urlPathNotFound: "/not-found",
@@ -28,7 +28,8 @@ function executeLogin() {
             const btn = document.querySelector(mural.login.querySignInButton);
             if (emailInput && btn) {
                 _enterEmailAndClickNext(emailInput, btn);
-                return stopAutoSignIn();
+                stopAutoSignIn();
+                return;
             }
         }
     }
@@ -53,8 +54,16 @@ function _enterEmailAndClickNext(emailInput, btn) {
     const configEmail = config[mural.login.configNameEmailAddress];
     if (emailInput.value === "") {
         if (configEmail) {
-            _setReactInputValue(emailInput, configEmail);
-            _clickButton(btn);
+            let i = 0;
+            const intervalId = setInterval(() => {
+                // When setting the input value w/o a timeout, mural/react does not correctly
+                // recognize the input value and shows "Please provide a valid email."
+                // While Firefox works with 1ms timeout, Chrome takes longer, so we try repeatedly.
+                i++;
+                _setReactInputValue(emailInput, configEmail);
+                _clickButton(btn);
+                if (i > 10) clearInterval(intervalId);
+            }, 100);
             stopAutoSignIn();
             return true;
         }
