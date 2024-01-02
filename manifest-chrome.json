@@ -42,19 +42,6 @@
         "content_scripts/sharepoint.js"
       ],
       "run_at": "document_start"
-    },
-    {
-      "matches": [
-        "*://app.pluralsight.com/*"
-      ],
-      "js": [
-        "utils/browser-setup.js",
-        "utils/storage.js",
-        "utils/option-helper.js",
-        "utils/dom-helper.js",
-        "content_scripts/pluralsight.js"
-      ],
-      "run_at": "document_start"
     }
   ],
   "permissions": [
@@ -71,7 +58,8 @@
     "*://sap.stackenterprise.co/*",
     "*://app.mural.co/*",
     "*://github.concur.com/*",
-    "*://jira.tools.sap/*"
+    "*://jira.tools.sap/*",
+    "*://app.pluralsight.com/*"
   ],
   "background": {
     "service_worker": "background_scripts/chrome-background.js"

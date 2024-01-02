@@ -4,9 +4,9 @@ const inputIds = [
     "github-show-names",
     "fiori-lunchmenu-german",
     "sharepoint-login",
-    "pluralsight-login",
     "stackenterprise-login",
     "mural-login",
+    "pluralsight-login",
     "jira-count-tips",
 ];
 const buttonInputIds = ["github-hide-notice-show-all-again"];

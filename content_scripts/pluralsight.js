@@ -3,7 +3,7 @@ const pluralsight = {
         mainUrlPath: "/id",
         loginUrlPath: "/id/signin/sso",
         optionName: "pluralsight-login",
-        ssoOptionQuery: "div.links > a:nth-child(2)",
+        ssoOptionQuery: "a[href^='/id/signin/sso']",
         inputField: "#Alias",
         signInBtn: ".psds-button",
     },
@@ -20,7 +20,7 @@ function getSsoOptionButtonAndClick() {
         if (ssoOption && ssoOption.click) {
             ssoOption.click();
         }
-    } catch { }
+    } catch {}
 }
 function executeLogin() {
     executeFunctionAfterPageLoaded(function () {
@@ -32,9 +32,9 @@ function getInputAndFill() {
     try {
         const inputField = document.querySelector(pluralsight.login.inputField);
         if (inputField) {
-            inputField.value = "sap.com"
+            inputField.value = "sap.com";
         }
-    } catch { }
+    } catch {}
 }
 function getSignInButtonAndClick() {
     try {
@@ -42,7 +42,7 @@ function getSignInButtonAndClick() {
         if (signInBtn && signInBtn.click) {
             signInBtn.click();
         }
-    } catch { }
+    } catch {}
 }
 
 let options = {};
