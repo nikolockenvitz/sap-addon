@@ -49,7 +49,7 @@ Updates are handled automatically.
 
 ## Features
 
-* **Auto Login** on GitHub, Sharepoint, Stack Overflow, and Mural
+* **Auto Login** on GitHub, Sharepoint, Stack Overflow, Mural, and Pluralsight
 * Showing peoples' **full names on GitHub** instead of user IDs
 * Find a full list of features with detailed descriptions <a href="https://github.com/nikolockenvitz/sap-addon/tree/master/docs#features">here</a>
 

@@ -57,10 +57,24 @@ const dynamicContentScripts = [
                 "/utils/dom-observer.js",
                 "/utils/option-helper.js",
                 "/utils/dom-helper.js",
-                "/content_scripts/jira.js"
+                "/content_scripts/jira.js",
             ],
             matches: ["*://jira.tools.sap/*"],
-            runAt: "document_start"
-        }
-    }
+            runAt: "document_start",
+        },
+    },
+    {
+        name: "app.pluralsight.com",
+        cs: {
+            js: [
+                "utils/browser-setup.js",
+                "utils/storage.js",
+                "utils/option-helper.js",
+                "utils/dom-helper.js",
+                "content_scripts/pluralsight.js",
+            ],
+            matches: ["*://app.pluralsight.com/*"],
+            runAt: "document_start",
+        },
+    },
 ];

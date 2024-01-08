@@ -21,6 +21,7 @@
   * Sharepoint
   * Stack Overflow (Stack@SAP)
   * Mural
+  * Pluralsight
 * addon just clicks the login button to trigger the SSO process
 * on some pages (Sharepoint, Mural), you need to enter your email address -> open the settings popup, go to *Configuration*, and enter your email address there to let the addon autofill it when required
 

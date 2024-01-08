@@ -56,7 +56,8 @@
     "*://sap.stackenterprise.co/*",
     "*://app.mural.co/*",
     "*://github.concur.com/*",
-    "*://jira.tools.sap/*"
+    "*://jira.tools.sap/*",
+    "*://app.pluralsight.com/*"
   ],
   "background": {
     "scripts": [

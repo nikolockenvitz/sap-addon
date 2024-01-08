@@ -58,7 +58,8 @@
     "*://sap.stackenterprise.co/*",
     "*://app.mural.co/*",
     "*://github.concur.com/*",
-    "*://jira.tools.sap/*"
+    "*://jira.tools.sap/*",
+    "*://app.pluralsight.com/*"
   ],
   "background": {
     "service_worker": "background_scripts/chrome-background.js"

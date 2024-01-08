@@ -6,6 +6,7 @@ const inputIds = [
     "sharepoint-login",
     "stackenterprise-login",
     "mural-login",
+    "pluralsight-login",
     "jira-count-tips",
 ];
 const buttonInputIds = ["github-hide-notice-show-all-again"];
