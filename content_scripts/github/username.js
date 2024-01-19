@@ -71,7 +71,9 @@ function initializeGitHubIdQueries() {
     // dashboard: PR comments (white box: xyz commented ... ago)
     _addQuery(`div.issues_comment div.message a.Link--secondary > span.Link--primary.text-bold`);
     // team members in hovercard of a team in dashboard > your teams
-    _addQuery(`div.Popover-message div.d-flex > div.color-fg-muted > span.css-truncate.tooltipped span.css-truncate-target.text-bold`, { hrefException: true });
+    _addQuery(`div.Popover-message div.d-flex > div.color-fg-muted > span.css-truncate.tooltipped span.css-truncate-target.text-bold`, {
+        hrefException: true,
+    });
     // comment resolver in PR reviews (Conversation)
     _addQuery(`form.js-resolvable-timeline-thread-form strong`, { hrefException: true });
     // comment resolver in PR (Files Changed)
@@ -79,10 +81,9 @@ function initializeGitHubIdQueries() {
         `div.js-resolvable-timeline-thread-container div.comment-holder.js-line-comments div.js-resolvable-thread-toggler-container strong`,
         { hrefException: true }
     );
-    _addQuery(
-        `div.comment-holder details.review-thread-component.js-comment-container summary.js-toggle-outdated-comments strong`,
-        { hrefException: true }
-    );
+    _addQuery(`div.comment-holder details.review-thread-component.js-comment-container summary.js-toggle-outdated-comments strong`, {
+        hrefException: true,
+    });
     // member statuses on team's overview page (directly next to icon)
     _addQuery(`div.user-status-container a.Link--primary.text-bold.no-underline[data-hovercard-type="user"]`);
     // list of users who contributed to a file (directly next to icon)
@@ -101,6 +102,8 @@ function initializeGitHubIdQueries() {
     _addTooltipQuery(`tool-tip[for^=reactions--reaction_button_component-]`);
     // tooltips: dashboard -> your teams -> popup (team member profile pictures)
     _addTooltipQuery(`div.AvatarStack div.AvatarStack-body.tooltipped`);
+    // tooltips of 3+ committers
+    _addTooltipQuery(`div.AvatarStack--three-plus + div > span.text-bold:first-child`);
 }
 function _addQuery(query, options = {}) {
     github.showNames.query += (github.showNames.query === "" ? "" : ",\n") + query;
@@ -159,13 +162,18 @@ function showGitHubIdsAgain() {
         element.textContent = element.getAttribute("data-sap-addon-user-id");
         element.removeAttribute("data-sap-addon-user-id");
     }
-    for (const element of document.querySelectorAll("[data-sap-addon-tooltip-original-content-aria-label]")) {
-        element.setAttribute("aria-label", element.getAttribute("data-sap-addon-tooltip-original-content-aria-label"));
-        element.removeAttribute("data-sap-addon-tooltip-original-content-aria-label");
-    }
-    for (const element of document.querySelectorAll("[data-sap-addon-tooltip-original-content-text-content]")) {
-        element.textContent = element.getAttribute("data-sap-addon-tooltip-original-content-text-content");
-        element.removeAttribute("data-sap-addon-tooltip-original-content-text-content");
+    for (const element of document.querySelectorAll("[data-sap-addon-tooltip-original-content]")) {
+        const tooltipType = element.getAttribute("data-sap-addon-tooltip-type");
+        const originalTooltipContent = element.getAttribute("data-sap-addon-tooltip-original-content");
+        if (tooltipType === "element") {
+            element.textContent = originalTooltipContent;
+        } else if (tooltipType === "aria-label") {
+            element.setAttribute("aria-label", originalTooltipContent);
+        } else if (tooltipType === "title") {
+            element.setAttribute("title", originalTooltipContent);
+        }
+        element.removeAttribute("data-sap-addon-tooltip-original-content");
+        element.removeAttribute("data-sap-addon-tooltip-type");
     }
 }
 function _replaceAllChildsWhichAreUserId(element) {
@@ -279,24 +287,39 @@ function _exceptionForCommitListPRFilesChanged(element, userId) {
 
 async function _replaceElementsTooltip(element) {
     if (
-        element.hasAttribute("data-sap-addon-tooltip-original-content-aria-label") ||
-        element.hasAttribute("data-sap-addon-tooltip-original-content-text-content") ||
+        element.hasAttribute("data-sap-addon-tooltip-original-content") ||
         element.hasAttribute("data-sap-addon-already-replacing-tooltip")
     ) {
         return; // already replaced
     }
     element.setAttribute("data-sap-addon-already-replacing-tooltip", "true");
-    
-    // old tooltips use aria-label, new ones use custom html element tool-tip with textContent
-    const isToolTipElement = element.nodeName === "TOOL-TIP";
-    const originalTooltipText = isToolTipElement ? element.textContent.trim() : element.getAttribute("aria-label");
+
+    // old tooltips use aria-label or even title, new ones use custom html element tool-tip with textContent
+    const tooltipType =
+        element.nodeName === "TOOL-TIP"
+            ? "element"
+            : element.hasAttribute("aria-label")
+            ? "aria-label"
+            : element.hasAttribute("title")
+            ? "title"
+            : "";
+    const originalTooltipText =
+        tooltipType === "element"
+            ? element.textContent.trim()
+            : tooltipType === "aria-label"
+            ? element.getAttribute("aria-label")
+            : tooltipType === "title"
+            ? element.getAttribute("title")
+            : "";
     const replacedTooltipText = await _getNewTooltipText(originalTooltipText);
-    if (isToolTipElement) {
-        element.setAttribute("data-sap-addon-tooltip-original-content-text-content", originalTooltipText);
+    element.setAttribute("data-sap-addon-tooltip-original-content", originalTooltipText);
+    element.setAttribute("data-sap-addon-tooltip-type", tooltipType);
+    if (tooltipType === "element") {
         element.textContent = replacedTooltipText;
-    } else {
-        element.setAttribute("data-sap-addon-tooltip-original-content-aria-label", originalTooltipText);
+    } else if (tooltipType === "aria-label") {
         element.setAttribute("aria-label", replacedTooltipText);
+    } else if (tooltipType === "title") {
+        element.setAttribute("title", replacedTooltipText);
     }
     element.removeAttribute("data-sap-addon-already-replacing-tooltip");
 }
@@ -419,11 +442,11 @@ async function _getUsername(userId) {
                 delete userIdUpdateQueue[userId];
             })();
         }
-        return user[USERNAME_CACHE_NAME];
+        return user[USERNAME_CACHE_NAME] || userId;
     } else if (userId in userIdRequestQueue) {
         return new Promise((resolve) => {
             userIdRequestQueue[userId].push(function (username) {
-                resolve(username);
+                resolve(username || userId);
             });
         });
     } else {
@@ -438,7 +461,7 @@ async function _getUsername(userId) {
         for (const notify of observers) {
             notify(username);
         }
-        return username;
+        return username || userId;
     }
 }
 
