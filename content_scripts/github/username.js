@@ -5,6 +5,7 @@ github.showNames = {
     hrefExceptions: [],
     userMentions: [],
     queryTooltips: ``,
+    queryTooltipsAriaDescribedbyRef: ``,
     regexNameOnProfilePage: `<span class="p-name vcard-fullname d-block overflow-hidden" itemprop="name">([^<]*)</span>`,
     userIdFalsePositives: ["edited", "github-actions"],
     documentTitle: {
@@ -43,10 +44,30 @@ function initializeGitHubIdQueries() {
     );
     // PR: "xyz requested your review" box
     _addQuery(`div#repo-content-pjax-container div.flash.flash-warn div a.text-emphasized.Link--primary`);
-    // projects: card/issue creator
+    // projects (classic): card/issue creator
     _addQuery(`div.project-column div.d-flex small.color-fg-muted a.color-fg-default`);
-    // projects: activity pane
+    // projects (classic): activity pane
     _addQuery(`div.js-project-activity-pane.Details ul.js-project-activity-container li p a.text-bold`, { userMention: true });
+    // projects (beta): item/issue details: creator of this item
+    _addQuery(`projects-v2 header div > figure + address > span:first-child`, { hrefException: true });
+    // projects (beta): item/issue details: most-recent description editor + comment author
+    _addQuery(`projects-v2 section article > header > address[data-testid="author-login"]`, { hrefException: true });
+    // projects (beta): item/issue details: assignees
+    _addQuery(`projects-v2 header + div aside section div[data-testid="sidebar-field-Assignees"] button img + span`, {
+        hrefException: true,
+    });
+    // projects (beta): item/issue details: assignees ("A and B", ..., "A, B, C, and D", ...)
+    _addQuery(`projects-v2 header + div aside section div[data-testid="sidebar-field-Assignees"] button > div > span + span`, {
+        hrefException: true,
+    });
+    // projects (beta): table assignees column
+    _addQuery(`projects-v2 div[data-testid^="TableCell"][data-testid$="column: Assignees}"] img + span`, {
+        hrefException: true,
+    });
+    // projects (beta): card assignee tooltip
+    _addTooltipQuery(`projects-v2 div[data-testid="board-card-header"] figure img[aria-describedby]`, { ariaDescribedbyRef: true });
+    // projects (beta): archived items list item
+    _addQuery(`projects-v2 main ul[data-testid="archived-item-list"] li div relative-time + span`, { hrefException: true });
     // wiki revisions history
     _addQuery(`#wiki-wrapper #version-form div > a.Link--muted span.text-bold`);
     // recent activity in dashboard (user commented)
@@ -133,8 +154,12 @@ function _addQuery(query, options = {}) {
         github.showNames.userMentions.push(query);
     }
 }
-function _addTooltipQuery(query) {
-    github.showNames.queryTooltips += (github.showNames.queryTooltips === "" ? "" : ",\n") + query;
+function _addTooltipQuery(query, options = {}) {
+    if (options.ariaDescribedbyRef) {
+        github.showNames.queryTooltipsAriaDescribedbyRef += (github.showNames.queryTooltipsAriaDescribedbyRef === "" ? "" : ",\n") + query;
+    } else {
+        github.showNames.queryTooltips += (github.showNames.queryTooltips === "" ? "" : ",\n") + query;
+    }
 }
 function initializeFurtherHrefExceptions() {
     github.showNames.hrefExceptions.push(_isInsightsPulseTooltip);
@@ -187,6 +212,13 @@ function _replaceAllChildsWhichAreUserId(element) {
             _replaceElementsTooltip(queryMatch);
         }
     } catch {}
+    try {
+        for (const queryMatch of element.querySelectorAll(github.showNames.queryTooltipsAriaDescribedbyRef)) {
+            const tooltipElement = document.getElementById(queryMatch.getAttribute("aria-describedby"));
+            if (tooltipElement === null) continue;
+            _replaceElementsTooltip(tooltipElement);
+        }
+    } catch {}
 }
 async function _replaceElementIfUserId(element) {
     const { userId, prefix, suffix } = _getUserIdIfElementIsUserId(element);
@@ -198,7 +230,13 @@ async function _replaceElementIfUserId(element) {
             previousWidthInsightPulseTooltip = element.parentElement.getBoundingClientRect().width;
         }
 
-        const username = await _getUsername(userId);
+        let username;
+        if (isUserIdList({ userId, prefix, suffix })) {
+            const usernames = await getUsernamesFromMultipleUserIdsString(userId);
+            username = _makeUsernameTextForTooltip(usernames);
+        } else {
+            username = await _getUsername(userId);
+        }
         if (username) {
             const el = getDirectParentOfText(element, prefix + userId + suffix);
             if (el) {
@@ -284,6 +322,9 @@ function _exceptionForCommitListPRFilesChanged(element, userId) {
     }
     return userId;
 }
+function isUserIdList({ userId, prefix, suffix }) {
+    return userId.includes(" and ") && !prefix && !suffix;
+}
 
 async function _replaceElementsTooltip(element) {
     if (
@@ -354,27 +395,7 @@ async function _getNewTooltipText(originalTooltipText) {
         [userIds, textAfter] = (tempSplitResultAtTextBeforeUserIds || originalTooltipText).split(currentTooltipType.textAfterUserIds);
     }
 
-    const usernamePromises = [];
-    if (userIds.includes(", and ")) {
-        // more than two names
-        const [firstUserIds, lastUserId] = userIds.split(", and ");
-        for (const userId of firstUserIds.split(", ")) {
-            usernamePromises.push(_getUsername(userId));
-        }
-        // lastUserId should not match something like "5 more" (e.g. in A, ..., B, and 5 more)
-        if (!new RegExp(`\\d+ more`).exec(lastUserId)) {
-            usernamePromises.push(_getUsername(lastUserId));
-        }
-    } else if (userIds.includes(" and ")) {
-        // two names
-        for (const userId of userIds.split(" and ")) {
-            usernamePromises.push(_getUsername(userId));
-        }
-    } else {
-        // one name
-        usernamePromises.push(_getUsername(userIds));
-    }
-    const usernames = (await Promise.allSettled(usernamePromises)).map((promiseResult) => promiseResult.value);
+    const usernames = await getUsernamesFromMultipleUserIdsString(userIds);
     if (usernames.includes(null)) {
         // probably not a tooltip with usernames -> return original text
         return originalTooltipText;
@@ -386,6 +407,32 @@ async function _getNewTooltipText(originalTooltipText) {
         (currentTooltipType.textAfterUserIds || "") +
         textAfter
     );
+}
+async function getUsernamesFromMultipleUserIdsString(userIds) {
+    const usernamePromises = [];
+    if (userIds.includes(", and ")) {
+        // more than two names
+        const [firstUserIds, lastUserId] = userIds.split(", and ");
+        for (const userId of firstUserIds.split(", ")) {
+            usernamePromises.push(_getUsername(userId));
+        }
+        // lastUserId should not match something like "5 more" (e.g. in A, ..., B, and 5 more)
+        if (!new RegExp(`\\d+ more`).exec(lastUserId)) {
+            usernamePromises.push(_getUsername(lastUserId));
+        } else {
+            usernamePromises.push(Promise.resolve(lastUserId));
+        }
+    } else if (userIds.includes(" and ")) {
+        // two names
+        for (const userId of userIds.split(" and ")) {
+            usernamePromises.push(_getUsername(userId));
+        }
+    } else {
+        // one name
+        usernamePromises.push(_getUsername(userIds));
+    }
+    const usernames = (await Promise.allSettled(usernamePromises)).map((promiseResult) => promiseResult.value);
+    return usernames;
 }
 function _makeUsernameTextForTooltip(usernames) {
     let usernameText = "";
