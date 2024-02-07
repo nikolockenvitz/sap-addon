@@ -72,6 +72,10 @@ function initializeGitHubIdQueries() {
     });
     // projects (beta): card assignee tooltip
     _addTooltipQuery(`projects-v2 div[data-testid="board-card-header"] figure img[aria-describedby]`, { ariaDescribedbyRef: true });
+    // projects (beta): roadmap assignee tooltip
+    _addTooltipQuery(`projects-v2 div[data-testid="roadmap-view-item-pill-content"] figure img[aria-describedby]`, { ariaDescribedbyRef: true });
+    // projects (beta): roadmap group name
+    _addQuery(`projects-v2 span[data-testid="table-group-name"]`, { hrefException: true });
     // projects (beta): archived items list item
     _addQuery(`projects-v2 main ul[data-testid="archived-item-list"] li div relative-time + span`, { hrefException: true });
     // wiki revisions history
