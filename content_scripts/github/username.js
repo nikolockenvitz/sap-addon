@@ -64,12 +64,12 @@ function initializeGitHubIdQueries() {
     _addQuery(`projects-v2 div[data-testid^="TableCell"][data-testid$="column: Assignees}"] img + span`, {
         hrefException: true,
     });
-    _addQuery(`projects-v2 div[data-testid^="TableCell"][data-testid$="column: Assignees}"] span.pc-AvatarStack--two + span`, {
-        hrefException: true,
-    });
-    _addQuery(`projects-v2 div[data-testid^="TableCell"][data-testid$="column: Assignees}"] span.pc-AvatarStack--three-plus + span`, {
-        hrefException: true,
-    });
+    _addQuery(
+        `projects-v2 div[data-testid^="TableCell"][data-testid$="column: Assignees}"] span[class*="AvatarStack__AvatarStackWrapper"] + span`,
+        {
+            hrefException: true,
+        }
+    );
     // projects (beta): card assignee tooltip
     _addTooltipQuery(`projects-v2 div[data-testid="board-card-header"] figure img[aria-describedby]`, { ariaDescribedbyRef: true });
     // projects (beta): roadmap assignee tooltip
