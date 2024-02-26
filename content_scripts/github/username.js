@@ -625,7 +625,7 @@ function replaceTextNodeWithDomElementForUsername(baseElement, indexUserId) {
 }
 
 let documentTitleUserIdState = {
-    observerRegistered: false,
+    intervalId: null,
     oldTitle: null,
     newTitle: null,
 };
@@ -633,15 +633,10 @@ function replaceGitHubIdsWithUsernameInDocumentTitle() {
     executeFunctionAfterPageLoaded(function () {
         _checkDocumentTitleAndReplaceUserId();
     });
-
-    if (!documentTitleUserIdState.observerRegistered) {
-        documentTitleUserIdState.observerRegistered = true;
-        new DOMObserver(document.querySelector("title")).registerCallbackFunction(
-            github.showNames.documentTitle.optionName,
-            function (_mutations, _observer) {
-                _checkDocumentTitleAndReplaceUserId();
-            }
-        );
+    if (documentTitleUserIdState.intervalId === null) {
+        documentTitleUserIdState.intervalId = setInterval(() => {
+            _checkDocumentTitleAndReplaceUserId();
+        }, 1_000);
     }
 }
 async function _checkDocumentTitleAndReplaceUserId() {
@@ -679,6 +674,10 @@ async function _checkDocumentTitleAndReplaceUserId() {
     }
 }
 function showGitHubIdsAgainInDocumentTitle() {
+    if (documentTitleUserIdState.intervalId !== null) {
+        clearInterval(documentTitleUserIdState.intervalId);
+        documentTitleUserIdState.intervalId = null;
+    }
     if (documentTitleUserIdState.oldTitle) document.title = documentTitleUserIdState.oldTitle;
 }
 
