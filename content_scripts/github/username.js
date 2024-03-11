@@ -252,6 +252,7 @@ async function _replaceElementIfUserId(element) {
         }
         if (username) {
             const el = getDirectParentOfText(element, prefix + userId + suffix);
+            // replace userId with username
             if (el) {
                 el.textContent = prefix + username + suffix;
                 el.setAttribute("data-sap-addon-user-id", prefix + userId + suffix);
@@ -260,6 +261,14 @@ async function _replaceElementIfUserId(element) {
                     const currentWidth = element.parentElement.getBoundingClientRect().width;
                     const offsetLeft = parseFloat(element.parentElement.style.left);
                     element.parentElement.style.left = `${offsetLeft + (previousWidthInsightPulseTooltip - currentWidth) / 2}px`;
+                }
+            }
+            // replace username (in parentheses) with userId
+            if (el && el.nextSibling && el.nextSibling.classList.contains("css-truncate")) {
+                const truncateTarget = el.nextSibling.querySelector(".css-truncate-target");
+                if (truncateTarget && truncateTarget.textContent === `(${username})`) {
+                    truncateTarget.textContent = `(${userId})`;
+                    truncateTarget.setAttribute("data-sap-addon-user-id", `(${username})`);
                 }
             }
         }
