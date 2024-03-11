@@ -134,6 +134,7 @@ function initializeGitHubIdQueries() {
 
     // tooltips (reactions)
     _addTooltipQuery(`tool-tip[for^=reactions--reaction_button_component-]`);
+    _addTooltipQuery(`button[data-testid="all-reactions-button"] + span[role="tooltip"]`);
     // tooltips: dashboard -> your teams -> popup (team member profile pictures)
     _addTooltipQuery(`div.AvatarStack div.AvatarStack-body.tooltipped`);
     // tooltips of 3+ committers
