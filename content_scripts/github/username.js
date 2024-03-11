@@ -267,8 +267,8 @@ async function _replaceElementIfUserId(element) {
             if (el && el.nextSibling && el.nextSibling.classList.contains("css-truncate")) {
                 const truncateTarget = el.nextSibling.querySelector(".css-truncate-target");
                 if (truncateTarget && truncateTarget.textContent === `(${username})`) {
+                    truncateTarget.setAttribute("data-sap-addon-user-id", truncateTarget.textContent);
                     truncateTarget.textContent = `(${userId})`;
-                    truncateTarget.setAttribute("data-sap-addon-user-id", `(${username})`);
                 }
             }
         }
