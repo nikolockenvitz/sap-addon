@@ -251,11 +251,11 @@ async function _replaceElementIfUserId(element) {
             username = await _getUsername(userId);
         }
         if (username) {
-            const el = getDirectParentOfText(element, prefix + userId + suffix);
             // replace userId with username
-            if (el) {
-                el.textContent = prefix + username + suffix;
-                el.setAttribute("data-sap-addon-user-id", prefix + userId + suffix);
+            const idToNameElement = getDirectParentOfText(element, prefix + userId + suffix);
+            if (idToNameElement) {
+                idToNameElement.textContent = prefix + username + suffix;
+                idToNameElement.setAttribute("data-sap-addon-user-id", prefix + userId + suffix);
 
                 if (previousWidthInsightPulseTooltip) {
                     const currentWidth = element.parentElement.getBoundingClientRect().width;
@@ -263,12 +263,12 @@ async function _replaceElementIfUserId(element) {
                     element.parentElement.style.left = `${offsetLeft + (previousWidthInsightPulseTooltip - currentWidth) / 2}px`;
                 }
             }
-            // replace username (in parentheses) with userId
-            if (el && el.nextSibling && el.nextSibling.classList.contains("css-truncate")) {
-                const truncateTarget = el.nextSibling.querySelector(".css-truncate-target");
-                if (truncateTarget && truncateTarget.textContent === `(${username})`) {
-                    truncateTarget.setAttribute("data-sap-addon-user-id", truncateTarget.textContent);
-                    truncateTarget.textContent = `(${userId})`;
+            // replace username with userId
+            const nameToIdElement = element.parentElement.querySelector(".css-truncate > .css-truncate-target");
+            if (nameToIdElement && nameToIdElement.textContent.includes(username)) {
+                if (!nameToIdElement.hasAttribute("data-sap-addon-user-id")) {
+                    nameToIdElement.setAttribute("data-sap-addon-user-id", nameToIdElement.textContent);
+                    nameToIdElement.textContent = nameToIdElement.textContent.replace(username, userId);
                 }
             }
         }
