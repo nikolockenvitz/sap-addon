@@ -197,9 +197,9 @@ function replaceGitHubIdsWithUsername() {
 }
 function showGitHubIdsAgain() {
     domObserver.unregisterCallbackFunction(github.showNames.optionName);
-    for (const element of document.querySelectorAll("[data-sap-addon-user-id]")) {
-        element.textContent = element.getAttribute("data-sap-addon-user-id");
-        element.removeAttribute("data-sap-addon-user-id");
+    for (const element of document.querySelectorAll("[data-sap-addon-original-content]")) {
+        element.textContent = element.getAttribute("data-sap-addon-original-content");
+        element.removeAttribute("data-sap-addon-original-content");
     }
     for (const element of document.querySelectorAll("[data-sap-addon-tooltip-original-content]")) {
         const tooltipType = element.getAttribute("data-sap-addon-tooltip-type");
@@ -256,7 +256,7 @@ async function _replaceElementIfUserId(element) {
             const idToNameElement = getDirectParentOfText(element, prefix + userId + suffix);
             if (idToNameElement) {
                 idToNameElement.textContent = prefix + username + suffix;
-                idToNameElement.setAttribute("data-sap-addon-user-id", prefix + userId + suffix);
+                idToNameElement.setAttribute("data-sap-addon-original-content", prefix + userId + suffix);
 
                 if (previousWidthInsightPulseTooltip) {
                     const currentWidth = element.parentElement.getBoundingClientRect().width;
@@ -267,8 +267,8 @@ async function _replaceElementIfUserId(element) {
             // replace username with userId
             const nameToIdElement = element.parentElement.querySelector(".css-truncate > .css-truncate-target");
             if (nameToIdElement && nameToIdElement.textContent.includes(username)) {
-                if (!nameToIdElement.hasAttribute("data-sap-addon-user-id")) {
-                    nameToIdElement.setAttribute("data-sap-addon-user-id", nameToIdElement.textContent);
+                if (!nameToIdElement.hasAttribute("data-sap-addon-original-content")) {
+                    nameToIdElement.setAttribute("data-sap-addon-original-content", nameToIdElement.textContent);
                     nameToIdElement.textContent = nameToIdElement.textContent.replace(username, userId);
                 }
             }
@@ -278,7 +278,7 @@ async function _replaceElementIfUserId(element) {
 }
 function _getUserIdIfElementIsUserId(element) {
     let userId =
-        !element.hasAttribute("data-sap-addon-user-id") && !element.querySelector("[data-sap-addon-user-id]")
+        !element.hasAttribute("data-sap-addon-original-content") && !element.querySelector("[data-sap-addon-original-content]")
             ? element.textContent.trim()
             : null;
     if (userId === "" || !isElementALink(element)) {
