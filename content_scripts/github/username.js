@@ -31,8 +31,8 @@ function initializeGitHubIdQueries() {
     _addQuery(`[data-hovercard-type=user]`);
     // ???
     _addQuery(`a.text-emphasized.Link--primary`);
-    // contributor list of a repo
-    //_addQuery(`a.Link--primary.no-underline.flex-self-center strong`);
+    // repo landing page: contributor list
+    _addQuery(`div.Layout-sidebar div > h2 + ul > li > a + span > a.Link--primary > strong`);
     // (pending) reviewers in PR ("xyz was requested for review" / "xyz approved these changes")
     _addQuery(
         `details.js-merge-review-section div.merge-status-item.review-item.js-details-container.Details div.review-status-item strong.text-emphasized`,
@@ -265,7 +265,7 @@ async function _replaceElementIfUserId(element) {
                 }
             }
             // replace username with userId
-            const nameToIdElement = element.parentElement.querySelector(".css-truncate > .css-truncate-target");
+            const nameToIdElement = getNextElementSiblingDeep(idToNameElement);
             if (nameToIdElement && nameToIdElement.textContent.includes(username)) {
                 if (!nameToIdElement.hasAttribute("data-sap-addon-original-content")) {
                     nameToIdElement.setAttribute("data-sap-addon-original-content", nameToIdElement.textContent);
@@ -624,7 +624,6 @@ function getDirectParentOfText(baseElement, text) {
         }
     }
 }
-
 function replaceTextNodeWithDomElementForUsername(baseElement, indexUserId) {
     const textNode = baseElement.childNodes[indexUserId];
     const newElement = document.createElement("span");
@@ -632,6 +631,14 @@ function replaceTextNodeWithDomElementForUsername(baseElement, indexUserId) {
     baseElement.replaceChild(newElement, textNode);
     newElement.insertAdjacentHTML("afterend", " ");
     return newElement;
+}
+function getNextElementSiblingDeep(element) {
+    let temp = element.nextElementSibling;
+    while (true) {
+        const firstChild = temp?.children[0];
+        if (!firstChild) return temp;
+        temp = firstChild;
+    }
 }
 
 let documentTitleUserIdState = {
