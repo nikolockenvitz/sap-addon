@@ -212,6 +212,7 @@ function showGitHubIdsAgain() {
             element.setAttribute("title", originalTooltipContent);
         }
         element.removeAttribute("data-sap-addon-tooltip-original-content");
+        element.removeAttribute("data-sap-addon-tooltip-new-content");
         element.removeAttribute("data-sap-addon-tooltip-type");
     }
 }
@@ -233,6 +234,36 @@ function _replaceAllChildsWhichAreUserId(element) {
             _replaceElementsTooltip(tooltipElement);
         }
     } catch {}
+
+    /**
+     * When an element is changed where we previously replaced the user id (e.g. tooltip with reactions),
+     * our query for matching this element might start too far up in the DOM tree, while the element
+     * that has been changed (and was noticed by the DOM observer) is deep inside our query
+     * (e.g. our query is "div#1 div#2 span" where the span holds the user id; if div#2 would change
+     * and be checked in this function, the query wouldn't work (since we query from the match,
+     * i.e. div#2, and not document.body here))
+     * Similary, for tooltips, we might have the element with the tooltip and only a child is noticed
+     * by the DOM observer.
+     *
+     * So far we noticed this only for the latter case (reaction tooltip in project issue).
+     * Below's implementation is concretely for this and might need to be generalized later
+     * if we also see this in other cases.
+     */
+    const parentWithUserIdTooltip = getParentWithAlreadyReplacedUserIdTooltip(element);
+    if (parentWithUserIdTooltip) {
+        _replaceElementsTooltip(parentWithUserIdTooltip);
+    }
+}
+function getParentWithAlreadyReplacedUserIdTooltip(element) {
+    let temp = element;
+    if (temp.nodeName === "#text") return null;
+    while (true) {
+        if (!temp) return null;
+        if (temp.hasAttribute("data-sap-addon-tooltip-original-content")) {
+            return temp;
+        }
+        temp = temp.parentElement;
+    }
 }
 async function _replaceElementIfUserId(element) {
     const { userId, prefix, suffix } = _getUserIdIfElementIsUserId(element);
@@ -350,13 +381,9 @@ function isUserIdList({ userId, prefix, suffix }) {
 }
 
 async function _replaceElementsTooltip(element) {
-    if (
-        element.hasAttribute("data-sap-addon-tooltip-original-content") ||
-        element.hasAttribute("data-sap-addon-already-replacing-tooltip")
-    ) {
-        return; // already replaced
+    if (element.hasAttribute("data-sap-addon-already-replacing-tooltip")) {
+        return; // already being replaced
     }
-    element.setAttribute("data-sap-addon-already-replacing-tooltip", "true");
 
     // old tooltips use aria-label or even title, new ones use custom html element tool-tip with textContent
     const tooltipType =
@@ -375,8 +402,15 @@ async function _replaceElementsTooltip(element) {
             : tooltipType === "title"
             ? element.getAttribute("title")
             : "";
+    if (originalTooltipText === element.getAttribute("data-sap-addon-tooltip-new-content")) {
+        // value is still what we last set
+        return;
+        // otherwise, tooltip has been updated and we need to replace again
+    }
+    element.setAttribute("data-sap-addon-already-replacing-tooltip", "true");
     const replacedTooltipText = await _getNewTooltipText(originalTooltipText);
     element.setAttribute("data-sap-addon-tooltip-original-content", originalTooltipText);
+    element.setAttribute("data-sap-addon-tooltip-new-content", replacedTooltipText);
     element.setAttribute("data-sap-addon-tooltip-type", tooltipType);
     if (tooltipType === "element") {
         element.textContent = replacedTooltipText;
