@@ -252,15 +252,24 @@ async function _replaceElementIfUserId(element) {
             username = await _getUsername(userId);
         }
         if (username) {
-            const el = getDirectParentOfText(element, prefix + userId + suffix);
-            if (el) {
-                el.textContent = prefix + username + suffix;
-                el.setAttribute("data-sap-addon-user-id", prefix + userId + suffix);
+            // replace userId with username
+            const idToNameElement = getDirectParentOfText(element, prefix + userId + suffix);
+            if (idToNameElement) {
+                idToNameElement.textContent = prefix + username + suffix;
+                idToNameElement.setAttribute("data-sap-addon-user-id", prefix + userId + suffix);
 
                 if (previousWidthInsightPulseTooltip) {
                     const currentWidth = element.parentElement.getBoundingClientRect().width;
                     const offsetLeft = parseFloat(element.parentElement.style.left);
                     element.parentElement.style.left = `${offsetLeft + (previousWidthInsightPulseTooltip - currentWidth) / 2}px`;
+                }
+            }
+            // replace username with userId
+            const nameToIdElement = element.parentElement.querySelector(".css-truncate > .css-truncate-target");
+            if (nameToIdElement && nameToIdElement.textContent.includes(username)) {
+                if (!nameToIdElement.hasAttribute("data-sap-addon-user-id")) {
+                    nameToIdElement.setAttribute("data-sap-addon-user-id", nameToIdElement.textContent);
+                    nameToIdElement.textContent = nameToIdElement.textContent.replace(username, userId);
                 }
             }
         }
