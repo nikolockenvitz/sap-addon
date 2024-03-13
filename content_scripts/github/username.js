@@ -53,11 +53,11 @@ function initializeGitHubIdQueries() {
     // projects (beta): item/issue details: most-recent description editor + comment author
     _addQuery(`projects-v2 section article > header > address[data-testid="author-login"]`, { hrefException: true });
     // projects (beta): item/issue details: assignees
-    _addQuery(`projects-v2 header + div aside section div[data-testid="sidebar-field-Assignees"] button img + span`, {
+    _addQuery(`projects-v2 header + div aside section div[data-testid="sidebar-field-Assignees"] img + span`, {
         hrefException: true,
     });
     // projects (beta): item/issue details: assignees ("A and B", ..., "A, B, C, and D", ...)
-    _addQuery(`projects-v2 header + div aside section div[data-testid="sidebar-field-Assignees"] button > div > span + span`, {
+    _addQuery(`projects-v2 header + div aside section div[data-testid="sidebar-field-Assignees"] div > span[class*="AvatarStack"] + span`, {
         hrefException: true,
     });
     // projects (beta): table assignees column
