@@ -48,6 +48,7 @@ function initializeGitHubIdQueries() {
     _addQuery(`div.Popover-message section + section a.text-bold.Link--primary`)
     // projects (classic): card/issue creator
     _addQuery(`div.project-column div.d-flex small.color-fg-muted a.color-fg-default`);
+    _addQuery(`div.d-flex div.js-project-issue-details-container small.color-fg-muted a.color-fg-default`);
     // projects (classic): activity pane
     _addQuery(`div.js-project-activity-pane.Details ul.js-project-activity-container li p a.text-bold`, { userMention: true });
     // projects (beta): item/issue details: creator of this item
