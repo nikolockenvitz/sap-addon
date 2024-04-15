@@ -44,6 +44,8 @@ function initializeGitHubIdQueries() {
     );
     // PR: "xyz requested your review" box
     _addQuery(`div#repo-content-pjax-container div.flash.flash-warn div a.text-emphasized.Link--primary`);
+    // PR: "Files changed" > "Conversations"
+    _addQuery(`a.js-conversations-menu-item div.d-flex img.avatar + span`);
     // hovercard
     _addQuery(`div.Popover-message section + section a.text-bold.Link--primary`)
     // projects (classic): card/issue creator
