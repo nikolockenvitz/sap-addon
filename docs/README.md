@@ -6,7 +6,6 @@
   - [Auto Login](#auto-login)
   - [GitHub - People's Full Names Instead of User IDs](#github---peoples-full-names-instead-of-user-ids)
   - [GitHub - Hiding Yellow Announcement Banners](#github---hiding-yellow-announcement-banners)
-  - [Fiori Launchpad - Override Lunchmenu Language](#fiori-launchpad---override-lunchmenu-language)
   - [SAP Jira - Count Tips](#sap-jira---count-tips)
 - [Settings Popup](#settings-popup)
 - [Configuration](#configuration)
@@ -36,12 +35,6 @@
 * new messages will always appear
 * if you dismissed a message by accident, you can show all banners again by clicking on the respective button in the settings popup
 
-### Fiori Launchpad - Override Lunchmenu Language
-
-* overrides language of the lunchmenu (home page tiles as well as app itself), so that you will see it e.g. in German even if your Fiori Launchpad is set to English
-* this is no translation but depends on the lunchmenu being offered in the corresponding language
-* currently supports `de` and `en` (define in settings popup / *Configuration*)
-
 ### SAP Jira - Count Tips
 
 * show the ticket priority count and the unassigned count on the pagination
@@ -65,7 +58,7 @@ This is because of permissions and requires you to manually grant the correspond
 ## Configuration
 
 At the bottom of the settings popup, you can navigate to *Configuration*.
-Enter your email address (used for auto login on Sharepoint and Mural) and your preferred lunchmenu language (`de` / `en`; only if you want to override the default language) there.
+Enter your email address (used for auto login on Sharepoint and Mural) there.
 The data is auto-saved and only stored in your browser's local storage.
 
 <img src="./screenshot-1.21-settings-popup-configuration.png" width="320" alt="Screenshot of Configuration in Popup" title="Screenshot of Configuration in Popup" />

@@ -2,7 +2,6 @@ const inputIds = [
     "github-sign-in",
     "github-hide-notice-overlay",
     "github-show-names",
-    "fiori-lunchmenu-german",
     "sharepoint-login",
     "stackenterprise-login",
     "mural-login",
@@ -10,7 +9,7 @@ const inputIds = [
     "jira-count-tips",
 ];
 const buttonInputIds = ["github-hide-notice-show-all-again"];
-const configInputIds = ["config-email", "config-lunchmenu-language"];
+const configInputIds = ["config-email"];
 
 let options = {};
 let config = {};

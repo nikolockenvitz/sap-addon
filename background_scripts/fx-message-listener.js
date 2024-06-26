@@ -9,7 +9,4 @@ browser.runtime.onMessage.addListener(function (request, sender, sendResponse) {
             return true;
         }
     }
-    if (request.rerunMainFunctionOfBackgroundPage) {
-        main();
-    }
 });

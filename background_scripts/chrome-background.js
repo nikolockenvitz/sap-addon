@@ -1,7 +1,6 @@
 try {
     importScripts(
         "./fetch-github-name.js",
-        "./chrome-fiori-lunchmenu.js",
         "../shared/dynamic-content-scripts-config.js",
         "./chrome-permission-manager.js"
     );
@@ -14,10 +13,6 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         const resultPromise = fetchUsername(...request.args);
         resultPromise.then((username) => sendResponse(username));
         return true;
-    }
-    if (request.rerunMainFunctionOfBackgroundPage) {
-        const { config, options } = request;
-        fioriLunchmenuUpdateDeclarativeNetRequest({ config, options });
     }
 });
 

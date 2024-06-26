@@ -1,8 +1,8 @@
 {
   "manifest_version": 2,
   "name": "SAP Addon",
-  "version": "1.22.8",
-  "description": "Extension for SAP internal webpages: GitHub, Fiori Launchpad, Sharepoint, Jira",
+  "version": "1.22.10",
+  "description": "Extension for SAP internal webpages: GitHub, Sharepoint, Jira, ...",
   "icons": {
     "48": "icons/icon48.png",
     "96": "icons/icon96.png",
@@ -46,9 +46,6 @@
   ],
   "permissions": [
     "storage",
-    "webRequest",
-    "webRequestBlocking",
-    "*://fiorilaunchpad.sap.com/sap/fiori/lunchmenu/*",
     "*://github.wdf.sap.corp/*",
     "*://github.tools.sap/*"
   ],
@@ -64,7 +61,6 @@
       "utils/browser-setup.js",
       "utils/storage.js",
       "utils/option-helper.js",
-      "background_scripts/fx-fiori-lunchmenu.js",
       "background_scripts/fx-on-tab-change.js",
       "background_scripts/fetch-github-name.js",
       "background_scripts/fx-message-listener.js",
