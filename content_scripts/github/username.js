@@ -54,15 +54,15 @@ function initializeGitHubIdQueries() {
     // projects (classic): activity pane
     _addQuery(`div.js-project-activity-pane.Details ul.js-project-activity-container li p a.text-bold`, { userMention: true });
     // projects (beta): item/issue details: creator of this item
-    _addQuery(`projects-v2 header div > figure + address > span:first-child`, { hrefException: true });
+    _addQuery(`projects-v2 header div > figure ~ address > span:first-child`, { hrefException: true });
     // projects (beta): item/issue details: most-recent description editor + comment author
-    _addQuery(`projects-v2 section article > header > address[data-testid="author-login"]`, { hrefException: true });
+    _addQuery(`projects-v2 section article > header address[data-testid="author-login"]`, { hrefException: true });
     // projects (beta): item/issue details: assignees
-    _addQuery(`projects-v2 header + div aside section div[data-testid="sidebar-field-Assignees"] img + span`, {
+    _addQuery(`projects-v2 section div[data-testid="sidebar-field-Assignees"] img + span`, {
         hrefException: true,
     });
     // projects (beta): item/issue details: assignees ("A and B", ..., "A, B, C, and D", ...)
-    _addQuery(`projects-v2 header + div aside section div[data-testid="sidebar-field-Assignees"] div > span[class*="AvatarStack"] + span`, {
+    _addQuery(`projects-v2 section div[data-testid="sidebar-field-Assignees"] div > span[class*="AvatarStack"] + span`, {
         hrefException: true,
     });
     // projects (beta): table assignees column
@@ -83,7 +83,7 @@ function initializeGitHubIdQueries() {
         { ariaDescribedbyRef: true }
     );
     // projects (beta): roadmap group name
-    _addQuery(`projects-v2 span[class*="AvatarStack__AvatarStackWrapper"] + span[data-testid="table-group-name"]`, { hrefException: true });
+    _addQuery(`projects-v2 div[data-testid="roadmap-items"] span[class*="AvatarStack__AvatarStackWrapper"] + span[data-testid="group-name"]`, { hrefException: true });
     // projects (beta): archived items list item
     _addQuery(`projects-v2 main ul[data-testid="archived-item-list"] li div relative-time + span`, { hrefException: true });
     // wiki revisions history
