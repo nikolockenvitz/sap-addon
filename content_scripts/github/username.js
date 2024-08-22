@@ -586,8 +586,12 @@ function _fetchUsername(userId) {
                 args: [userId, url.host, github.showNames.regexNameOnProfilePage],
             },
             (username) => {
-                const name = decodeHtml(username);
-                resolve(name);
+                if (username && username !== "undefined") {
+                    const name = decodeHtml(username);
+                    resolve(name);
+                } else {
+                    resolve(null);
+                }
             }
         );
     });
