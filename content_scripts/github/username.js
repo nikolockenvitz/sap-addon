@@ -47,7 +47,7 @@ function initializeGitHubIdQueries() {
     // PR: "Files changed" > "Conversations"
     _addQuery(`a.js-conversations-menu-item div.d-flex img.avatar + span`);
     // hovercard
-    _addQuery(`div.Popover-message section + section a.text-bold.Link--primary`)
+    _addQuery(`div.Popover-message section + section a.text-bold.Link--primary`);
     // projects (classic): card/issue creator
     _addQuery(`div.project-column div.d-flex small.color-fg-muted a.color-fg-default`);
     _addQuery(`div.d-flex div.js-project-issue-details-container small.color-fg-muted a.color-fg-default`);
@@ -83,7 +83,10 @@ function initializeGitHubIdQueries() {
         { ariaDescribedbyRef: true }
     );
     // projects (beta): roadmap group name
-    _addQuery(`projects-v2 div[data-testid="roadmap-items"] span[class*="AvatarStack__AvatarStackWrapper"] + span[data-testid="group-name"]`, { hrefException: true });
+    _addQuery(
+        `projects-v2 div[data-testid="roadmap-items"] span[class*="AvatarStack__AvatarStackWrapper"] + span[data-testid="group-name"]`,
+        { hrefException: true }
+    );
     // projects (beta): archived items list item
     _addQuery(`projects-v2 main ul[data-testid="archived-item-list"] li div relative-time + span`, { hrefException: true });
     // wiki revisions history
@@ -527,8 +530,8 @@ and there's no username in the cache yet.
 const userIdRequestQueue = {};
 const userIdUpdateQueue = {};
 
-const USERNAME_CACHE_NAME = 0;
-const USERNAME_CACHE_UPDATED_AT = 1;
+const USERNAME_CACHE_IX_NAME = 0;
+const USERNAME_CACHE_IX_UPDATED_AT = 1;
 
 const USERNAME_CACHE_MAX_TIME_IN_S = 2_592_000; // 30 days: 30 * 24 * 60 * 60 = 2_592_000
 
@@ -536,9 +539,9 @@ async function _getUsername(userId) {
     if (!userId || github.showNames.userIdFalsePositives.includes(userId)) return null;
     const user = usernameCache[userId];
     const now = getUnixTimestamp(); // seconds/milliseconds don't matter so it's sufficient to get it only once
-    if (user && user[USERNAME_CACHE_NAME]) {
+    if (user && user[USERNAME_CACHE_IX_NAME]) {
         // check if value is older than threshold
-        if (now - user[USERNAME_CACHE_UPDATED_AT] > USERNAME_CACHE_MAX_TIME_IN_S && !(userId in userIdUpdateQueue)) {
+        if (now - user[USERNAME_CACHE_IX_UPDATED_AT] > USERNAME_CACHE_MAX_TIME_IN_S && !(userId in userIdUpdateQueue)) {
             // refetch in background; prevent multiple refetches
             // still return old value directly for best performance -> will only be updated when cache is requested the next time
             userIdUpdateQueue[userId] = true;
@@ -551,7 +554,7 @@ async function _getUsername(userId) {
                 delete userIdUpdateQueue[userId];
             })();
         }
-        return user[USERNAME_CACHE_NAME] || userId;
+        return user[USERNAME_CACHE_IX_NAME] || userId;
     } else if (userId in userIdRequestQueue) {
         return new Promise((resolve) => {
             userIdRequestQueue[userId].push(function (username) {
