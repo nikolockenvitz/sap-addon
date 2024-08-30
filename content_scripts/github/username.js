@@ -46,6 +46,15 @@ function initializeGitHubIdQueries() {
     _addQuery(`div#repo-content-pjax-container div.flash.flash-warn div a.text-emphasized.Link--primary`);
     // PR: "Files changed" > "Conversations"
     _addQuery(`a.js-conversations-menu-item div.d-flex img.avatar + span`);
+    // PR hovercard in PR list or when PR is referenced somewhere ("xyz approved, you commented", where xyz might be a list of users)
+    _addQuery(
+        `div.Popover[data-hovercard-target-url*="/pull/"] > div.Popover-message--large.Box div.p-3 > div.border-top div.hovercard-icon + span.lh-condensed`,
+        {
+            hrefException: (element) => {
+                return element.textContent.trim().endsWith(" approved, you commented");
+            },
+        }
+    );
     // hovercard
     _addQuery(`div.Popover-message section + section a.text-bold.Link--primary`);
     // projects (classic): card/issue creator
@@ -337,6 +346,7 @@ function _getUserIdIfElementIsUserId(element) {
                 },
             },
             { prefix: "edited by " },
+            { suffix: " approved, you commented" },
             { suffix: " commented" },
         ]) {
             if (
@@ -384,8 +394,8 @@ function _exceptionForCommitListPRFilesChanged(element, userId) {
     }
     return userId;
 }
-function isUserIdList({ userId, prefix, suffix }) {
-    return userId.includes(" and ") && !prefix && !suffix;
+function isUserIdList({ userId }) {
+    return userId.includes(" and ");
 }
 
 async function _replaceElementsTooltip(element) {
