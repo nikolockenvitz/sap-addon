@@ -151,10 +151,11 @@ function initializeGitHubIdQueries() {
 
     // tooltips (reactions)
     _addTooltipQuery(`tool-tip[for^=reactions--reaction_button_component-]`);
+    _addTooltipQuery(`button[data-testid="all-reactions-button"] ~ span[role="tooltip"]`);
+    // tooltips (PR reviewers)
     _addTooltipQuery(`tool-tip[for^=awaiting-review-]`);
     _addTooltipQuery(`tool-tip[for^=review-status-]`);
     _addTooltipQuery(`tool-tip[for^=codeowner-]`);
-    _addTooltipQuery(`button[data-testid="all-reactions-button"] ~ span[role="tooltip"]`);
     // tooltips: dashboard -> your teams -> popup (team member profile pictures)
     _addTooltipQuery(`div.AvatarStack div.AvatarStack-body.tooltipped`);
     // tooltips of 3+ committers
@@ -447,13 +448,13 @@ async function _getNewTooltipText(originalTooltipText) {
     // (A | A and B | A, B, and C) reacted with ... emoji
     // Assigned to (A | A and B | A, B, and C)
     const tooltipTypes = [
-        { textAfterUserIds: " reacted with " }, 
+        { textAfterUserIds: " reacted with " },
         { textBeforeUserIds: "Assigned to " },
         { textBeforeUserIds: "Awaiting requested review from " },
         { textAfterUserIds: " is a code owner" },
         { textAfterUserIds: " approved these changes" },
         { textAfterUserIds: " requested changes" },
-        { textAfterUserIds: " left review comments" }
+        { textAfterUserIds: " left review comments" },
     ];
     let currentTooltipType;
     for (const tooltipType of tooltipTypes) {
