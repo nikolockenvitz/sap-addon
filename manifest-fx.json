@@ -54,7 +54,9 @@
     "*://app.mural.co/*",
     "*://github.concur.com/*",
     "*://jira.tools.sap/*",
-    "*://app.pluralsight.com/*"
+    "*://app.pluralsight.com/*",
+    "*://common.repositories.cloud.sap/*",
+    "*://eng-srv.accounts.ondemand.com/*"
   ],
   "background": {
     "scripts": [

@@ -7,9 +7,10 @@ const inputIds = [
     "mural-login",
     "pluralsight-login",
     "jira-count-tips",
+    "artifactory-login",
 ];
 const buttonInputIds = ["github-hide-notice-show-all-again"];
-const configInputIds = ["config-email"];
+const configInputIds = ["config-email", "config-user-id"];
 
 let options = {};
 let config = {};

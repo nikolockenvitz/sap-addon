@@ -77,4 +77,34 @@ const dynamicContentScripts = [
             runAt: "document_start",
         },
     },
+    {
+        name: "common.repositories.cloud.sap",
+        cs: {
+            js: [
+                "/utils/browser-setup.js",
+                "/utils/storage.js",
+                "/utils/dom-observer.js",
+                "/utils/option-helper.js",
+                "/utils/dom-helper.js",
+                "/content_scripts/artifactory.js",
+            ],
+            matches: ["*://common.repositories.cloud.sap/*"],
+            runAt: "document_start",
+        },
+    },
+    {
+        name: "eng-srv.accounts.ondemand.com",
+        cs: {
+            js: [
+                "/utils/browser-setup.js",
+                "/utils/storage.js",
+                "/utils/dom-observer.js",
+                "/utils/option-helper.js",
+                "/utils/dom-helper.js",
+                "/content_scripts/artifactory-login-engsrvaccounts.js",
+            ],
+            matches: ["*://eng-srv.accounts.ondemand.com/*"],
+            runAt: "document_start",
+        },
+    },
 ];

@@ -137,6 +137,16 @@
                         </label></p>
                         <p></p>
                     </div>
+                    <div class="section-text disabled" data-dynamic-content-script-name="common.repositories.cloud.sap"
+                        title="Optional: common.repositories.cloud.sap & eng-srv.accounts.ondemand.com (You may enable this first within 'Optional Permissions'). If eng-srv.accounts.ondemand.com is granted, the User ID can be auto-filled - this will take the User ID from this addon's configuration page and fall back to the configured email address.">
+                        <p>Artifactory (JFrog)</p>
+                        <!-- note: we could also split it into 2 checkboxes "click on sso button in jfrog" and "fill user on eng-srv.accounts.ondemand.com" for more control on the user side but should be fine to keep it simple -->
+                        <p><label class="switch">
+                            <input type="checkbox" id="artifactory-login" disabled>
+                            <span class="slider round"></span>
+                        </label></p>
+                        <p></p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -149,10 +159,11 @@
                     <span><span class="arrow arrow-white arrow-larger right"></span></span>
                 </div>
                 <div class="section">
-                    <p class="section-heading">Email Address <span title="Used to log in automatically (Sharepoint, Mural)">ⓘ</span></p>
+                    <p class="section-heading">Email Address <span title="Used for Auto Login when your email address needs to be entered (Microsoft / Sharepoint, Mural, Artifactory)">ⓘ</span></p>
                     <p><input type="email" id="config-email" placeholder="your.email@sap.com" /></p>
 
-                    <p id="debug"></p>
+                    <p class="section-heading">SAP User ID <span title="Used for Auto Login when your SAP User ID needs to be entered (Artifactory)">ⓘ</span></p>
+                    <p><input type="text" id="config-user-id" placeholder="ID" /></p>
                 </div>
                 <div class="section">
                     <p class="footer-text">
