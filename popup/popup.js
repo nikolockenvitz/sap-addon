@@ -7,9 +7,10 @@ const inputIds = [
     "mural-login",
     "pluralsight-login",
     "jira-count-tips",
+    "artifactory-login",
 ];
 const buttonInputIds = ["github-hide-notice-show-all-again"];
-const configInputIds = ["config-email"];
+const configInputIds = ["config-email", "config-user-id"];
 
 let options = {};
 let config = {};
@@ -130,7 +131,7 @@ function initInputs() {
 }
 
 function initModals() {
-    for (const name of ["configuration", "permissions"]) {
+    for (const name of ["auto-login-subpage", "configuration", "permissions"]) {
         const modal = document.getElementById(`modal-${name}`);
         document.getElementById(`btn-show-${name}`).addEventListener("click", function () {
             modal.style.display = "block";
@@ -140,7 +141,7 @@ function initModals() {
             setTimeout(function () {
                 modal.style.display = "none";
                 modal.classList.remove("hide");
-            }, 400); // needs to be equal to what is specified in css animation
+            }, 360); // needs to be equal (or less) to what is specified in css animation
         });
     }
     initPermissionsModal();
