@@ -130,7 +130,7 @@ function initInputs() {
 }
 
 function initModals() {
-    for (const name of ["configuration", "permissions"]) {
+    for (const name of ["auto-login-subpage", "configuration", "permissions"]) {
         const modal = document.getElementById(`modal-${name}`);
         document.getElementById(`btn-show-${name}`).addEventListener("click", function () {
             modal.style.display = "block";

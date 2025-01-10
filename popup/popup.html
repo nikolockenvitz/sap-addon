@@ -64,39 +64,9 @@
             </div>
             <div class="section">
                 <p class="section-heading">Auto Login</p>
-                <div class="section-text" title="sap-my.sharepoint.com, login.microsoftonline.com">
-                    <p>Sharepoint</p>
-                    <p><label class="switch">
-                        <input type="checkbox" id="sharepoint-login" checked>
-                        <span class="slider round"></span>
-                    </label></p>
-                    <p></p>
-                </div>
-                <div class="section-text disabled" data-dynamic-content-script-name="sap.stackenterprise.co"
-                    title="Optional: sap.stackenterprise.co (You may enable this first within 'Optional Permissions')">
-                    <p>Stack Overflow (Stack@SAP)</p>
-                    <p><label class="switch">
-                        <input type="checkbox" id="stackenterprise-login" disabled>
-                        <span class="slider round"></span>
-                    </label></p>
-                    <p></p>
-                </div>
-                <div class="section-text disabled" data-dynamic-content-script-name="app.mural.co"
-                    title="Optional: app.mural.co (You may enable this first within 'Optional Permissions')">
-                    <p>Mural</p>
-                    <p><label class="switch">
-                        <input type="checkbox" id="mural-login" disabled>
-                        <span class="slider round"></span>
-                    </label></p>
-                    <p></p>
-                </div>
-                <div class="section-text disabled" data-dynamic-content-script-name="app.pluralsight.com"
-                    title="Optional: app.pluralsight.com (You may enable this first within 'Optional Permissions')">
-                    <p>Pluralsight</p>
-                    <p><label class="switch">
-                        <input type="checkbox" id="pluralsight-login" checked>
-                        <span class="slider round"></span>
-                    </label></p>
+                <div class="section-text" id="btn-show-auto-login-subpage">
+                    <p>Configure Auto Login Websites</p>
+                    <p><span class="arrow right"></span></p>
                     <p></p>
                 </div>
             </div>
@@ -120,6 +90,53 @@
                         <polyline points="5,5 9,1" />
                     </svg></span></p>
                     <p></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal" id="modal-auto-login-subpage">
+            <div class="modal-content">
+                <div class="section modal-header">
+                    <span id="btn-hide-auto-login-subpage"><span class="arrow arrow-white arrow-larger left"></span></span>
+                    <span>Auto Login</span>
+                    <span><span class="arrow arrow-white arrow-larger right"></span></span>
+                </div>
+                <div class="section">
+                    <div class="section-text" title="sap-my.sharepoint.com, login.microsoftonline.com">
+                        <p>Microsoft / Sharepoint</p>
+                        <p><label class="switch">
+                            <input type="checkbox" id="sharepoint-login" checked>
+                            <span class="slider round"></span>
+                        </label></p>
+                        <p></p>
+                    </div>
+                    <div class="section-text disabled" data-dynamic-content-script-name="sap.stackenterprise.co"
+                        title="Optional: sap.stackenterprise.co (You may enable this first within 'Optional Permissions')">
+                        <p>Stack Overflow (Stack@SAP)</p>
+                        <p><label class="switch">
+                            <input type="checkbox" id="stackenterprise-login" disabled>
+                            <span class="slider round"></span>
+                        </label></p>
+                        <p></p>
+                    </div>
+                    <div class="section-text disabled" data-dynamic-content-script-name="app.mural.co"
+                        title="Optional: app.mural.co (You may enable this first within 'Optional Permissions')">
+                        <p>Mural</p>
+                        <p><label class="switch">
+                            <input type="checkbox" id="mural-login" disabled>
+                            <span class="slider round"></span>
+                        </label></p>
+                        <p></p>
+                    </div>
+                    <div class="section-text disabled" data-dynamic-content-script-name="app.pluralsight.com"
+                        title="Optional: app.pluralsight.com (You may enable this first within 'Optional Permissions')">
+                        <p>Pluralsight</p>
+                        <p><label class="switch">
+                            <input type="checkbox" id="pluralsight-login" checked>
+                            <span class="slider round"></span>
+                        </label></p>
+                        <p></p>
+                    </div>
                 </div>
             </div>
         </div>
