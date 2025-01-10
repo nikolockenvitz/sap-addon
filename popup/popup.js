@@ -141,7 +141,7 @@ function initModals() {
             setTimeout(function () {
                 modal.style.display = "none";
                 modal.classList.remove("hide");
-            }, 400); // needs to be equal to what is specified in css animation
+            }, 360); // needs to be equal (or less) to what is specified in css animation
         });
     }
     initPermissionsModal();

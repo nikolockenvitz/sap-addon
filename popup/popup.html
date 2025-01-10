@@ -14,11 +14,19 @@
     <body class="noselect">
         <div id="popup-content">
             <div class="section">
+                <p class="section-heading">Auto Login</p>
+                <div class="section-text" id="btn-show-auto-login-subpage">
+                    <p>Manage Auto Login Websites</p>
+                    <p><span class="arrow right"></span></p>
+                    <p></p>
+                </div>
+            </div>
+            <div class="section">
                 <p class="section-heading" title="github.wdf.sap.corp, github.tools.sap; Optional: github.concur.com">GitHub</p>
-                <div class="section-text">
-                    <p>Sign In Automatically</p>
+                <div class="section-text" title="Replaces user IDs with people's full name that they configure in their profile">
+                    <p>Show Names</p>
                     <p><label class="switch">
-                        <input type="checkbox" id="github-sign-in" checked>
+                        <input type="checkbox" id="github-show-names" checked>
                         <span class="slider round"></span>
                     </label></p>
                     <p></p>
@@ -40,14 +48,6 @@
                     </label></p>
                     <p></p>
                 </div>
-                <div class="section-text" title="Replaces user IDs with people's full name that they configure in their profile">
-                    <p>Show Names</p>
-                    <p><label class="switch">
-                        <input type="checkbox" id="github-show-names" checked>
-                        <span class="slider round"></span>
-                    </label></p>
-                    <p></p>
-                </div>
             </div>
             <div class="section">
                 <p class="section-heading" title="Optional: jira.tools.sap (You may enable this first within 'Optional Permissions')">SAP Jira</p>
@@ -59,14 +59,6 @@
                         <input type="checkbox" id="jira-count-tips" disabled>
                         <span class="slider round"></span>
                     </label></p>
-                    <p></p>
-                </div>
-            </div>
-            <div class="section">
-                <p class="section-heading">Auto Login</p>
-                <div class="section-text" id="btn-show-auto-login-subpage">
-                    <p>Configure Auto Login Websites</p>
-                    <p><span class="arrow right"></span></p>
                     <p></p>
                 </div>
             </div>
@@ -102,19 +94,28 @@
                     <span><span class="arrow arrow-white arrow-larger right"></span></span>
                 </div>
                 <div class="section">
-                    <div class="section-text" title="sap-my.sharepoint.com, login.microsoftonline.com">
-                        <p>Microsoft / Sharepoint</p>
+                    <div class="section-text disabled" data-dynamic-content-script-name="common.repositories.cloud.sap"
+                        title="Optional: common.repositories.cloud.sap & eng-srv.accounts.ondemand.com (You may enable this first within 'Optional Permissions'). If eng-srv.accounts.ondemand.com is granted, the User ID can be auto-filled - this will take the User ID from this addon's configuration page and fall back to the configured email address.">
+                        <p>Artifactory (JFrog)</p>
+                        <!-- note: we could also split it into 2 checkboxes "click on sso button in jfrog" and "fill user on eng-srv.accounts.ondemand.com" for more control on the user side but should be fine to keep it simple -->
                         <p><label class="switch">
-                            <input type="checkbox" id="sharepoint-login" checked>
+                            <input type="checkbox" id="artifactory-login" disabled>
                             <span class="slider round"></span>
                         </label></p>
                         <p></p>
                     </div>
-                    <div class="section-text disabled" data-dynamic-content-script-name="sap.stackenterprise.co"
-                        title="Optional: sap.stackenterprise.co (You may enable this first within 'Optional Permissions')">
-                        <p>Stack Overflow (Stack@SAP)</p>
+                    <div class="section-text" title="github.wdf.sap.corp, github.tools.sap; Optional: github.concur.com">
+                        <p>GitHub</p>
                         <p><label class="switch">
-                            <input type="checkbox" id="stackenterprise-login" disabled>
+                            <input type="checkbox" id="github-sign-in" checked>
+                            <span class="slider round"></span>
+                        </label></p>
+                        <p></p>
+                    </div>
+                    <div class="section-text" title="sap-my.sharepoint.com, login.microsoftonline.com">
+                        <p>Microsoft 365 / Sharepoint</p>
+                        <p><label class="switch">
+                            <input type="checkbox" id="sharepoint-login" checked>
                             <span class="slider round"></span>
                         </label></p>
                         <p></p>
@@ -137,12 +138,11 @@
                         </label></p>
                         <p></p>
                     </div>
-                    <div class="section-text disabled" data-dynamic-content-script-name="common.repositories.cloud.sap"
-                        title="Optional: common.repositories.cloud.sap & eng-srv.accounts.ondemand.com (You may enable this first within 'Optional Permissions'). If eng-srv.accounts.ondemand.com is granted, the User ID can be auto-filled - this will take the User ID from this addon's configuration page and fall back to the configured email address.">
-                        <p>Artifactory (JFrog)</p>
-                        <!-- note: we could also split it into 2 checkboxes "click on sso button in jfrog" and "fill user on eng-srv.accounts.ondemand.com" for more control on the user side but should be fine to keep it simple -->
+                    <div class="section-text disabled" data-dynamic-content-script-name="sap.stackenterprise.co"
+                        title="Optional: sap.stackenterprise.co (You may enable this first within 'Optional Permissions')">
+                        <p>Stack Overflow (Stack@SAP)</p>
                         <p><label class="switch">
-                            <input type="checkbox" id="artifactory-login" disabled>
+                            <input type="checkbox" id="stackenterprise-login" disabled>
                             <span class="slider round"></span>
                         </label></p>
                         <p></p>
