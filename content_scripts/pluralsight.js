@@ -3,9 +3,9 @@ const pluralsight = {
         mainUrlPath: "/id",
         loginUrlPath: "/id/signin/sso",
         optionName: "pluralsight-login",
-        ssoOptionQuery: "a[href^='/id/signin/sso']",
+        ssoOptionQuery: "form#passwordSignInForm + .links a[href^='/id/signin/sso']",
         inputField: "#Alias",
-        signInBtn: ".psds-button",
+        signInBtn: ".sso-form form button.psds-button--appearance-primary[type='submit']",
     },
 };
 
