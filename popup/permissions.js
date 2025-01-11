@@ -3,7 +3,7 @@ function initPermissionsModal() {
     const templ = containerPermissionsDomains.querySelector("template");
     const contentScriptCurrentSelectionStatus = {};
     const contentScriptOriginalSelectionStatus = {};
-    for (const dynamicContentScript of dynamicContentScripts.sort((cs1, cs2) => cs1.name.localeCompare(cs2.name))) {
+    for (const dynamicContentScript of dynamicContentScripts) {
         const clone = templ.content.cloneNode(true);
         const domainTextNode = clone.querySelector("[data-template-id=domain]");
         domainTextNode.textContent = dynamicContentScript.name;
