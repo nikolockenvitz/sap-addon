@@ -19,7 +19,7 @@
     ·
     <a href="#contribute">Contribute</a>
     ·
-    <a href="https://github.com/nikolockenvitz/sap-addon/tree/master/docs#readme">Documentation</a>
+    <a href="https://github.com/nikolockenvitz/sap-addon/tree/main/docs#readme">Documentation</a>
   </p>
 </div>
 
@@ -49,14 +49,14 @@ Updates are handled automatically.
 
 ## Features
 
-* **Auto Login** on GitHub, Sharepoint, Stack Overflow, Mural, and Pluralsight
-* Showing peoples' **full names on GitHub** instead of user IDs
-* Find a full list of features with detailed descriptions <a href="https://github.com/nikolockenvitz/sap-addon/tree/master/docs#features">here</a>
+* **Auto Login** on GitHub, Sharepoint, Stack Overflow, Mural, and some other pages
+* Showing people's **full names on GitHub** instead of user IDs
+* Find a full list of features with detailed descriptions <a href="https://github.com/nikolockenvitz/sap-addon/tree/main/docs#features">here</a>
 
 All features are enabled by default but can be disabled in the settings popup.
 Click on the addon's icon in your browser's toolbar to open the popup (see screenshots below).
 After successful installation, you may want to configure everything and grant the optional permissions.
-Learn more about this <a href="https://github.com/nikolockenvitz/sap-addon/tree/master/docs#optional-permissions">here</a>.
+Learn more about this <a href="https://github.com/nikolockenvitz/sap-addon/tree/main/docs#optional-permissions">here</a>.
 
 <img src="docs/screenshot-1.21-settings-popup.png" width="320" alt="Screenshot of Settings Popup" title="Screenshot of Settings Popup" /> <img src="docs/screenshot-1.21-settings-popup-configuration.png" width="320" alt="Screenshot of Configuration in Popup" title="Screenshot of Configuration in Popup" />
 
@@ -64,4 +64,4 @@ Learn more about this <a href="https://github.com/nikolockenvitz/sap-addon/tree/
 
 Contributions of any kind are highly appreciated - code, improvement ideas, bug reports, or feature requests.
 If you want to help, just contact me or open a pull request.
-Check out <a href="https://github.com/nikolockenvitz/sap-addon/blob/master/CONTRIBUTING.md#readme">CONTRIBUTING.md</a> for more details and local setup instructions.
+Check out <a href="https://github.com/nikolockenvitz/sap-addon/blob/main/CONTRIBUTING.md#readme">CONTRIBUTING.md</a> for more details and local setup instructions.

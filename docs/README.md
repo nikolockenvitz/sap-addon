@@ -17,10 +17,11 @@
 
 * works on following sites:
   * GitHub
-  * Sharepoint
+  * Sharepoint, Outlook (Microsoft 365)
   * Stack Overflow (Stack@SAP)
   * Mural
   * Pluralsight
+  * Artifactory (JFrog)
 * addon just clicks the login button to trigger the SSO process
 * on some pages (Sharepoint, Mural), you need to enter your email address -> open the settings popup, go to *Configuration*, and enter your email address there to let the addon autofill it when required
 
@@ -58,7 +59,8 @@ This is because of permissions and requires you to manually grant the correspond
 ## Configuration
 
 At the bottom of the settings popup, you can navigate to *Configuration*.
-Enter your email address (used for auto login on Sharepoint and Mural) there.
+You can enter your email address and SAP User ID there.
+This is used for the auto login feature (for pages where you need to enter email / user ID).
 The data is auto-saved and only stored in your browser's local storage.
 
 <img src="./screenshot-1.21-settings-popup-configuration.png" width="320" alt="Screenshot of Configuration in Popup" title="Screenshot of Configuration in Popup" />
