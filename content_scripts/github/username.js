@@ -84,6 +84,8 @@ function initializeGitHubIdQueries() {
             hrefException: true,
         }
     );
+    // projects (beta)L splice by assignees
+    _addQuery(`projects-v2 div[data-testid^="slicer-panel"] div > ul > li span h3"`, { hrefException: true });
     // projects (beta): card assignee tooltip
     _addTooltipQuery(`projects-v2 div[data-testid="board-card-header"] figure img[aria-describedby]`, { ariaDescribedbyRef: true });
     // projects (beta): roadmap assignee tooltip
