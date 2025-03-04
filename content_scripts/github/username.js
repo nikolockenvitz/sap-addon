@@ -25,6 +25,9 @@ function initializeGitHubIdQueries() {
     _addQuery(`.user-mention`, { userMention: true });
     _addQuery(`.commit-author.user-mention`, { hrefException: true });
     _addQuery(`.author[data-test-selector="pr-timeline-events-commit-actor-name"]`, { hrefException: true });
+    // commit author (last commit / commit history; older GHE)
+    _addQuery(`div[data-testid="author-avatar"] > a[data-testid="avatar-icon-link"] + a[data-hovercard-url^="/users/"]`);
+    _addQuery(`div[data-testid="author-link"] > a[data-hovercard-url^="/users/"]`);
     // commit author of last commit not linked to a GH account (single file view, box with info above actual file content)
     _addQuery(`div.Box span.text-bold.Link--primary`, { hrefException: true });
     // several places where username can be found (hovering opens card with profile info)
