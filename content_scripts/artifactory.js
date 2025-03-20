@@ -4,7 +4,7 @@ const artifactory = {
         urlPaths: ["/ui/login", "/ui/login/"],
         optionName: "artifactory-login",
         samlSsoBtnQuery: "div.additional-signin button.login-provider-button",
-        queryDistinctElementAfterLogin: "span.welcome-container",
+        queryDistinctElementAfterLogin: "div.userDropDown",
         // note: for the internal instance, we could also check for div.login-container
     },
 };
