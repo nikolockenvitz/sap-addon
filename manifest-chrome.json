@@ -59,7 +59,8 @@
     "*://jira.tools.sap/*",
     "*://app.pluralsight.com/*",
     "*://common.repositories.cloud.sap/*",
-    "*://eng-srv.accounts.ondemand.com/*"
+    "*://eng-srv.accounts.ondemand.com/*",
+    "*://dashboard.dwc.tools.sap/*"
   ],
   "background": {
     "service_worker": "background_scripts/chrome-background.js"

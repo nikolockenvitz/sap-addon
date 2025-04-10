@@ -44,6 +44,21 @@ const dynamicContentScripts = [
         },
     },
     {
+        name: "dwc.tools.sap",
+        cs: {
+            js: [
+                "/utils/browser-setup.js",
+                "/utils/storage.js",
+                "/utils/dom-observer.js",
+                "/utils/option-helper.js",
+                "/utils/dom-helper.js",
+                "/content_scripts/dwc.js",
+            ],
+            matches: ["*://dashboard.dwc.tools.sap/*"],
+            runAt: "document_start",
+        },
+    },
+    {
         name: "eng-srv.accounts.ondemand.com",
         cs: {
             js: [
