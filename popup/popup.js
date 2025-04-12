@@ -8,6 +8,7 @@ const inputIds = [
     "pluralsight-login",
     "jira-count-tips",
     "artifactory-login",
+    "dwc-login",
 ];
 const buttonInputIds = ["github-hide-notice-show-all-again"];
 const configInputIds = ["config-email", "config-user-id"];

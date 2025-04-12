@@ -3,7 +3,6 @@ const dwc = {
         urlPath: "/login",
         optionName: "dwc-login",
         query: "#amalthea-login-button",
-        queryDistinctElementAfterLogin: "#navigationLayout > ui5-shellbar",
     },
 };
 
@@ -12,6 +11,7 @@ function executeLogin() {
         domObserver.registerCallbackFunction(dwc.login.optionName, function (_mutations, _observer) {
             getSignInButtonAndClick();
         });
+        getSignInButtonAndClick();
     });
 }
 function getSignInButtonAndClick() {
@@ -20,10 +20,8 @@ function getSignInButtonAndClick() {
         if (signInBtn && signInBtn.click) {
             signInBtn.click();
             stopAutoSignIn();
-        } else if (document.querySelector(dwc.login.queryDistinctElementAfterLogin) !== null) {
-            stopAutoSignIn();
         }
-    } catch { }
+    } catch {}
 }
 
 function stopAutoSignIn() {
@@ -34,7 +32,6 @@ let options = {};
 
 async function main() {
     if (url.pathname === dwc.login.urlPath) {
-        console.log(url.pathname, dwc.login.urlPath);
         options = await loadFromStorage("options");
         if (isEnabled(dwc.login.optionName)) {
             executeLogin();
