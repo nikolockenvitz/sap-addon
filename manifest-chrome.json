@@ -24,7 +24,8 @@
         "content_scripts/github/sign-in.js",
         "content_scripts/github/hide-notice-box.js",
         "content_scripts/github/username.js",
-        "content_scripts/github/main.js"
+        "content_scripts/github/main.js",
+        "content_scripts/github/renovate-dashboard.js"
       ],
       "run_at": "document_start"
     },
