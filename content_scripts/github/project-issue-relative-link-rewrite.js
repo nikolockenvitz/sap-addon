@@ -1,47 +1,25 @@
-// wait until page is loaded
-window.onload = function() {
-    // page load is not enough, because the side panel is loaded dynamically
-    const observer = new MutationObserver((mutationsList, observer) => {
-        // wait until the side panel is loaded
-        const targetElement = document.querySelector('[data-testid="comment-body"] a');
-        if (targetElement) {
-            // do not disconnect, because the user can change to another dynamic side-panel
-            //observer.disconnect(); 
-            // call business logic to replace relative urls with absolute urls
-            replaceUrl();
-        }
-    });
-    observer.observe(document.body, { childList: true, subtree: true });
-}
-
-github.renovateRewrite = {
-    optionName: "github-rewrite-renovate",
+github.projectIssueRelativeLinkRewrite = {
+    optionName: "github-project-rewrite-issue-rel-links",
     queryCommentBodyLink: '[data-testid="comment-body"] a',
     queryCommentBody: '[data-testid="comment-body"]',
-    querySidePanelTitle: '[data-testid="side-panel-title-content"]'
+    querySidePanelTitle: '[data-testid="side-panel-title-content"]',
 };
 
-function rewriteRenovateLinks() {
+function startRewritingRelativeLinksInProjectIssues() {
     executeFunctionAfterPageLoaded(function () {
-        replaceUrl();
+        replaceApplicableRelativeUrls();
     });
-
-    domObserver.registerCallbackFunction(github.renovateRewrite.optionName, function (mutations, _observer) {
-        for (const { target } of mutations) {
-            // check whether the target element is a comment body
-            if (target.matches(github.renovateRewrite.queryCommentBodyLink)) {
-                replaceUrl();
-            }
-        }
+    domObserver.registerCallbackFunction(github.projectIssueRelativeLinkRewrite.optionName, () => {
+        replaceApplicableRelativeUrls();
     });
 }
 
-function stopRewriteRenovateLinks() {
+function stopRewritingRelativeLinksInProjectIssues() {
     domObserver.disconnect();
-    domObserver.unregisterCallbackFunction(github.renovateRewrite.optionName);
+    domObserver.unregisterCallbackFunction(github.projectIssueRelativeLinkRewrite.optionName);
 }
 
-function replaceUrl() {
+function replaceApplicableRelativeUrls() {
     // check whether we are on a github projects page
     if (!window.location.href.includes("/projects/")) {
         return;
@@ -52,31 +30,30 @@ function replaceUrl() {
         return;
     }
     // select the comment body of the side panel
-    const targetElement = document.querySelector(github.renovateRewrite.queryCommentBody);
+    const targetElement = document.querySelector(github.projectIssueRelativeLinkRewrite.queryCommentBody);
     if (targetElement) {
-        const anchors = targetElement.querySelectorAll('a');
+        const anchors = targetElement.querySelectorAll("a");
         for (const anchor of anchors) {
-            // check whether the anchor element is a link to a pull request
-            // and whether it is not already an absolute url
-            if (anchor.href.includes('/pull/') && !anchor.href.includes(baseUrl)) {
-                // read existing url
-                const oldUrl = anchor.getAttribute('href');
-                // extract the part of the pull request, e.g. /pull/1234
-                const pullUrl = oldUrl.substring(oldUrl.indexOf('/pull/'), oldUrl.length)
-                // concantenate the base url with the pull request url
-                const newUrl = baseUrl + pullUrl;
+            // check if the anchor element is a relative link (e.g., "../pull/123")
+            // but we need to access the attribute directly (coz anchor.href is full/absolute link as interpreted by browser)
+            const href = anchor.getAttribute("href");
+            if (href.startsWith("../")) {
+                // original issue URL is "<baseUrl>/issues/<#i>"
+                // thus, in the repo, "../<x>" would become "<baseUrl>/<x>"
+                const x = href.substring(3);
+                const newUrl = baseUrl + "/" + x;
                 // set the new url to the anchor element
-                anchor.setAttribute('href', newUrl);
+                anchor.setAttribute("href", newUrl);
             }
         }
     }
 }
 
 function getBaseUrlOfRepo() {
-    const targetElement = document.querySelector(github.renovateRewrite.querySidePanelTitle);
+    const targetElement = document.querySelector(github.projectIssueRelativeLinkRewrite.querySidePanelTitle);
     let href = null;
     if (targetElement) {
-        const anchorElement = targetElement.querySelector('a');
+        const anchorElement = targetElement.querySelector("a");
         if (anchorElement) {
             href = anchorElement.href;
         }
@@ -84,7 +61,7 @@ function getBaseUrlOfRepo() {
 
     let baseUrl = null;
     if (null != href) {
-        baseUrl = href.substring(0, href.indexOf('/issues'));
+        baseUrl = href.substring(0, href.indexOf("/issues"));
     }
 
     return baseUrl;
