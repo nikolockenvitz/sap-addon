@@ -6,6 +6,7 @@
   - [Auto Login](#auto-login)
   - [GitHub - People's Full Names Instead of User IDs](#github---peoples-full-names-instead-of-user-ids)
   - [GitHub - Hiding Yellow Announcement Banners](#github---hiding-yellow-announcement-banners)
+  - [GitHub - Rewrite Relative Links (GitHub Projects)](#github---rewrite-relative-links-github-projects)
   - [SAP Jira - Count Tips](#sap-jira---count-tips)
 - [Settings Popup](#settings-popup)
 - [Configuration](#configuration)
@@ -36,6 +37,11 @@
 * adds buttons to yellow announcement banners to dismiss a particular message
 * new messages will always appear
 * if you dismissed a message by accident, you can show all banners again by clicking on the respective button in the settings popup
+
+### GitHub - Rewrite Relative Links (GitHub Projects)
+
+* when relative links are used in issues (e.g., Renovate Bot uses relative links such as `../pull/123` in its Dependency Dashboard instead of absolute URLs), those links will not work (404) when viewing the issue within a GitHub Project (v2) side panel
+* to fix this behavior, relative links (starting with `../`) are rewritten to absolute URLs
 
 ### SAP Jira - Count Tips
 
