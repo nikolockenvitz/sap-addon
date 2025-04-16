@@ -2,6 +2,7 @@ const inputIds = [
     "github-sign-in",
     "github-hide-notice-overlay",
     "github-show-names",
+    "github-rewrite-renovate",
     "sharepoint-login",
     "stackenterprise-login",
     "mural-login",
