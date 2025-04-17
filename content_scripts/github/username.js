@@ -158,6 +158,10 @@ function initializeGitHubIdQueries() {
     _addQuery(`p.org-user-notice-content > strong:first-child`, { hrefException: true }); // as an owner, xyz has ...
     // search: issues (xyz opened on ...) and commits (xyz committed ...)
     _addQuery(`div.issue-list-item div.text-small a.text-bold:not([data-hovercard-type="repository"])`);
+    // release contributors
+    _addQuery(`section div.col-md-9 > div.Box > div.Box-footer > div > h3 + ul + div.color-fg-muted`, { hrefException: true });
+    // github app developer on app page
+    _addQuery(`div.Layout-sidebar li > img.avatar.avatar-user + a`);
 
     // tooltips (reactions)
     _addTooltipQuery(`tool-tip[for^=reactions--reaction_button_component-]`);
@@ -513,8 +517,8 @@ async function getUsernamesFromMultipleUserIdsString(userIds) {
         for (const userId of firstUserIds.split(", ")) {
             usernamePromises.push(_getUsername(userId));
         }
-        // lastUserId should not match something like "5 more" (e.g. in A, ..., B, and 5 more)
-        if (!new RegExp(`\\d+ more`).exec(lastUserId)) {
+        // lastUserId should not match something like "5 more" (e.g. in A, ..., B, and 5 more) or "2 other contributors" (e.g. in release contributors: A, B, and 2 other contributors)
+        if (new RegExp(`^\\d+ (more|other contributors)$`).exec(lastUserId) === null) {
             usernamePromises.push(_getUsername(lastUserId));
         } else {
             usernamePromises.push(Promise.resolve(lastUserId));
