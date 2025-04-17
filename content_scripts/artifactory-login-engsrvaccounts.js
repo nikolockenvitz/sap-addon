@@ -3,7 +3,10 @@ const artifactoryEngSrvAccounts = {
         optionName: "artifactory-login",
         configNameUserId: "config-user-id",
         configNameEmailAddress: "config-email",
-        urlPath: "/saml2/idp/sso/eng-srv.accounts.ondemand.com",
+        urlHostPaths: [
+            "eng-srv.accounts.ondemand.com/saml2/idp/sso/eng-srv.accounts.ondemand.com",
+            "eng-srv.accounts400.ondemand.com/oauth2/authorize",
+        ],
         queryUserIdInput: "input#j_username[placeholder='User ID']",
         queryBtnContinue: "button#logOnFormSubmit",
     },
@@ -43,7 +46,8 @@ let options = {};
 let config = {};
 
 async function main() {
-    if (url.pathname === artifactoryEngSrvAccounts.login.urlPath) {
+    const urlHostPath = url.host + url.pathname;
+    if (artifactoryEngSrvAccounts.login.urlHostPaths.includes(urlHostPath)) {
         [options, config] = await Promise.all([loadFromStorage("options"), loadFromStorage("config")]);
 
         if (isEnabled(artifactoryEngSrvAccounts.login.optionName)) {

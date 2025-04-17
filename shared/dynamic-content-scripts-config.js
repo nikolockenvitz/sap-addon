@@ -74,6 +74,20 @@ const dynamicContentScripts = [
         },
     },
     {
+        name: "eng-srv.accounts400.ondemand.com",
+        cs: {
+            js: [
+                "/utils/browser-setup.js",
+                "/utils/storage.js",
+                "/utils/option-helper.js",
+                "/utils/dom-helper.js",
+                "/content_scripts/artifactory-login-engsrvaccounts.js",
+            ],
+            matches: ["*://eng-srv.accounts400.ondemand.com/*"],
+            runAt: "document_start",
+        },
+    },
+    {
         name: "github.concur.com",
         cs: {
             js: [

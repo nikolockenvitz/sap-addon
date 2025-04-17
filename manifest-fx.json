@@ -58,6 +58,7 @@
     "*://app.pluralsight.com/*",
     "*://common.repositories.cloud.sap/*",
     "*://eng-srv.accounts.ondemand.com/*",
+    "*://eng-srv.accounts400.ondemand.com/*",
     "*://dashboard.dwc.tools.sap/*"
   ],
   "background": {
