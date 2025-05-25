@@ -15,7 +15,6 @@ function startRewritingRelativeLinksInProjectIssues() {
 }
 
 function stopRewritingRelativeLinksInProjectIssues() {
-    domObserver.disconnect();
     domObserver.unregisterCallbackFunction(github.projectIssueRelativeLinkRewrite.optionName);
 }
 
