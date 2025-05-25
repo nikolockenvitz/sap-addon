@@ -14,6 +14,9 @@
         "*://github.wdf.sap.corp/*",
         "*://github.tools.sap/*"
       ],
+      "exclude_matches": [
+        "*://github.wdf.sap.corp/pages/*"
+      ],
       "js": [
         "utils/browser-setup.js",
         "utils/storage.js",
