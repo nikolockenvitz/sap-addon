@@ -69,14 +69,32 @@ function initializeGitHubIdQueries() {
     _addQuery(`projects-v2 header div > figure ~ address > span:first-child`, { hrefException: true });
     // projects (beta): item/issue details: most-recent description editor + comment author
     _addQuery(`projects-v2 section article > header address[data-testid="author-login"]`, { hrefException: true });
+    _addQuery(`projects-v2 a[data-testid="issue-body-header-author"]`);
+    // projects (beta): issue details: comment edited by + menu with edits
+    _addQuery(`projects-v2 div[data-testid="issue-body"] div:has(h3) + div > div > span > a`);
+    _addQuery(
+        `projects-v2 div[class^="Overlay__"] ul[role="menu"] > li[role="none"] > ul[role="group"] > li[role="menuitem"] > span:has(img[data-testid="github-avatar"]) + div[data-component="ActionList.Item--DividerContainer"] > div span[id$="--label"] > span`,
+        { hrefException: true }
+    );
     // projects (beta): item/issue details: assignees
     _addQuery(`projects-v2 section div[data-testid="sidebar-field-Assignees"] img + span`, {
         hrefException: true,
     });
+    _addQuery(
+        `projects-v2 div[data-testid="sidebar-section"] ul > li > a[data-hovercard-url] > span:has(img[data-testid="github-avatar"]) + div[data-component="ActionList.Item--DividerContainer"] > span > div[data-testid="issue-assignees"]`
+    );
     // projects (beta): item/issue details: assignees ("A and B", ..., "A, B, C, and D", ...)
     _addQuery(`projects-v2 section div[data-testid="sidebar-field-Assignees"] div > span[class*="AvatarStack"] + span`, {
         hrefException: true,
     });
+    // projects (beta): issue details: timeline events (user mentions, added labels/assignees, etc.)
+    _addQuery(
+        `projects-v2 div[data-testid="issue-timeline-front"] > section[aria-label="Events"] div.Timeline-Item a[data-testid="actor-link"][data-hovercard-url^="/users/"]`
+    );
+    // projects (beta): issue details: timeline events: person that has been assigned
+    _addQuery(
+        `projects-v2 div[data-testid="issue-timeline-front"] > section[aria-label="Events"] div.Timeline-Item a[data-hovercard-url^="/users/"][class*="assignees-module__assigneeLink--"]`
+    );
     // projects (beta): table assignees column
     _addQuery(`projects-v2 div[data-testid^="TableCell"][data-testid$="column: Assignees}"] img + span`, {
         hrefException: true,
@@ -243,6 +261,7 @@ function showGitHubIdsAgain() {
             element.textContent = originalTooltipContent;
         } else if (tooltipType === "aria-label") {
             element.setAttribute("aria-label", originalTooltipContent);
+            element.setAttribute("data-visible-text", originalTooltipContent);
         } else if (tooltipType === "title") {
             element.setAttribute("title", originalTooltipContent);
         }
@@ -452,6 +471,7 @@ async function _replaceElementsTooltip(element) {
         element.textContent = replacedTooltipText;
     } else if (tooltipType === "aria-label") {
         element.setAttribute("aria-label", replacedTooltipText);
+        element.setAttribute("data-visible-text", replacedTooltipText);
     } else if (tooltipType === "title") {
         element.setAttribute("title", replacedTooltipText);
     }

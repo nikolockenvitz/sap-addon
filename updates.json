@@ -59,9 +59,9 @@
           "update_link": "https://nikolockenvitz.github.io/sap-addon/xpi/sap_addon-1.24.0.xpi",
           "update_hash": "sha256:94cab805f55c684ac9f6c638c8794ef4496b3afb281f767fc26475d1eb1364ba"
         }, {
-          "version": "1.25.2",
-          "update_link": "https://nikolockenvitz.github.io/sap-addon/xpi/sap_addon-1.25.2.xpi",
-          "update_hash": "sha256:662b0fc1815662c86c9f15c866fdb3f18373e5ade737f3df36ab579d845667fb"
+          "version": "1.25.3",
+          "update_link": "https://nikolockenvitz.github.io/sap-addon/xpi/sap_addon-1.25.3.xpi",
+          "update_hash": "sha256:a115c39cfa002acedce144b64562206e7abaa2629cbe488e2a60ff05debfd982"
         }
       ]
     }
