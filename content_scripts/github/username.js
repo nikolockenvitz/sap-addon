@@ -67,9 +67,12 @@ function initializeGitHubIdQueries() {
     _addQuery(`div.js-project-activity-pane.Details ul.js-project-activity-container li p a.text-bold`, { userMention: true });
     // projects (beta): item/issue details: creator of this item
     _addQuery(`projects-v2 header div > figure ~ address > span:first-child`, { hrefException: true });
-    // projects (beta): item/issue details: most-recent description editor + comment author
+    // projects (beta): item details: most-recent description editor
     _addQuery(`projects-v2 section article > header address[data-testid="author-login"]`, { hrefException: true });
+    // projects (beta): issue details: comment author (creator)
     _addQuery(`projects-v2 a[data-testid="issue-body-header-author"]`);
+    // projects (beta): issue details: comment author (comments)
+    _addQuery(`projects-v2 div[data-testid="comment-header-left-side-items"] a[data-testid="avatar-link"]`);
     // projects (beta): issue details: comment edited by + menu with edits
     _addQuery(`projects-v2 div[data-testid="issue-body"] div:has(h3) + div > div > span > a`);
     _addQuery(
