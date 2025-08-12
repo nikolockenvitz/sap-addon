@@ -54,7 +54,10 @@ function initializeGitHubIdQueries() {
         `div.Popover[data-hovercard-target-url*="/pull/"] > div.Popover-message--large.Box div.p-3 > div.border-top div.hovercard-icon + span.lh-condensed`,
         {
             hrefException: (element) => {
-                return element.textContent.trim().endsWith(" approved, you commented");
+                return (
+                    element.textContent.trim().endsWith(" approved, you commented") ||
+                    element.textContent.trim().endsWith(" requested changes, you commented")
+                );
             },
         }
     );
@@ -186,7 +189,7 @@ function initializeGitHubIdQueries() {
 
     // tooltips (reactions)
     _addTooltipQuery(`tool-tip[for^=reactions--reaction_button_component-]`);
-    _addTooltipQuery(`button[data-testid="all-reactions-button"] ~ span[role="tooltip"]`);
+    _addTooltipQuery(`button[aria-label="All reactions"] ~ span[role="tooltip"]`);
     // tooltips (PR reviewers)
     _addTooltipQuery(`tool-tip[for^=awaiting-review-]`);
     _addTooltipQuery(`tool-tip[for^=review-status-]`);
@@ -387,6 +390,7 @@ function _getUserIdIfElementIsUserId(element) {
             },
             { prefix: "edited by " },
             { suffix: " approved, you commented" },
+            { suffix: " requested changes, you commented" },
             { suffix: " commented" },
         ]) {
             if (
