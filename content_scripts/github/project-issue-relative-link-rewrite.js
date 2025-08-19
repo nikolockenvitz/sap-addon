@@ -12,7 +12,7 @@ function startRewritingRelativeLinksInProjectIssues() {
         replaceApplicableRelativeUrls();
     });
     domObserver.registerCallbackFunction(github.projectIssueRelativeLinkRewrite.optionName, () => {
-        replaceApplicableRelativeUrls(); 
+        replaceApplicableRelativeUrls();
     });
 }
 
@@ -40,20 +40,11 @@ function replaceApplicableRelativeUrls() {
             // check if the anchor element is a relative link (e.g., "../pull/123")
             // but we need to access the attribute directly (coz anchor.href is full/absolute link as interpreted by browser)
             const href = anchor.getAttribute("href");
-            let newUrl = null;
             if (href.startsWith("../")) {
                 // original issue URL is "<baseUrl>/issues/<#i>"
                 // thus, in the repo, "../<x>" would become "<baseUrl>/<x>"
                 const x = href.substring(3);
-                newUrl = baseUrl + "/" + x;
-            }
-            // there was no relative link, so just check out for pull request links
-            if (null == newUrl && href.search("/pull/") > 0) {
-                let parts = href.split("/pull/");
-                newUrl = baseUrl + "/pull/" + parts[1];
-            }
-
-            if (newUrl) {
+                const newUrl = baseUrl + "/" + x;
                 // set the new url to the anchor element
                 anchor.setAttribute("href", newUrl);
             }
