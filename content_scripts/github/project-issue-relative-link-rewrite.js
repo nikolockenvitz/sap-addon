@@ -54,11 +54,9 @@ function replaceApplicableRelativeUrls() {
 
 function getBaseUrlOfRepo() {
     let href = null;
-    let targetElement = document.querySelector(github.projectIssueRelativeLinkRewrite.querySidePanelTitle);
-    if (null == targetElement) { 
-        // fallback, if query for side panel title did fail
-        targetElement = document.querySelector(github.projectIssueRelativeLinkRewrite.querySidePanelTitle2);
-    }
+    const targetElement = 
+        document.querySelector(github.projectIssueRelativeLinkRewrite.querySidePanelTitle) ??
+        document.querySelector(github.projectIssueRelativeLinkRewrite.querySidePanelTitle2);
     if (targetElement) {
         const anchorElement = targetElement.querySelector("a");
         if (anchorElement) {
