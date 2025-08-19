@@ -31,11 +31,9 @@ function replaceApplicableRelativeUrls() {
         return;
     }
     // select the comment body of the side panel
-    let targetElement = document.querySelector(github.projectIssueRelativeLinkRewrite.queryCommentBody);
-    if (null == targetElement) {
-        targetElement = document.querySelector(github.projectIssueRelativeLinkRewrite.queryIssueBody);
-    }
-
+    const targetElement =
+        document.querySelector(github.projectIssueRelativeLinkRewrite.queryCommentBody) ??
+        document.querySelector(github.projectIssueRelativeLinkRewrite.queryIssueBody);
     if (targetElement) {
         const anchors = targetElement.querySelectorAll("a");
         for (const anchor of anchors) {
