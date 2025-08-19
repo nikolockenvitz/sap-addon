@@ -2,7 +2,9 @@ github.projectIssueRelativeLinkRewrite = {
     optionName: "github-project-rewrite-issue-rel-links",
     queryCommentBodyLink: '[data-testid="comment-body"] a',
     queryCommentBody: '[data-testid="comment-body"]',
+    queryIssueBody: '[data-testid="issue-body"]',
     querySidePanelTitle: '[data-testid="side-panel-title-content"]',
+    querySidePanelTitle2: '[data-component="PH_Title"]'
 };
 
 function startRewritingRelativeLinksInProjectIssues() {
@@ -10,7 +12,7 @@ function startRewritingRelativeLinksInProjectIssues() {
         replaceApplicableRelativeUrls();
     });
     domObserver.registerCallbackFunction(github.projectIssueRelativeLinkRewrite.optionName, () => {
-        replaceApplicableRelativeUrls();
+        replaceApplicableRelativeUrls(); 
     });
 }
 
@@ -29,18 +31,31 @@ function replaceApplicableRelativeUrls() {
         return;
     }
     // select the comment body of the side panel
-    const targetElement = document.querySelector(github.projectIssueRelativeLinkRewrite.queryCommentBody);
+    let targetElement = document.querySelector(github.projectIssueRelativeLinkRewrite.queryCommentBody);
+    if (null == targetElement) {
+        targetElement = document.querySelector(github.projectIssueRelativeLinkRewrite.queryIssueBody);
+    }
+
     if (targetElement) {
         const anchors = targetElement.querySelectorAll("a");
         for (const anchor of anchors) {
             // check if the anchor element is a relative link (e.g., "../pull/123")
             // but we need to access the attribute directly (coz anchor.href is full/absolute link as interpreted by browser)
             const href = anchor.getAttribute("href");
+            let newUrl = null;
             if (href.startsWith("../")) {
                 // original issue URL is "<baseUrl>/issues/<#i>"
                 // thus, in the repo, "../<x>" would become "<baseUrl>/<x>"
                 const x = href.substring(3);
-                const newUrl = baseUrl + "/" + x;
+                newUrl = baseUrl + "/" + x;
+            }
+            // there was no relative link, so just check out for pull request links
+            if (null == newUrl && href.search("/pull/") > 0) {
+                let parts = href.split("/pull/");
+                newUrl = baseUrl + "/pull/" + parts[1];
+            }
+
+            if (newUrl) {
                 // set the new url to the anchor element
                 anchor.setAttribute("href", newUrl);
             }
@@ -49,8 +64,12 @@ function replaceApplicableRelativeUrls() {
 }
 
 function getBaseUrlOfRepo() {
-    const targetElement = document.querySelector(github.projectIssueRelativeLinkRewrite.querySidePanelTitle);
     let href = null;
+    let targetElement = document.querySelector(github.projectIssueRelativeLinkRewrite.querySidePanelTitle);
+    if (null == targetElement) { 
+        // fallback, if query for side panel title did fail
+        targetElement = document.querySelector(github.projectIssueRelativeLinkRewrite.querySidePanelTitle2);
+    }
     if (targetElement) {
         const anchorElement = targetElement.querySelector("a");
         if (anchorElement) {
