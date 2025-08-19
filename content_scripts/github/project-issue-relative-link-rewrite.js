@@ -32,8 +32,8 @@ function replaceApplicableRelativeUrls() {
     }
     // select the comment body of the side panel
     const targetElement =
-        document.querySelector(github.projectIssueRelativeLinkRewrite.queryCommentBody) ??
-        document.querySelector(github.projectIssueRelativeLinkRewrite.queryIssueBody);
+        document.querySelector(github.projectIssueRelativeLinkRewrite.queryIssueBody) ??
+        document.querySelector(github.projectIssueRelativeLinkRewrite.queryCommentBody):
     if (targetElement) {
         const anchors = targetElement.querySelectorAll("a");
         for (const anchor of anchors) {
@@ -55,8 +55,8 @@ function replaceApplicableRelativeUrls() {
 function getBaseUrlOfRepo() {
     let href = null;
     const targetElement = 
-        document.querySelector(github.projectIssueRelativeLinkRewrite.querySidePanelTitle) ??
-        document.querySelector(github.projectIssueRelativeLinkRewrite.querySidePanelTitle2);
+        document.querySelector(github.projectIssueRelativeLinkRewrite.querySidePanelTitle2) ??
+        document.querySelector(github.projectIssueRelativeLinkRewrite.querySidePanelTitle);
     if (targetElement) {
         const anchorElement = targetElement.querySelector("a");
         if (anchorElement) {
