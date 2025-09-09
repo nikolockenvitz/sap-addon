@@ -65,8 +65,8 @@ function initializeGitHubIdQueries() {
     _addQuery(`div.Popover-message section + section a.text-bold.Link--primary`);
     // deployments: "branch is waiting to be deployed" "by", "Deployment protection rules" "requested review", "Review pending deployments" "requested by"
     _addQuery(`div.branch-action div.merge-status-list a.text-bold`);
-    _addQuery(`div.actions-fullwidth-module a.text-bold`);
-    _addQuery(`dialog div.Overlay-header h3 div span.text-semibold`, { hrefException: true });
+    _addQuery(`div.actions-fullwidth-module > table td > div > div:has(img.avatar) + div > a.text-bold.Link--primary`);
+    _addQuery(`dialog div.Overlay-header h3 div span.text-semibold:first-child`, { hrefException: true });
     // projects (classic): card/issue creator
     _addQuery(`div.project-column div.d-flex small.color-fg-muted a.color-fg-default`);
     _addQuery(`div.d-flex div.js-project-issue-details-container small.color-fg-muted a.color-fg-default`);
