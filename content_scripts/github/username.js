@@ -63,6 +63,10 @@ function initializeGitHubIdQueries() {
     );
     // hovercard
     _addQuery(`div.Popover-message section + section a.text-bold.Link--primary`);
+    // deployments: "branch is waiting to be deployed" "by", "Deployment protection rules" "requested review", "Review pending deployments" "requested by"
+    _addQuery(`div.branch-action div.merge-status-list a.text-bold`);
+    _addQuery(`div.actions-fullwidth-module a.text-bold`);
+    _addQuery(`dialog div.Overlay-header h3 div span.text-semibold`, { hrefException: true });
     // projects (classic): card/issue creator
     _addQuery(`div.project-column div.d-flex small.color-fg-muted a.color-fg-default`);
     _addQuery(`div.d-flex div.js-project-issue-details-container small.color-fg-muted a.color-fg-default`);
@@ -281,19 +285,19 @@ function _replaceAllChildsWhichAreUserId(element) {
         for (const queryMatch of element.querySelectorAll(github.showNames.query)) {
             _replaceElementIfUserId(queryMatch);
         }
-    } catch {}
+    } catch { }
     try {
         for (const queryMatch of element.querySelectorAll(github.showNames.queryTooltips)) {
             _replaceElementsTooltip(queryMatch);
         }
-    } catch {}
+    } catch { }
     try {
         for (const queryMatch of element.querySelectorAll(github.showNames.queryTooltipsAriaDescribedbyRef)) {
             const tooltipElement = document.getElementById(queryMatch.getAttribute("aria-describedby"));
             if (tooltipElement === null) continue;
             _replaceElementsTooltip(tooltipElement);
         }
-    } catch {}
+    } catch { }
 
     /**
      * When an element is changed where we previously replaced the user id (e.g. tooltip with reactions),
@@ -452,18 +456,18 @@ async function _replaceElementsTooltip(element) {
         element.nodeName === "TOOL-TIP"
             ? "element"
             : element.hasAttribute("aria-label")
-            ? "aria-label"
-            : element.hasAttribute("title")
-            ? "title"
-            : "";
+                ? "aria-label"
+                : element.hasAttribute("title")
+                    ? "title"
+                    : "";
     const originalTooltipText =
         tooltipType === "element"
             ? element.textContent.trim()
             : tooltipType === "aria-label"
-            ? element.getAttribute("aria-label")
-            : tooltipType === "title"
-            ? element.getAttribute("title")
-            : "";
+                ? element.getAttribute("aria-label")
+                : tooltipType === "title"
+                    ? element.getAttribute("title")
+                    : "";
     if (originalTooltipText === element.getAttribute("data-sap-addon-tooltip-new-content")) {
         // value is still what we last set
         return;
@@ -788,8 +792,7 @@ async function _checkDocumentTitleAndReplaceUserId() {
                 // make sure title has not changed in the meantime
                 const newTitle = title.replace(
                     regex,
-                    `${rule.prefixReplace === undefined ? rule.prefix : rule.prefixReplace}${username}${
-                        rule.suffixReplace === undefined ? rule.suffix : rule.suffixReplace
+                    `${rule.prefixReplace === undefined ? rule.prefix : rule.prefixReplace}${username}${rule.suffixReplace === undefined ? rule.suffix : rule.suffixReplace
                     }`
                 );
                 document.title = newTitle;
