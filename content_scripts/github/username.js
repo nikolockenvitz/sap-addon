@@ -132,6 +132,13 @@ function initializeGitHubIdQueries() {
             hrefException: true,
         }
     );
+    // projects (beta): group by assignees
+    _addQuery(
+        `projects-v2 div[data-testid*="group-header"] span[class*="AvatarStack__AvatarStackWrapper"] + span[data-testid="group-name"]`,
+        {
+            hrefException: true,
+        }
+    );
     // projects (beta): card assignee tooltip
     _addTooltipQuery(`projects-v2 div[data-testid="board-card-header"] figure img[aria-describedby]`, { ariaDescribedbyRef: true });
     // projects (beta): roadmap assignee tooltip
