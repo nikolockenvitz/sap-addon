@@ -72,40 +72,40 @@ function initializeGitHubIdQueries() {
     _addQuery(`div.d-flex div.js-project-issue-details-container small.color-fg-muted a.color-fg-default`);
     // projects (classic): activity pane
     _addQuery(`div.js-project-activity-pane.Details ul.js-project-activity-container li p a.text-bold`, { userMention: true });
-    // projects (beta): item/issue details: creator of this item
+    // projects (v2): item/issue details: creator of this item
     _addQuery(`projects-v2 header div > figure ~ address > span:first-child`, { hrefException: true });
-    // projects (beta): item details: most-recent description editor
+    // projects (v2): item details: most-recent description editor
     _addQuery(`projects-v2 section article > header address[data-testid="author-login"]`, { hrefException: true });
-    // projects (beta): issue details: comment author (creator)
+    // projects (v2): issue details: comment author (creator)
     _addQuery(`projects-v2 a[data-testid="issue-body-header-author"]`);
-    // projects (beta): issue details: comment author (comments)
+    // projects (v2): issue details: comment author (comments)
     _addQuery(`projects-v2 div[data-testid="comment-header-left-side-items"] a[data-testid="avatar-link"]`);
-    // projects (beta): issue details: comment edited by + menu with edits
+    // projects (v2): issue details: comment edited by + menu with edits
     _addQuery(`projects-v2 div[data-testid="issue-body"] div:has(h3) + div > div > span > a`);
     _addQuery(
         `projects-v2 div[class^="Overlay__"] ul[role="menu"] > li[role="none"] > ul[role="group"] > li[role="menuitem"] > span:has(img[data-testid="github-avatar"]) + div[data-component="ActionList.Item--DividerContainer"] > div span[id$="--label"] > span`,
         { hrefException: true }
     );
-    // projects (beta): item/issue details: assignees
+    // projects (v2): item/issue details: assignees
     _addQuery(`projects-v2 section div[data-testid="sidebar-field-Assignees"] img + span`, {
         hrefException: true,
     });
     _addQuery(
         `projects-v2 div[data-testid="sidebar-section"] ul > li > a[data-hovercard-url] > span:has(img[data-testid="github-avatar"]) + div[data-component="ActionList.Item--DividerContainer"] > span > div[data-testid="issue-assignees"]`
     );
-    // projects (beta): item/issue details: assignees ("A and B", ..., "A, B, C, and D", ...)
+    // projects (v2): item/issue details: assignees ("A and B", ..., "A, B, C, and D", ...)
     _addQuery(`projects-v2 section div[data-testid="sidebar-field-Assignees"] div > span[class*="AvatarStack"] + span`, {
         hrefException: true,
     });
-    // projects (beta): issue details: timeline events (user mentions, added labels/assignees, etc.)
+    // projects (v2): issue details: timeline events (user mentions, added labels/assignees, etc.)
     _addQuery(
         `projects-v2 div[data-testid="issue-timeline-front"] > section[aria-label="Events"] div.Timeline-Item a[data-testid="actor-link"][data-hovercard-url^="/users/"]`
     );
-    // projects (beta): issue details: timeline events: person that has been assigned
+    // projects (v2): issue details: timeline events: person that has been assigned
     _addQuery(
         `projects-v2 div[data-testid="issue-timeline-front"] > section[aria-label="Events"] div.Timeline-Item a[data-hovercard-url^="/users/"][class*="assignees-module__assigneeLink--"]`
     );
-    // projects (beta): table assignees column
+    // projects (v2): table assignees column
     _addQuery(`projects-v2 div[data-testid^="TableCell"][data-testid$="column: Assignees}"] img + span`, {
         hrefException: true,
     });
@@ -115,7 +115,7 @@ function initializeGitHubIdQueries() {
             hrefException: true,
         }
     );
-    // projects (beta): table reviewers column
+    // projects (v2): table reviewers column
     _addQuery(`projects-v2 div[data-testid^="TableCell"][data-testid$="column: Reviewers}"] img + span`, {
         hrefException: true,
     });
@@ -125,33 +125,33 @@ function initializeGitHubIdQueries() {
             hrefException: true,
         }
     );
-    // projects (beta): slice by assignees
+    // projects (v2): slice by assignees
     _addQuery(
         `projects-v2 div[data-testid="slicer-panel"] li div.actionlistitem-leadingcontent:has(div > img[data-testid="github-avatar"]) + div > div > h3`,
         {
             hrefException: true,
         }
     );
-    // projects (beta): group by assignees
+    // projects (v2): group by assignees
     _addQuery(
         `projects-v2 div[data-testid*="group-header"] span[class*="AvatarStack__AvatarStackWrapper"] + span[data-testid="group-name"]`,
         {
             hrefException: true,
         }
     );
-    // projects (beta): card assignee tooltip
+    // projects (v2): card assignee tooltip
     _addTooltipQuery(`projects-v2 div[data-testid="board-card-header"] figure img[aria-describedby]`, { ariaDescribedbyRef: true });
-    // projects (beta): roadmap assignee tooltip
+    // projects (v2): roadmap assignee tooltip
     _addTooltipQuery(
         `projects-v2 div[data-testid="roadmap-view-item-pill-content"] figure[data-testid="roadmap-item-assignees"] img[aria-describedby]`,
         { ariaDescribedbyRef: true }
     );
-    // projects (beta): roadmap group name
+    // projects (v2): roadmap group name
     _addQuery(
         `projects-v2 div[data-testid="roadmap-items"] span[class*="AvatarStack__AvatarStackWrapper"] + span[data-testid="group-name"]`,
         { hrefException: true }
     );
-    // projects (beta): archived items list item
+    // projects (v2): archived items list item
     _addQuery(`projects-v2 main ul[data-testid="archived-item-list"] li div relative-time + span`, { hrefException: true });
     // wiki revisions history
     _addQuery(`#wiki-wrapper #version-form div > a.Link--muted span.text-bold`);
