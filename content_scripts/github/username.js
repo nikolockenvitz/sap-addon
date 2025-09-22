@@ -115,6 +115,16 @@ function initializeGitHubIdQueries() {
             hrefException: true,
         }
     );
+    // projects (beta): table reviewers column
+    _addQuery(`projects-v2 div[data-testid^="TableCell"][data-testid$="column: Reviewers}"] img + span`, {
+        hrefException: true,
+    });
+    _addQuery(
+        `projects-v2 div[data-testid^="TableCell"][data-testid$="column: Reviewers}"] span[class*="AvatarStack__AvatarStackWrapper"] + span`,
+        {
+            hrefException: true,
+        }
+    );
     // projects (beta): slice by assignees
     _addQuery(
         `projects-v2 div[data-testid="slicer-panel"] li div.actionlistitem-leadingcontent:has(div > img[data-testid="github-avatar"]) + div > div > h3`,
