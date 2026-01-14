@@ -67,92 +67,130 @@ function initializeGitHubIdQueries() {
     _addQuery(`div.branch-action div.merge-status-list a.text-bold`);
     _addQuery(`div.actions-fullwidth-module > table td > div > div:has(img.avatar) + div > a.text-bold.Link--primary`);
     _addQuery(`dialog div.Overlay-header h3 div span.text-semibold:first-child`, { hrefException: true });
+
     // projects (classic): card/issue creator
     _addQuery(`div.project-column div.d-flex small.color-fg-muted a.color-fg-default`);
     _addQuery(`div.d-flex div.js-project-issue-details-container small.color-fg-muted a.color-fg-default`);
     // projects (classic): activity pane
     _addQuery(`div.js-project-activity-pane.Details ul.js-project-activity-container li p a.text-bold`, { userMention: true });
+
+    // projects (v2) meta: places where username appears with avatar (replaces few specific queries below)
+    _addQuery(`projects-v2 img[data-testid="github-avatar"] + span`, {
+        hrefException: true,
+    });
+    _addQuery(`projects-v2 span[class*="AvatarStack__AvatarStackWrapper"] + span`, {
+        hrefException: true,
+    });
+
     // projects (v2): item/issue details: creator of this item
     _addQuery(`projects-v2 header div > figure ~ address > span:first-child`, { hrefException: true });
     // projects (v2): item details: most-recent description editor
-    _addQuery(`projects-v2 section article > header address[data-testid="author-login"]`, { hrefException: true });
+    if (url.hostname === "github.wdf.sap.corp") {
+        _addQuery(`projects-v2 section article > header address`, { hrefException: true });
+    } else {
+        _addQuery(`projects-v2 section article > header address[data-testid="author-login"]`, { hrefException: true });
+    }
     // projects (v2): issue details: comment author (creator)
     _addQuery(`projects-v2 a[data-testid="issue-body-header-author"]`);
     // projects (v2): issue details: comment author (comments)
     _addQuery(`projects-v2 div[data-testid="comment-header-left-side-items"] a[data-testid="avatar-link"]`);
     // projects (v2): issue details: comment edited by + menu with edits
-    _addQuery(`projects-v2 div[data-testid="issue-body"] div:has(h3) + div > div > span > a`);
+    if (url.hostname === "github.wdf.sap.corp") {
+        _addQuery(`projects-v2 div[data-testid="issue-body"] a[data-testid="issue-body-header-link"] + span > span > a`);
+        _addQuery(
+            `projects-v2 div[data-testid="issue-timeline-container"] div[data-testid="comment-header-left-side-items"] span[class*="MarkdownLastEditedBy"] > span > a`
+        );
+    } else {
+        _addQuery(`projects-v2 div[data-testid="issue-body"] div:has(h3) + div > div > span > a`);
+        _addQuery(`projects-v2 div[data-testid="issue-timeline-front"] div[data-testid="comment-header-right-side-items"] span > a`);
+    }
     _addQuery(
         `projects-v2 div[class^="Overlay__"] ul[role="menu"] > li[role="none"] > ul[role="group"] > li[role="menuitem"] > span:has(img[data-testid="github-avatar"]) + div[data-component="ActionList.Item--DividerContainer"] > div span[id$="--label"] > span`,
         { hrefException: true }
     );
     // projects (v2): item/issue details: assignees
-    _addQuery(`projects-v2 section div[data-testid="sidebar-field-Assignees"] img + span`, {
-        hrefException: true,
-    });
+    /// `projects-v2 section div[data-testid="sidebar-field-Assignees"] img[data-testid="github-avatar"] + span`
     _addQuery(
         `projects-v2 div[data-testid="sidebar-section"] ul > li > a[data-hovercard-url] > span:has(img[data-testid="github-avatar"]) + div[data-component="ActionList.Item--DividerContainer"] > span > div[data-testid="issue-assignees"]`
     );
-    // projects (v2): item/issue details: assignees ("A and B", ..., "A, B, C, and D", ...)
+    // projects (v2): item details: assignees ("A and B", ..., "A, B, C, and D", ...)
     _addQuery(`projects-v2 section div[data-testid="sidebar-field-Assignees"] div > span[class*="AvatarStack"] + span`, {
         hrefException: true,
     });
     // projects (v2): issue details: timeline events (user mentions, added labels/assignees, etc.)
-    _addQuery(
-        `projects-v2 div[data-testid="issue-timeline-front"] > section[aria-label="Events"] div.Timeline-Item a[data-testid="actor-link"][data-hovercard-url^="/users/"]`
-    );
+    if (url.hostname === "github.wdf.sap.corp") {
+        /// covered by `projects-v2 img[data-testid="github-avatar"] > span`
+    } else {
+        _addQuery(
+            `projects-v2 div[data-testid="issue-timeline-front"] > section[aria-label="Events"] div.Timeline-Item a[data-testid="actor-link"][data-hovercard-url^="/users/"]:has(img[data-testid="github-avatar"])`
+        );
+    }
     // projects (v2): issue details: timeline events: person that has been assigned
-    _addQuery(
-        `projects-v2 div[data-testid="issue-timeline-front"] > section[aria-label="Events"] div.Timeline-Item a[data-hovercard-url^="/users/"][class*="assignees-module__assigneeLink--"]`
-    );
-    // projects (v2): table assignees column
-    _addQuery(`projects-v2 div[data-testid^="TableCell"][data-testid$="column: Assignees}"] img + span`, {
-        hrefException: true,
-    });
-    _addQuery(
-        `projects-v2 div[data-testid^="TableCell"][data-testid$="column: Assignees}"] span[class*="AvatarStack__AvatarStackWrapper"] + span`,
-        {
-            hrefException: true,
-        }
-    );
-    // projects (v2): table reviewers column
-    _addQuery(`projects-v2 div[data-testid^="TableCell"][data-testid$="column: Reviewers}"] img + span`, {
-        hrefException: true,
-    });
-    _addQuery(
-        `projects-v2 div[data-testid^="TableCell"][data-testid$="column: Reviewers}"] span[class*="AvatarStack__AvatarStackWrapper"] + span`,
-        {
-            hrefException: true,
-        }
-    );
+    if (url.hostname === "github.wdf.sap.corp") {
+        _addQuery(
+            `projects-v2 div[data-testid="issue-timeline-container"] > section[aria-label="Events"] div.Timeline-Item a[data-hovercard-url^="/users/"][class*="assignees-module__assigneeLink--"]`
+        );
+    } else {
+        _addQuery(
+            `projects-v2 div[data-testid="issue-timeline-front"] > section[aria-label="Events"] div.Timeline-Item a[data-hovercard-url^="/users/"][class*="assignees-module__assigneeLink--"]`
+        );
+    }
+    // projects (v2): table assignees column / reviewers column (github.wdf)
+    /// `projects-v2 div[role="gridcell"] img[data-testid="github-avatar"] + span`
+    /// `projects-v2 div[role="gridcell"] span[class*="AvatarStack__AvatarStackWrapper"] + span
+    // projects (v2): table assignees column (github.tools)
+    /// `projects-v2 div[data-testid^="TableCell"][data-testid$="column: Assignees}"] img[data-testid="github-avatar"] + span`
+    /// `projects-v2 div[data-testid^="TableCell"][data-testid$="column: Assignees}"] span[class*="AvatarStack__AvatarStackWrapper"] + span`
+    // projects (v2): table reviewers column (github.tools)
+    /// `projects-v2 div[data-testid^="TableCell"][data-testid$="column: Reviewers}"] img[data-testid="github-avatar"] + span`
+    /// `projects-v2 div[data-testid^="TableCell"][data-testid$="column: Reviewers}"] span[class*="AvatarStack__AvatarStackWrapper"] + span`
     // projects (v2): slice by assignees
-    _addQuery(
-        `projects-v2 div[data-testid="slicer-panel"] li div.actionlistitem-leadingcontent:has(div > img[data-testid="github-avatar"]) + div > div > h3`,
-        {
-            hrefException: true,
-        }
-    );
+    if (url.hostname === "github.wdf.sap.corp") {
+        _addQuery(
+            `projects-v2 div[class*="slicer-items-module__SlicerPanel--"] li div[class*="slicer-items-module__leadingContent"]:has(div > img[data-testid="github-avatar"]) + div > div > h3`,
+            {
+                hrefException: true,
+            }
+        );
+    } else {
+        _addQuery(
+            `projects-v2 div[data-testid="slicer-panel"] li div.actionlistitem-leadingcontent:has(div > img[data-testid="github-avatar"]) + div > div > h3`,
+            {
+                hrefException: true,
+            }
+        );
+    }
     // projects (v2): group by assignees
-    _addQuery(
-        `projects-v2 div[data-testid*="group-header"] span[class*="AvatarStack__AvatarStackWrapper"] + span[data-testid="group-name"]`,
-        {
-            hrefException: true,
-        }
-    );
+    /// github.wdf `projects-v2 div[role="rowgroup"] > div > div[role="row"] > div[role="cell"] > div > span[class*="AvatarStack__AvatarStackWrapper"] + span`
+    /// github.tools `projects-v2 div[data-testid^="group-header"] span[class*="AvatarStack__AvatarStackWrapper"] + span[data-testid="group-name"]`
     // projects (v2): card assignee tooltip
-    _addTooltipQuery(`projects-v2 div[data-testid="board-card-header"] figure img[aria-describedby]`, { ariaDescribedbyRef: true });
+    if (url.hostname === "github.wdf.sap.corp") {
+        _addTooltipQuery(`projects-v2 div[data-board-card-id] figure img[aria-describedby]`, { ariaDescribedbyRef: true });
+    } else {
+        _addTooltipQuery(`projects-v2 div[data-testid="board-card-header"] figure img[aria-describedby]`, { ariaDescribedbyRef: true });
+    }
     // projects (v2): roadmap assignee tooltip
-    _addTooltipQuery(
-        `projects-v2 div[data-testid="roadmap-view-item-pill-content"] figure[data-testid="roadmap-item-assignees"] img[aria-describedby]`,
-        { ariaDescribedbyRef: true }
-    );
+    if (url.hostname === "github.wdf.sap.corp") {
+        _addTooltipQuery(`projects-v2 div.roadmap-table-cell + div[data-date-start] figure img[aria-describedby]`, {
+            ariaDescribedbyRef: true,
+        });
+    } else {
+        _addTooltipQuery(
+            `projects-v2 div[data-testid="roadmap-view-item-pill-content"] figure[data-testid="roadmap-item-assignees"] img[aria-describedby]`,
+            { ariaDescribedbyRef: true }
+        );
+    }
     // projects (v2): roadmap group name
-    _addQuery(
-        `projects-v2 div[data-testid="roadmap-items"] span[class*="AvatarStack__AvatarStackWrapper"] + span[data-testid="group-name"]`,
-        { hrefException: true }
-    );
+    /// `projects-v2 div[data-testid="roadmap-items"] span[class*="AvatarStack__AvatarStackWrapper"] + span[data-testid="group-name"]`
     // projects (v2): archived items list item
-    _addQuery(`projects-v2 main ul[data-testid="archived-item-list"] li div relative-time + span`, { hrefException: true });
+    if (url.hostname === "github.wdf.sap.corp") {
+        _addQuery(`projects-v2 main ul > li > label + div + div > div + div > relative-time + span`, { hrefException: true });
+    } else {
+        _addQuery(`projects-v2 main ul[data-testid="archived-item-list"] li div relative-time + span`, { hrefException: true });
+    }
+    // projects (v2): search for assignee
+    _addQuery(`projects-v2 ~ div#portal-root ul#search-suggestions-box img[data-testid="github-avatar"] + span`, { hrefException: true });
+
     // wiki revisions history
     _addQuery(`#wiki-wrapper #version-form div > a.Link--muted span.text-bold`);
     // recent activity in dashboard (user commented)
@@ -302,19 +340,19 @@ function _replaceAllChildsWhichAreUserId(element) {
         for (const queryMatch of element.querySelectorAll(github.showNames.query)) {
             _replaceElementIfUserId(queryMatch);
         }
-    } catch { }
+    } catch {}
     try {
         for (const queryMatch of element.querySelectorAll(github.showNames.queryTooltips)) {
             _replaceElementsTooltip(queryMatch);
         }
-    } catch { }
+    } catch {}
     try {
         for (const queryMatch of element.querySelectorAll(github.showNames.queryTooltipsAriaDescribedbyRef)) {
             const tooltipElement = document.getElementById(queryMatch.getAttribute("aria-describedby"));
             if (tooltipElement === null) continue;
             _replaceElementsTooltip(tooltipElement);
         }
-    } catch { }
+    } catch {}
 
     /**
      * When an element is changed where we previously replaced the user id (e.g. tooltip with reactions),
@@ -473,18 +511,18 @@ async function _replaceElementsTooltip(element) {
         element.nodeName === "TOOL-TIP"
             ? "element"
             : element.hasAttribute("aria-label")
-                ? "aria-label"
-                : element.hasAttribute("title")
-                    ? "title"
-                    : "";
+            ? "aria-label"
+            : element.hasAttribute("title")
+            ? "title"
+            : "";
     const originalTooltipText =
         tooltipType === "element"
             ? element.textContent.trim()
             : tooltipType === "aria-label"
-                ? element.getAttribute("aria-label")
-                : tooltipType === "title"
-                    ? element.getAttribute("title")
-                    : "";
+            ? element.getAttribute("aria-label")
+            : tooltipType === "title"
+            ? element.getAttribute("title")
+            : "";
     if (originalTooltipText === element.getAttribute("data-sap-addon-tooltip-new-content")) {
         // value is still what we last set
         return;
@@ -809,7 +847,8 @@ async function _checkDocumentTitleAndReplaceUserId() {
                 // make sure title has not changed in the meantime
                 const newTitle = title.replace(
                     regex,
-                    `${rule.prefixReplace === undefined ? rule.prefix : rule.prefixReplace}${username}${rule.suffixReplace === undefined ? rule.suffix : rule.suffixReplace
+                    `${rule.prefixReplace === undefined ? rule.prefix : rule.prefixReplace}${username}${
+                        rule.suffixReplace === undefined ? rule.suffix : rule.suffixReplace
                     }`
                 );
                 document.title = newTitle;
