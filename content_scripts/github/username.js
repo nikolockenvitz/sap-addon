@@ -73,51 +73,19 @@ function initializeGitHubIdQueries() {
     _addQuery(`div.d-flex div.js-project-issue-details-container small.color-fg-muted a.color-fg-default`);
     // projects (classic): activity pane
     _addQuery(`div.js-project-activity-pane.Details ul.js-project-activity-container li p a.text-bold`, { userMention: true });
-
-    // projects (v2) meta: places where username appears with avatar (replaces few specific queries below)
-    _addQuery(`projects-v2 img[data-testid="github-avatar"] + span`, {
-        hrefException: true,
-    });
-    _addQuery(`projects-v2 span[class*="AvatarStack__AvatarStackWrapper"] + span`, {
-        hrefException: true,
-    });
-
     // projects (v2): item/issue details: creator of this item
     _addQuery(`projects-v2 header div > figure ~ address > span:first-child`, { hrefException: true });
-    // projects (v2): item details: most-recent description editor
-    if (url.hostname === "github.wdf.sap.corp") {
-        _addQuery(`projects-v2 section article > header address`, { hrefException: true });
-    } else {
-        _addQuery(`projects-v2 section article > header address[data-testid="author-login"]`, { hrefException: true });
-    }
-    // projects (v2): issue details: comment author (creator)
-    _addQuery(`projects-v2 a[data-testid="issue-body-header-author"]`);
-    // projects (v2): issue details: comment author (comments)
-    _addQuery(`projects-v2 div[data-testid="comment-header-left-side-items"] a[data-testid="avatar-link"]`);
-    // projects (v2): issue details: comment edited by + menu with edits
-    if (url.hostname === "github.wdf.sap.corp") {
-        _addQuery(`projects-v2 div[data-testid="issue-body"] a[data-testid="issue-body-header-link"] + span > span > a`);
-        _addQuery(
-            `projects-v2 div[data-testid="issue-timeline-container"] div[data-testid="comment-header-left-side-items"] span[class*="MarkdownLastEditedBy"] > span > a`
-        );
-    } else {
-        _addQuery(`projects-v2 div[data-testid="issue-body"] div:has(h3) + div > div > span > a`);
-        _addQuery(`projects-v2 div[data-testid="issue-timeline-front"] div[data-testid="comment-header-right-side-items"] span > a`);
-    }
-    _addQuery(
-        `projects-v2 div[class^="Overlay__"] ul[role="menu"] > li[role="none"] > ul[role="group"] > li[role="menuitem"] > span:has(img[data-testid="github-avatar"]) + div[data-component="ActionList.Item--DividerContainer"] > div span[id$="--label"] > span`,
-        { hrefException: true }
-    );
+    // projects (v2): item/issue details: most-recent description editor + comment author
+    _addQuery(`projects-v2 section article > header address[data-testid="author-login"]`, { hrefException: true });
     // projects (v2): item/issue details: assignees
-    /// `projects-v2 section div[data-testid="sidebar-field-Assignees"] img[data-testid="github-avatar"] + span`
-    _addQuery(
-        `projects-v2 div[data-testid="sidebar-section"] ul > li > a[data-hovercard-url] > span:has(img[data-testid="github-avatar"]) + div[data-component="ActionList.Item--DividerContainer"] > span > div[data-testid="issue-assignees"]`
-    );
-    // projects (v2): item details: assignees ("A and B", ..., "A, B, C, and D", ...)
+    _addQuery(`projects-v2 section div[data-testid="sidebar-field-Assignees"] img + span`, {
+        hrefException: true,
+    });
+    // projects (v2): item/issue details: assignees ("A and B", ..., "A, B, C, and D", ...)
     _addQuery(`projects-v2 section div[data-testid="sidebar-field-Assignees"] div > span[class*="AvatarStack"] + span`, {
         hrefException: true,
     });
-    // projects (beta): table assignees column
+    // projects (v2): table assignees column
     _addQuery(`projects-v2 div[data-testid^="TableCell"][data-testid$="column: Assignees}"] img + span`, {
         hrefException: true,
     });
@@ -127,26 +95,26 @@ function initializeGitHubIdQueries() {
             hrefException: true,
         }
     );
-    // projects (beta): slice by assignees
+    // projects (v2): slice by assignees
     _addQuery(
         `projects-v2 div[class^="slicer-items-module__SlicerPanel"] li div[class^="slicer-items-module__mainContent"] h3`,
         {
             hrefException: true,
         }
     );
-    // projects (beta): card assignee tooltip
+    // projects (v2): card assignee tooltip
     _addTooltipQuery(`projects-v2 div[data-testid="board-card-header"] figure img[aria-describedby]`, { ariaDescribedbyRef: true });
-    // projects (beta): roadmap assignee tooltip
+    // projects (v2): roadmap assignee tooltip
     _addTooltipQuery(
         `projects-v2 div[data-testid="roadmap-view-item-pill-content"] figure[data-testid="roadmap-item-assignees"] img[aria-describedby]`,
         { ariaDescribedbyRef: true }
     );
-    // projects (beta): roadmap group name
+    // projects (v2): roadmap group name
     _addQuery(
         `projects-v2 div[data-testid="roadmap-items"] span[class*="AvatarStack__AvatarStackWrapper"] + span[data-testid="group-name"]`,
         { hrefException: true }
     );
-    // projects (beta): archived items list item
+    // projects (v2): archived items list item
     _addQuery(`projects-v2 main ul[data-testid="archived-item-list"] li div relative-time + span`, { hrefException: true });
     // wiki revisions history
     _addQuery(`#wiki-wrapper #version-form div > a.Link--muted span.text-bold`);
