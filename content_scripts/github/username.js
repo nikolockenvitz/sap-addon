@@ -214,6 +214,11 @@ function initializeGitHubIdQueries() {
             },
         },
     );
+    // issue description/comment edits (edited by)
+    _addQuery(`div[data-testid="issue-body"] span[class*="MarkdownLastEditedBy-"] > span + span > a`);
+    _addQuery(`div[data-testid="comment-header"] div[data-testid="comment-header-left-side-items"] span[class*="MarkdownLastEditedBy-"] > span + span > a`);
+    // issue description/comment edits (edits menu)
+    _addQuery(`div[data-variant="anchored"] > div > ul > li > ul > li > span:has(img[data-testid="github-avatar"]) + div[data-component="ActionList.Item--DividerContainer"] div > span > span`, { hrefException: true });
     // comment edit history
     _addQuery(`span.js-comment-edit-history details summary div span`);
     _addQuery(`div.js-suggested-changes-contents span details.dropdown summary.btn-link div span`);
