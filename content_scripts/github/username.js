@@ -248,6 +248,8 @@ function initializeGitHubIdQueries() {
     _addQuery(`#files_bucket div.pr-toolbar div.diffbar a.select-menu-item div.select-menu-item-text span.description`);
     // chart tooltip (insights > pulse)
     _addQuery(`body > div.svg-tip.n strong ~ strong`);
+    // insights > contributors: card title in <repo>/graph/contributors
+    _addQuery(`div:has(> a[data-hovercard-url] > img[data-testid="github-avatar"]) + div > h2[class*="ChartCardTitleHeading--"] > span > a:not([href^="/github-apps/"])`);
     // user details in organization's admin view (people > specific user)
     _addQuery(`div.table-list-header > span.table-list-heading > strong`, { hrefException: true }); // xyz has access to n repos
     _addQuery(`p.org-user-notice-content > strong:first-child`, { hrefException: true }); // as an owner, xyz has ...
