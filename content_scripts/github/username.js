@@ -216,17 +216,19 @@ function initializeGitHubIdQueries() {
     );
     // issue description/comment edits (edited by)
     _addQuery(`div[data-testid="issue-body"] span[class*="MarkdownLastEditedBy-"] > span + span > a`);
-    _addQuery(`div[data-testid="comment-header"] div[data-testid="comment-header-left-side-items"] span[class*="MarkdownLastEditedBy-"] > span + span > a`);
+    _addQuery(
+        `div[data-testid="comment-header"] div[data-testid="comment-header-left-side-items"] span[class*="MarkdownLastEditedBy-"] > span + span > a`,
+    );
     // issue description/comment edits (edits menu)
-    _addQuery(`div[data-variant="anchored"] > div > ul > li > ul > li > span:has(img[data-testid="github-avatar"]) + div[data-component="ActionList.Item--DividerContainer"] div > span > span`, { hrefException: true });
+    _addQuery(
+        `div[data-variant="anchored"] > div > ul > li > ul > li > span:has(img[data-testid="github-avatar"]) + div[data-component="ActionList.Item--DividerContainer"] div > span > span`,
+        { hrefException: true },
+    );
     // comment edit history
     _addQuery(`span.js-comment-edit-history details summary div span`);
     _addQuery(`div.js-suggested-changes-contents span details.dropdown summary.btn-link div span`);
-    _addQuery(
-        `details details-menu.dropdown-menu.js-comment-edit-history-menu ul li button.btn-link span.css-truncate-target.v-align-middle.text-bold`,
-    );
     // dialog with comment edit history
-    _addQuery(`details.details-overlay details-dialog div div div span.css-truncate-target.v-align-middle.text-bold.text-small`, {
+    _addQuery(`details.details-overlay > details-menu.js-comment-edit-history-menu > ul > li img.avatar-user + span.text-bold`, {
         hrefException: true,
     });
     // dashboard: PR comments (white box: xyz commented ... ago)
@@ -254,7 +256,9 @@ function initializeGitHubIdQueries() {
     // chart tooltip (insights > pulse)
     _addQuery(`body > div.svg-tip.n strong ~ strong`);
     // insights > contributors: card title in <repo>/graph/contributors
-    _addQuery(`div:has(> a[data-hovercard-url] > img[data-testid="github-avatar"]) + div > h2[class*="ChartCardTitleHeading--"] > span > a:not([href^="/github-apps/"])`);
+    _addQuery(
+        `div:has(> a[data-hovercard-url] > img[data-testid="github-avatar"]) + div > h2[class*="ChartCardTitleHeading--"] > span > a:not([href^="/github-apps/"])`,
+    );
     // user details in organization's admin view (people > specific user)
     _addQuery(`div.table-list-header > span.table-list-heading > strong`, { hrefException: true }); // xyz has access to n repos
     _addQuery(`p.org-user-notice-content > strong:first-child`, { hrefException: true }); // as an owner, xyz has ...
