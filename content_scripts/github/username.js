@@ -326,6 +326,13 @@ function initializeFurtherHrefExceptions() {
 initializeGitHubIdQueries();
 initializeFurtherHrefExceptions();
 
+// element (CSS query match) -> { originalText, replacedText, textNode }
+const sapReplacedElements = new Map();
+// elements currently being fetched (deduplication guard)
+const sapProcessing = new Set();
+// elements that received a mutation while a fetch was in-flight
+const sapPendingReprocess = new Set();
+
 function replaceGitHubIdsWithUsername() {
     executeFunctionAfterPageLoaded(function () {
         /* execute once in cases where observer is not registered before
@@ -336,12 +343,29 @@ function replaceGitHubIdsWithUsername() {
 
     domObserver.registerCallbackFunction(github.showNames.optionName, function (mutations, _observer) {
         for (const { target } of mutations) {
-            _replaceAllChildsWhichAreUserId(target);
+            if (target.nodeName === "#text") {
+                const element = target.parentElement;
+                if (!element) continue;
+                // if we previously replaced this element, re-process it directly without query matching
+                // (query may no longer match due to structural changes in surrounding DOM)
+                if (sapReplacedElements.has(element)) {
+                    _replaceElementIfUserId(element);
+                } else {
+                    _replaceAllChildsWhichAreUserId(element);
+                }
+            } else {
+                _replaceAllChildsWhichAreUserId(target);
+            }
         }
     });
 }
 function showGitHubIdsAgain() {
     domObserver.unregisterCallbackFunction(github.showNames.optionName);
+    for (const [_element, { originalText, textNode }] of sapReplacedElements) {
+        textNode.nodeValue = originalText;
+    }
+    sapReplacedElements.clear();
+    // nameToId siblings still use data-attributes (not text nodes we own), keep attribute-based restore for them
     for (const element of document.querySelectorAll("[data-sap-addon-original-content]")) {
         element.textContent = element.getAttribute("data-sap-addon-original-content");
         element.removeAttribute("data-sap-addon-original-content");
@@ -364,11 +388,23 @@ function showGitHubIdsAgain() {
 }
 function _replaceAllChildsWhichAreUserId(element) {
     try {
+        if (element.matches?.(github.showNames.query)) {
+            _replaceElementIfUserId(element);
+        } else {
+            const ancestor = element.closest?.(github.showNames.query);
+            if (ancestor) _replaceElementIfUserId(ancestor);
+        }
         for (const queryMatch of element.querySelectorAll(github.showNames.query)) {
             _replaceElementIfUserId(queryMatch);
         }
     } catch {}
     try {
+        if (element.matches?.(github.showNames.queryTooltips)) {
+            _replaceElementsTooltip(element);
+        } else {
+            const ancestor = element.closest?.(github.showNames.queryTooltips);
+            if (ancestor) _replaceElementsTooltip(ancestor);
+        }
         for (const queryMatch of element.querySelectorAll(github.showNames.queryTooltips)) {
             _replaceElementsTooltip(queryMatch);
         }
@@ -411,51 +447,78 @@ function getParentWithAlreadyReplacedUserIdTooltip(element) {
         temp = temp.parentElement;
     }
 }
-async function _replaceElementIfUserId(element) {
+async function _replaceElementIfUserId(element, maxRetries = 3) {
+    if (maxRetries < 0) return;
     const { userId, prefix, suffix } = _getUserIdIfElementIsUserId(element);
     if (userId) {
-        if (element.hasAttribute("data-sap-addon-already-getting-username")) return;
-        element.setAttribute("data-sap-addon-already-getting-username", "true");
-        let previousWidthInsightPulseTooltip = null;
-        if (_isInsightsPulseTooltip(element)) {
-            previousWidthInsightPulseTooltip = element.parentElement.getBoundingClientRect().width;
+        if (sapProcessing.has(element)) {
+            sapPendingReprocess.add(element);
+            return;
         }
+        sapProcessing.add(element);
+        try {
+            let previousWidthInsightPulseTooltip = null;
+            if (_isInsightsPulseTooltip(element)) {
+                previousWidthInsightPulseTooltip = element.parentElement.getBoundingClientRect().width;
+            }
 
-        let username;
-        if (isUserIdList({ userId, prefix, suffix })) {
-            const usernames = await getUsernamesFromMultipleUserIdsString(userId);
-            username = _makeUsernameTextForTooltip(usernames);
-        } else {
-            username = await _getUsername(userId);
-        }
-        if (username) {
-            // replace userId with username
-            const idToNameElement = getDirectParentOfText(element, prefix + userId + suffix);
-            if (idToNameElement) {
-                idToNameElement.textContent = prefix + username + suffix;
-                idToNameElement.setAttribute("data-sap-addon-original-content", prefix + userId + suffix);
+            let username;
+            if (isUserIdList({ userId, prefix, suffix })) {
+                const usernames = await getUsernamesFromMultipleUserIdsString(userId);
+                username = _makeUsernameTextForTooltip(usernames);
+            } else {
+                username = await _getUsername(userId);
+            }
+            if (username) {
+                // replace userId with username
+                const result = getDirectParentOfText(element, prefix + userId + suffix);
+                if (result) {
+                    const { container: idToNameElement, textNode } = result;
+                    const initialText = prefix + userId + suffix;
+                    const currentText = element.textContent;
+                    if (currentText.trim() !== initialText.trim()) {
+                        // text changed while we resolved the username -> try again from scratch
+                        sapProcessing.delete(element);
+                        return _replaceElementIfUserId(element, maxRetries - 1);
+                    }
+                    const replacedText = prefix + username + suffix;
+                    textNode.nodeValue = replacedText;
+                    sapReplacedElements.set(element, { originalText: initialText, replacedText, textNode });
 
-                if (previousWidthInsightPulseTooltip) {
-                    const currentWidth = element.parentElement.getBoundingClientRect().width;
-                    const offsetLeft = parseFloat(element.parentElement.style.left);
-                    element.parentElement.style.left = `${offsetLeft + (previousWidthInsightPulseTooltip - currentWidth) / 2}px`;
+                    if (previousWidthInsightPulseTooltip) {
+                        const currentWidth = element.parentElement.getBoundingClientRect().width;
+                        const offsetLeft = parseFloat(element.parentElement.style.left);
+                        element.parentElement.style.left = `${offsetLeft + (previousWidthInsightPulseTooltip - currentWidth) / 2}px`;
+                    }
+                }
+                // replace username with userId
+                const nameToIdElement = getNextElementSiblingDeep(result?.container);
+                if (nameToIdElement && nameToIdElement.textContent.includes(username)) {
+                    if (!nameToIdElement.hasAttribute("data-sap-addon-original-content")) {
+                        nameToIdElement.setAttribute("data-sap-addon-original-content", nameToIdElement.textContent);
+                        nameToIdElement.textContent = nameToIdElement.textContent.replace(username, userId);
+                    }
                 }
             }
-            // replace username with userId
-            const nameToIdElement = getNextElementSiblingDeep(idToNameElement);
-            if (nameToIdElement && nameToIdElement.textContent.includes(username)) {
-                if (!nameToIdElement.hasAttribute("data-sap-addon-original-content")) {
-                    nameToIdElement.setAttribute("data-sap-addon-original-content", nameToIdElement.textContent);
-                    nameToIdElement.textContent = nameToIdElement.textContent.replace(username, userId);
-                }
+        } finally {
+            sapProcessing.delete(element);
+            if (sapPendingReprocess.has(element)) {
+                sapPendingReprocess.delete(element);
+                _replaceElementIfUserId(element, maxRetries);
             }
         }
-        element.removeAttribute("data-sap-addon-already-getting-username");
     }
 }
 function _getUserIdIfElementIsUserId(element) {
+    const existing = sapReplacedElements.get(element);
+    if (existing) {
+        if (existing.textNode.nodeValue?.trim() === existing.replacedText) {
+            return { prefix: "", userId: null, suffix: "" };
+        }
+        sapReplacedElements.delete(element); // React wrote a new value, re-process
+    }
     let userId =
-        !element.hasAttribute("data-sap-addon-original-content") && !element.querySelector("[data-sap-addon-original-content]")
+        !element.querySelector("[data-sap-addon-original-content]")
             ? element.textContent.trim()
             : null;
     if (userId === "" || !isElementALink(element)) {
@@ -517,7 +580,7 @@ function _exceptionForCommitListPRFilesChanged(element, userId) {
                 return null;
             }
             if (element.childNodes[0].textContent.endsWith(" commits")) return null;
-            return replaceTextNodeWithDomElementForUsername(element, 0).textContent;
+            return element.childNodes[0].nodeValue?.trim() ?? element.childNodes[0].textContent.trim();
         } else if (element.childNodes.length === 1) {
             return null;
         }
@@ -791,16 +854,14 @@ function isElementALink(element) {
 
 function getDirectParentOfText(baseElement, text) {
     if (baseElement.childNodes.length === 1 && baseElement.firstChild.nodeName === "#text" && baseElement.textContent.trim() === text) {
-        return baseElement;
+        return { container: baseElement, textNode: baseElement.firstChild };
     } else if (
-        // sometimes text is directly after the user icon w/o separate html tag
-        // however, a real element is needed (not only a text node; a data-attribute will be set on the element later)
         baseElement.childNodes.length === 2 &&
         baseElement.childNodes[0].nodeName === "IMG" &&
         baseElement.childNodes[1].nodeName === "#text" &&
         baseElement.childNodes[1].textContent.trim() === text
     ) {
-        return replaceTextNodeWithDomElementForUsername(baseElement, 1);
+        return { container: baseElement, textNode: baseElement.childNodes[1] };
     } else if (
         baseElement.childNodes.length === 3 &&
         baseElement.childNodes[0].nodeName === "#text" &&
@@ -808,7 +869,7 @@ function getDirectParentOfText(baseElement, text) {
         baseElement.childNodes[2].nodeName === "#text" &&
         baseElement.childNodes[2].textContent.trim() === text
     ) {
-        return replaceTextNodeWithDomElementForUsername(baseElement, 2);
+        return { container: baseElement, textNode: baseElement.childNodes[2] };
     } else {
         for (const child of baseElement.childNodes) {
             if (child.childNodes.length > 0) {
@@ -820,20 +881,16 @@ function getDirectParentOfText(baseElement, text) {
         }
     }
 }
-function replaceTextNodeWithDomElementForUsername(baseElement, indexUserId) {
-    const textNode = baseElement.childNodes[indexUserId];
-    const newElement = document.createElement("span");
-    newElement.textContent = textNode.textContent.trim();
-    baseElement.replaceChild(newElement, textNode);
-    newElement.insertAdjacentHTML("afterend", " ");
-    return newElement;
-}
 function getNextElementSiblingDeep(element) {
-    let temp = element.nextElementSibling;
-    while (true) {
-        const firstChild = temp?.children[0];
-        if (!firstChild) return temp;
-        temp = firstChild;
+    try {
+        let temp = element.nextElementSibling;
+        while (true) {
+            const firstChild = temp?.children[0];
+            if (!firstChild) return temp;
+            temp = firstChild;
+        }
+    } catch (err) {
+        return null;
     }
 }
 
