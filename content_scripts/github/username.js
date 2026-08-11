@@ -530,8 +530,9 @@ async function _replaceElementsTooltip(element) {
     }
 
     // old tooltips use aria-label or even title, new ones use custom html element tool-tip with textContent
+    // newest GHE uses span[role="tooltip"] with textContent
     const tooltipType =
-        element.nodeName === "TOOL-TIP"
+        element.nodeName === "TOOL-TIP" || element.getAttribute("role") === "tooltip"
             ? "element"
             : element.hasAttribute("aria-label")
               ? "aria-label"
