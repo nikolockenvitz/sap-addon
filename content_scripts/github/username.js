@@ -475,8 +475,7 @@ async function _replaceElementIfUserId(element, maxRetries = 3) {
                 if (result) {
                     const { container: idToNameElement, textNode } = result;
                     const initialText = prefix + userId + suffix;
-                    const currentText = element.textContent;
-                    if (currentText.trim() !== initialText.trim()) {
+                    if (textNode.nodeValue?.trim() !== initialText.trim()) {
                         // text changed while we resolved the username -> try again from scratch
                         sapProcessing.delete(element);
                         return _replaceElementIfUserId(element, maxRetries - 1);
@@ -512,7 +511,7 @@ async function _replaceElementIfUserId(element, maxRetries = 3) {
 function _getUserIdIfElementIsUserId(element) {
     const existing = sapReplacedElements.get(element);
     if (existing) {
-        if (existing.textNode.nodeValue?.trim() === existing.replacedText) {
+        if (existing.textNode.nodeValue?.trim() === existing.replacedText.trim()) {
             return { prefix: "", userId: null, suffix: "" };
         }
         sapReplacedElements.delete(element); // React wrote a new value, re-process
@@ -528,6 +527,13 @@ function _getUserIdIfElementIsUserId(element) {
     }
     if (userId) {
         userId = _exceptionForCommitListPRFilesChanged(element, userId);
+    }
+    if (userId) {
+        const trimmed = userId.trim();
+        if (trimmed !== userId) {
+            const idx = userId.indexOf(trimmed);
+            return { prefix: userId.slice(0, idx), userId: trimmed, suffix: userId.slice(idx + trimmed.length) };
+        }
     }
     if (userId) {
         for (const possiblePrefixOrSuffix of [
@@ -580,7 +586,7 @@ function _exceptionForCommitListPRFilesChanged(element, userId) {
                 return null;
             }
             if (element.childNodes[0].textContent.endsWith(" commits")) return null;
-            return element.childNodes[0].nodeValue?.trim() ?? element.childNodes[0].textContent.trim();
+            return element.childNodes[0].nodeValue ?? element.childNodes[0].textContent;
         } else if (element.childNodes.length === 1) {
             return null;
         }
@@ -872,6 +878,9 @@ function getDirectParentOfText(baseElement, text) {
         return { container: baseElement, textNode: baseElement.childNodes[2] };
     } else {
         for (const child of baseElement.childNodes) {
+            if (child.nodeName === "#text" && child.textContent.trim() === text.trim()) {
+                return { container: baseElement, textNode: child };
+            }
             if (child.childNodes.length > 0) {
                 const r = getDirectParentOfText(child, text);
                 if (r) {
