@@ -87,121 +87,123 @@ function initializeGitHubIdQueries() {
     _addQuery(`div.js-project-activity-pane.Details ul.js-project-activity-container li p a.text-bold`, { userMention: true });
 
     // projects (v2) meta: places where username appears with avatar (replaces few specific queries below)
-    _addQuery(`projects-v2 img[data-testid="github-avatar"] + span`, {
+    _addQuery(`img[data-testid="github-avatar"] + span`, {
         hrefException: true,
     });
-    _addQuery(`projects-v2 span[data-avatar-count]:has(img[data-testid="github-avatar"]) + span`, {
+    _addQuery(`span[data-avatar-count]:has(img[data-testid="github-avatar"]) + span`, {
         hrefException: true,
     });
 
     // projects (v2): item/issue details: creator of this item
-    _addQuery(`projects-v2 header div > figure ~ address > span:first-child`, { hrefException: true });
+    _addQuery(`header div > figure ~ address > span:first-child`, { hrefException: true });
     // projects (v2): item details: most-recent description editor
     if (url.hostname === "github.wdf.sap.corp" || url.hostname === "github.tools.sap") {
-        _addQuery(`projects-v2 section article > header address`, { hrefException: true });
+        _addQuery(`section article > header address`, { hrefException: true });
     } else {
-        _addQuery(`projects-v2 section article > header address[data-testid="author-login"]`, { hrefException: true });
+        _addQuery(`section article > header address[data-testid="author-login"]`, { hrefException: true });
     }
     // projects (v2): issue details: comment author (creator)
-    _addQuery(`projects-v2 a[data-testid="issue-body-header-author"]`);
+    _addQuery(`a[data-testid="issue-body-header-author"]`);
     // projects (v2): issue details: comment author (comments)
-    _addQuery(`projects-v2 div[data-testid="comment-header-left-side-items"] a[data-testid="avatar-link"]`);
+    _addQuery(`div[data-testid="comment-header-left-side-items"] a[data-testid="avatar-link"]`);
     // projects (v2): issue details: comment edited by + menu with edits
     if (url.hostname === "github.wdf.sap.corp" || url.hostname === "github.tools.sap") {
-        _addQuery(`projects-v2 div[data-testid="issue-body"] a[data-testid="issue-body-header-link"] + span > span > a`);
+        _addQuery(`div[data-testid="issue-body"] a[data-testid="issue-body-header-link"] + span > span > a`);
         _addQuery(
-            `projects-v2 div[data-testid="issue-timeline-container"] div[data-testid="comment-header-left-side-items"] span[class*="MarkdownLastEditedBy"] > span > a`,
+            `div[data-testid="issue-timeline-container"] div[data-testid="comment-header-left-side-items"] span[class*="MarkdownLastEditedBy"] > span > a`,
         );
     } else {
-        _addQuery(`projects-v2 div[data-testid="issue-body"] div:has(h3) + div > div > span > a`);
-        _addQuery(`projects-v2 div[data-testid="issue-timeline-front"] div[data-testid="comment-header-right-side-items"] span > a`);
+        _addQuery(`div[data-testid="issue-body"] div:has(h3) + div > div > span > a`);
+        _addQuery(`div[data-testid="issue-timeline-front"] div[data-testid="comment-header-right-side-items"] span > a`);
     }
     _addQuery(
-        `projects-v2 div[class^="Overlay__"] ul[role="menu"] > li[role="none"] > ul[role="group"] > li[role="menuitem"] > span:has(img[data-testid="github-avatar"]) + div[data-component="ActionList.Item--DividerContainer"] > div span[id$="--label"] > span`,
+        `div[class*="Overlay"] > div[class^="prc-ActionMenu"] > ul[role="menu"] > li[role="none"] > ul[role="group"] > li[role="menuitem"] > div > span:has(img[data-testid="github-avatar"]) + [data-component="ActionList.Item--DividerContainer"] > div span[id$="--label"] > span`,
         { hrefException: true },
     );
     // projects (v2): item/issue details: assignees
-    /// `projects-v2 section div[data-testid="sidebar-field-Assignees"] img[data-testid="github-avatar"] + span`
+    /// `section div[data-testid="sidebar-field-Assignees"] img[data-testid="github-avatar"] + span`
     _addQuery(
-        `projects-v2 div[data-testid="sidebar-section"] ul > li > a[data-hovercard-url] > span:has(img[data-testid="github-avatar"]) + div[data-component="ActionList.Item--DividerContainer"] > span > div[data-testid="issue-assignees"]`,
+        `div[data-testid="sidebar-section"] ul > li > a[data-hovercard-url] > span:has(img[data-testid="github-avatar"]) + div[data-component="ActionList.Item--DividerContainer"] > span > div[data-testid="issue-assignees"]`,
     );
     // projects (v2): item details: assignees ("A and B", ..., "A, B, C, and D", ...)
-    _addQuery(`projects-v2 section div[data-testid="sidebar-field-Assignees"] div > span[class*="AvatarStack"] + span`, {
+    _addQuery(`section div[data-testid="sidebar-field-Assignees"] div > span[class*="AvatarStack"] + span`, {
         hrefException: true,
     });
     // projects (v2): issue details: timeline events (user mentions, added labels/assignees, etc.)
     if (url.hostname === "github.wdf.sap.corp" || url.hostname === "github.tools.sap") {
-        /// covered by `projects-v2 img[data-testid="github-avatar"] > span`
+        /// covered by `img[data-testid="github-avatar"] > span`
     } else {
         _addQuery(
-            `projects-v2 div[data-testid="issue-timeline-front"] > section[aria-label="Events"] div.Timeline-Item a[data-testid="actor-link"][data-hovercard-url^="/users/"]:has(img[data-testid="github-avatar"])`,
+            `div[data-testid="issue-timeline-front"] > section[aria-label="Events"] div.Timeline-Item a[data-testid="actor-link"][data-hovercard-url^="/users/"]:has(img[data-testid="github-avatar"])`,
         );
     }
     // projects (v2): issue details: timeline events: person that has been assigned
     if (url.hostname === "github.wdf.sap.corp" || url.hostname === "github.tools.sap") {
         _addQuery(
-            `projects-v2 div[data-testid="issue-timeline-container"] > section[aria-label="Events"] div.Timeline-Item a[data-hovercard-url^="/users/"][class*="assignees-module__assigneeLink--"]`,
+            `div[data-testid="issue-timeline-container"] > section[aria-label="Events"] div.Timeline-Item a[data-hovercard-url^="/users/"][class*="assignees-module__assigneeLink--"]`,
         );
     } else {
         _addQuery(
-            `projects-v2 div[data-testid="issue-timeline-front"] > section[aria-label="Events"] div.Timeline-Item a[data-hovercard-url^="/users/"][class*="assignees-module__assigneeLink--"]`,
+            `div[data-testid="issue-timeline-front"] > section[aria-label="Events"] div.Timeline-Item a[data-hovercard-url^="/users/"][class*="assignees-module__assigneeLink--"]`,
         );
     }
     // projects (v2): table assignees column / reviewers column (github.wdf)
-    /// `projects-v2 div[role="gridcell"] img[data-testid="github-avatar"] + span`
-    /// `projects-v2 div[role="gridcell"] span[class*="AvatarStack__AvatarStackWrapper"] + span
+    /// `div[role="gridcell"] img[data-testid="github-avatar"] + span`
+    /// `div[role="gridcell"] span[class*="AvatarStack__AvatarStackWrapper"] + span
     // projects (v2): table assignees column (github.tools)
-    /// `projects-v2 div[data-testid^="TableCell"][data-testid$="column: Assignees}"] img[data-testid="github-avatar"] + span`
-    /// `projects-v2 div[data-testid^="TableCell"][data-testid$="column: Assignees}"] span[class*="AvatarStack__AvatarStackWrapper"] + span`
+    /// `div[data-testid^="TableCell"][data-testid$="column: Assignees}"] img[data-testid="github-avatar"] + span`
+    /// `div[data-testid^="TableCell"][data-testid$="column: Assignees}"] span[class*="AvatarStack__AvatarStackWrapper"] + span`
     // projects (v2): table reviewers column (github.tools)
-    /// `projects-v2 div[data-testid^="TableCell"][data-testid$="column: Reviewers}"] img[data-testid="github-avatar"] + span`
-    /// `projects-v2 div[data-testid^="TableCell"][data-testid$="column: Reviewers}"] span[class*="AvatarStack__AvatarStackWrapper"] + span`
+    /// `div[data-testid^="TableCell"][data-testid$="column: Reviewers}"] img[data-testid="github-avatar"] + span`
+    /// `div[data-testid^="TableCell"][data-testid$="column: Reviewers}"] span[class*="AvatarStack__AvatarStackWrapper"] + span`
     // projects (v2): slice by assignees
     if (url.hostname === "github.wdf.sap.corp" || url.hostname === "github.tools.sap") {
         _addQuery(
-            `projects-v2 div[class*="slicer-items-module__SlicerPanel--"] li div[class*="slicer-items-module__leadingContent"]:has(div > img[data-testid="github-avatar"]) + div > div > h3`,
+            `div[class*="slicer-items-module__SlicerPanel--"] li div[class*="slicer-items-module__leadingContent"]:has(div > img[data-testid="github-avatar"]) + div > div > h3`,
             {
                 hrefException: true,
             },
         );
     } else {
         _addQuery(
-            `projects-v2 div[data-testid="slicer-panel"] li div.actionlistitem-leadingcontent:has(div > img[data-testid="github-avatar"]) + div > div > h3`,
+            `div[data-testid="slicer-panel"] li div.actionlistitem-leadingcontent:has(div > img[data-testid="github-avatar"]) + div > div > h3`,
             {
                 hrefException: true,
             },
         );
     }
     // projects (v2): group by assignees
-    /// github.wdf `projects-v2 div[role="rowgroup"] > div > div[role="row"] > div[role="cell"] > div > span[class*="AvatarStack__AvatarStackWrapper"] + span`
-    /// github.tools `projects-v2 div[data-testid^="group-header"] span[class*="AvatarStack__AvatarStackWrapper"] + span[data-testid="group-name"]`
+    /// github.wdf `div[role="rowgroup"] > div > div[role="row"] > div[role="cell"] > div > span[class*="AvatarStack__AvatarStackWrapper"] + span`
+    /// github.tools `div[data-testid^="group-header"] span[class*="AvatarStack__AvatarStackWrapper"] + span[data-testid="group-name"]`
     // projects (v2): card assignee tooltip
     if (url.hostname === "github.wdf.sap.corp" || url.hostname === "github.tools.sap") {
-        _addTooltipQuery(`projects-v2 div[data-board-card-id] figure img[aria-describedby]`, { ariaDescribedbyRef: true });
+        _addTooltipQuery(`div[data-board-card-id] figure img[aria-describedby]`, { ariaDescribedbyRef: true });
     } else {
-        _addTooltipQuery(`projects-v2 div[data-testid="board-card-header"] figure img[aria-describedby]`, { ariaDescribedbyRef: true });
+        _addTooltipQuery(`div[data-testid="board-card-header"] figure img[aria-describedby]`, { ariaDescribedbyRef: true });
     }
     // projects (v2): roadmap assignee tooltip
     if (url.hostname === "github.wdf.sap.corp" || url.hostname === "github.tools.sap") {
-        _addTooltipQuery(`projects-v2 div.roadmap-table-cell + div[data-date-start] figure img[aria-describedby]`, {
+        _addTooltipQuery(`div.roadmap-table-cell + div[data-date-start] figure img[data-testid="github-avatar"][aria-describedby]`, {
             ariaDescribedbyRef: true,
         });
     } else {
         _addTooltipQuery(
-            `projects-v2 div[data-testid="roadmap-view-item-pill-content"] figure[data-testid="roadmap-item-assignees"] img[aria-describedby]`,
+            `div[data-testid="roadmap-view-item-pill-content"] figure[data-testid="roadmap-item-assignees"] img[aria-describedby]`,
             { ariaDescribedbyRef: true },
         );
     }
     // projects (v2): roadmap group name
-    /// `projects-v2 div[data-testid="roadmap-items"] span[class*="AvatarStack__AvatarStackWrapper"] + span[data-testid="group-name"]`
+    /// `div[data-testid="roadmap-items"] span[class*="AvatarStack__AvatarStackWrapper"] + span[data-testid="group-name"]`
     // projects (v2): archived items list item
     if (url.hostname === "github.wdf.sap.corp" || url.hostname === "github.tools.sap") {
-        _addQuery(`projects-v2 main ul > li > label + div + div > div + div > relative-time + span`, { hrefException: true });
+        _addQuery(`main ul > li > label + div + div > div + div > relative-time + span`, { hrefException: true });
     } else {
-        _addQuery(`projects-v2 main ul[data-testid="archived-item-list"] li div relative-time + span`, { hrefException: true });
+        _addQuery(`main ul[data-testid="archived-item-list"] li div relative-time + span`, { hrefException: true });
     }
     // projects (v2): search for assignee
-    _addQuery(`projects-v2 ~ div#portal-root ul#search-suggestions-box img[data-testid="github-avatar"] + span`, { hrefException: true });
+    _addQuery(`ul#filter-bar-component-results > li > ul > li > div > span:has(img[data-testid="github-avatar"]) + span > span > span`, {
+        hrefException: true,
+    });
 
     // wiki revisions history
     _addQuery(`#wiki-wrapper #version-form div > a.Link--muted span.text-bold`);
@@ -270,7 +272,7 @@ function initializeGitHubIdQueries() {
     _addQuery(`div.Layout-sidebar li > img.avatar.avatar-user + a`);
 
     // secret scanning: xyz closed this (or more generally: avatar with name)
-    _addQuery(`img[data-testid="github-avatar"] + span.text-bold`, { hrefException: true });
+    // _addQuery(`img[data-testid="github-avatar"] + span.text-bold`, { hrefException: true });
 
     // tooltips (reactions)
     _addTooltipQuery(`tool-tip[for^=reactions--reaction_button_component-]`);
@@ -516,10 +518,7 @@ function _getUserIdIfElementIsUserId(element) {
         }
         sapReplacedElements.delete(element); // React wrote a new value, re-process
     }
-    let userId =
-        !element.querySelector("[data-sap-addon-original-content]")
-            ? element.textContent.trim()
-            : null;
+    let userId = !element.querySelector("[data-sap-addon-original-content]") ? element.textContent.trim() : null;
     if (userId === "" || !isElementALink(element)) {
         if (!_hrefException(element)) {
             userId = null;
