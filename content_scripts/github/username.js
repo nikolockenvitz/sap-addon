@@ -271,6 +271,9 @@ function initializeGitHubIdQueries() {
     // github app developer on app page
     _addQuery(`div.Layout-sidebar li > img.avatar.avatar-user + a`);
 
+    // axis labels for insights charts
+    _addQuery(`svg > g.highcharts-axis-labels > text`, { hrefException: true });
+
     // secret scanning: xyz closed this (or more generally: avatar with name)
     // _addQuery(`img[data-testid="github-avatar"] + span.text-bold`, { hrefException: true });
 
