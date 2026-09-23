@@ -24,9 +24,11 @@ async function main() {
     if (isEnabled(github.showNames.optionName)) {
         replaceGitHubIdsWithUsername();
         replaceGitHubIdsWithUsernameInDocumentTitle();
+        replaceCodeownersUserIds();
     } else {
         showGitHubIdsAgain();
         showGitHubIdsAgainInDocumentTitle();
+        showCodeownersIdsAgain();
     }
 
     if (isEnabled(github.projectIssueRelativeLinkRewrite.optionName)) {
