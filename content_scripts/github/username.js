@@ -833,6 +833,97 @@ function _isInsightsPulseTooltip(element) {
     );
 }
 
+// Code file support: replace @D/I-IDs in code file views (CODEOWNERS, CODENOTIFY, etc.)
+// Two rendering modes on GitHub:
+//   1. Syntax-highlighted: user IDs are in span.pl-v preceded by span.pl-k "@"
+//   2. Plain text (no highlighting): user IDs appear as raw "@DXXXXXX" tokens in text nodes
+const codeownersUserIdRegex = /^[dDiI]\d{6}$|^[cC]\d{7}$/;
+const codeownersAtUserIdRegex = /@([dDiI]\d{6}|[cC]\d{7})/g;
+const codeownersReplacedElements = new Map();   // span → originalText (highlighted mode)
+const codeownersReplacedTextNodes = new Map();  // textNode → originalValue (plain-text mode)
+
+function replaceCodeownersUserIds() {
+    executeFunctionAfterPageLoaded(function () {
+        _replaceAllCodeownersIds(document.body);
+    });
+
+    domObserver.registerCallbackFunction("github-codeowners-show-names", function (mutations) {
+        for (const { target } of mutations) {
+            _replaceAllCodeownersIds(target.nodeType === Node.TEXT_NODE ? target.parentElement : target);
+        }
+    });
+}
+
+function showCodeownersIdsAgain() {
+    domObserver.unregisterCallbackFunction("github-codeowners-show-names");
+    for (const [element, originalText] of codeownersReplacedElements) {
+        element.textContent = originalText;
+    }
+    codeownersReplacedElements.clear();
+    for (const [textNode, originalValue] of codeownersReplacedTextNodes) {
+        textNode.nodeValue = originalValue;
+    }
+    codeownersReplacedTextNodes.clear();
+}
+
+function _replaceAllCodeownersIds(root) {
+    if (!root || !root.querySelectorAll) return;
+    // Mode 1: syntax-highlighted — span.pl-v preceded by span.pl-k "@"
+    for (const span of root.querySelectorAll('.react-file-line span.pl-v')) {
+        _replaceCodeownersSpan(span);
+    }
+    // Mode 2: plain-text lines — walk text nodes inside .react-file-line that have no span children
+    for (const line of root.querySelectorAll('.react-file-line')) {
+        if (line.querySelector('span.pl-v')) continue; // already handled by mode 1
+        _replaceCodeownersTextNodes(line);
+    }
+}
+
+async function _replaceCodeownersSpan(span) {
+    if (codeownersReplacedElements.has(span)) return;
+    const text = span.textContent.trim();
+    if (!codeownersUserIdRegex.test(text)) return;
+    const prev = span.previousElementSibling;
+    if (!prev || !prev.classList.contains("pl-k") || prev.textContent.trim() !== "@") return;
+
+    const username = await _getUsername(text);
+    if (username && username !== text) {
+        codeownersReplacedElements.set(span, text);
+        span.textContent = username;
+        span.title = text;
+    }
+}
+
+function _replaceCodeownersTextNodes(line) {
+    const walker = document.createTreeWalker(line, NodeFilter.SHOW_TEXT);
+    let node;
+    while ((node = walker.nextNode())) {
+        if (!codeownersAtUserIdRegex.test(node.nodeValue)) continue;
+        if (codeownersReplacedTextNodes.has(node)) continue;
+        _replaceCodeownersTextNode(node);
+    }
+}
+
+async function _replaceCodeownersTextNode(textNode) {
+    if (codeownersReplacedTextNodes.has(textNode)) return;
+    const original = textNode.nodeValue;
+    const matches = [...original.matchAll(/@([dDiI]\d{6}|[cC]\d{7})/g)];
+    if (!matches.length) return;
+    codeownersReplacedTextNodes.set(textNode, original);
+    const usernames = await Promise.all(matches.map(m => _getUsername(m[1])));
+    let replaced = original;
+    for (let i = matches.length - 1; i >= 0; i--) {
+        const m = matches[i];
+        const name = usernames[i];
+        if (name && name !== m[1]) {
+            replaced = replaced.slice(0, m.index + 1) + name + replaced.slice(m.index + 1 + m[1].length);
+        }
+    }
+    if (replaced !== original) {
+        textNode.nodeValue = replaced;
+    }
+}
+
 function getUnixTimestamp() {
     return Math.floor(Date.now() / 1000);
 }
